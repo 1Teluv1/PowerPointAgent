@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ppt-agent/contracts/pipeline.contract.v1.json",
+  "title": "PPT Agent Serial Pipeline Contract",
+  "type": "object",
+  "required": [
+    "planning_spec",
+    "visual_assets_bundle",
+    "ppt_code_bundle"
+  ],
+  "properties": {
+    "planning_spec": {
+      "type": "object",
+      "required": ["schema_version", "presentation_goal", "slides"],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "presentation_goal": { "type": "string" },
+        "tone": { "type": "string" },
+        "slides": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["index", "title", "asset_needs", "narrative"],
+            "properties": {
+              "index": { "type": "integer", "minimum": 1 },
+              "title": { "type": "string" },
+              "asset_needs": { "type": "array", "items": { "type": "string" } },
+              "narrative": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "visual_assets_bundle": {
+      "type": "object",
+      "required": ["schema_version", "assets"],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["asset_id", "type", "layout_code", "placement", "slide_index"],
+            "properties": {
+              "asset_id": { "type": "string" },
+              "type": { "type": "string" },
+              "layout_code": { "type": "string" },
+              "slide_index": { "type": "integer", "minimum": 1 },
+              "placement": {
+                "type": "object",
+                "required": ["x", "y", "w", "h"],
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "w": { "type": "number" },
+                  "h": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ppt_code_bundle": {
+      "type": "object",
+      "required": ["schema_version", "python_code", "expected_outputs"],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "python_code": { "type": "string" },
+        "expected_outputs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

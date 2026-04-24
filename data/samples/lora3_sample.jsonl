@@ -1,0 +1,2 @@
+{"planning_spec":{"presentation_goal":"의사결정 지원","slides":[{"index":1,"title":"요약","asset_needs":["kpi_table"],"narrative":"핵심 지표 공유"}]},"visual_assets_layout_code":[{"asset_id":"kpi_table_01","layout_code":"<svg>...</svg>","placement":{"x":1,"y":1.5,"w":8,"h":3}}],"ppt_requirements":{"library":"python-pptx"},"python_code":"from pptx import Presentation\n# ..."}
+{"failed_code":"from pptx import Presentation\nraise Exception('shape error')","traceback":"ShapePositionError: x must be positive","repaired_code":"from pptx import Presentation\n# x 값을 보정한 코드"}

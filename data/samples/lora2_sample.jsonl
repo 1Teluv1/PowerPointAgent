@@ -1,0 +1,2 @@
+{"topic":"Q3 사업전략","slide_goal":"핵심 KPI 요약","asset_type":"table","style":"corporate","constraints":{"max_columns":4},"layout_code":"<svg>...</svg>","placement":{"x":1.0,"y":1.8,"w":8.0,"h":3.0},"explanation":"4열 KPI 테이블"}
+{"topic":"Q3 사업전략","slide_goal":"성장 추세 설명","asset_type":"line_chart","style":"minimal","constraints":{"series":2},"layout_code":"<svg>...</svg>","placement":{"x":0.8,"y":1.5,"w":8.5,"h":3.5},"explanation":"2개 시계열 추세선"}

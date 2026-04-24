@@ -1,0 +1,18 @@
+{
+  "name": "lora3_ppt_code_dataset",
+  "version": "1.0.0",
+  "sample_unit": "planning_plus_assets_to_python_pptx",
+  "input_fields": [
+    "planning_spec",
+    "visual_assets_layout_code",
+    "ppt_requirements"
+  ],
+  "output_fields": [
+    "python_code"
+  ],
+  "repair_pair_fields": [
+    "failed_code",
+    "traceback",
+    "repaired_code"
+  ]
+}

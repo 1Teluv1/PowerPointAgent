@@ -1,0 +1,23 @@
+{
+  "name": "lora2_visual_asset_dataset",
+  "version": "1.0.0",
+  "sample_unit": "slide_asset_task",
+  "input_fields": [
+    "topic",
+    "slide_goal",
+    "asset_type",
+    "style",
+    "constraints"
+  ],
+  "output_fields": [
+    "layout_code",
+    "placement",
+    "explanation"
+  ],
+  "quality_labels": [
+    "readability",
+    "accuracy",
+    "consistency",
+    "reusability"
+  ]
+}

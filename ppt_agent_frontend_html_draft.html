@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PPT Agent</title>
+  <style>
+    :root {
+      --bg: #09090b;
+      --panel: #151518;
+      --panel-soft: #1d1d22;
+      --border: #2c2c32;
+      --text: #f6f4ea;
+      --muted: #9b9b93;
+      --yellow: #ffd43b;
+      --green: #61e59f;
+      --red: #ff6262;
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 212, 59, 0.18), transparent 32%),
+        linear-gradient(180deg, #070708, #101013);
+    }
+
+    button, input, textarea, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .app {
+      width: min(100% - 40px, 1320px);
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 32px;
+      border: 1px solid rgba(255, 212, 59, 0.22);
+      border-radius: var(--radius-xl);
+      background: rgba(15, 15, 18, 0.88);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--yellow);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(40px, 6vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+    }
+
+    .subtitle {
+      max-width: 520px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .status-card {
+      min-width: 220px;
+      align-self: flex-start;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--panel-soft);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #111;
+      background: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #111;
+    }
+
+    .job-id {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 0.95fr 0.9fr 1.05fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .panel {
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(24, 24, 28, 0.98), rgba(14, 14, 17, 0.98));
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: -0.04em;
+    }
+
+    .panel-note {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      color: var(--yellow);
+      border: 1px solid rgba(255, 212, 59, 0.38);
+      background: rgba(255, 212, 59, 0.08);
+      font-weight: 900;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      color: #d8d6ca;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      background: #0d0d10;
+      outline: none;
+    }
+
+    input, select {
+      height: 44px;
+      padding: 0 13px;
+    }
+
+    textarea {
+      min-height: 94px;
+      padding: 13px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 4px rgba(255, 212, 59, 0.12);
+    }
+
+    .primary {
+      min-height: 48px;
+      border: 0;
+      border-radius: var(--radius-md);
+      color: #111;
+      background: linear-gradient(135deg, var(--yellow), #ffe987);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .step[data-state="active"] {
+      border-color: rgba(255, 212, 59, 0.68);
+      background: rgba(255, 212, 59, 0.08);
+      box-shadow: inset 4px 0 0 var(--yellow);
+    }
+
+    .step[data-state="done"] {
+      border-color: rgba(97, 229, 159, 0.32);
+      background: rgba(97, 229, 159, 0.05);
+    }
+
+    .dot {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      color: #111;
+      background: #d8d6ca;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .step[data-state="active"] .dot { background: var(--yellow); }
+    .step[data-state="done"] .dot { background: var(--green); }
+
+    .step strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .state {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .current {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px dashed rgba(255, 212, 59, 0.34);
+      border-radius: var(--radius-lg);
+      color: var(--yellow);
+      background: rgba(255, 212, 59, 0.05);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      font-size: 15px;
+    }
+
+    .assets {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .asset {
+      display: flex;
+      justify-content: space-between;
+      padding: 11px 12px;
+      border-radius: var(--radius-md);
+      background: #0d0d10;
+      color: #d8d6ca;
+      font-size: 13px;
+    }
+
+    .type {
+      color: var(--yellow);
+      font-weight: 900;
+    }
+
+    pre {
+      overflow: auto;
+      max-height: 140px;
+      margin: 0;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: #d8d6ca;
+      background: #08080a;
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .download {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      border-radius: var(--radius-md);
+      color: #111;
+      background: var(--yellow);
+      font-weight: 900;
+    }
+
+    .error {
+      padding: 14px;
+      border: 1px solid rgba(255, 98, 98, 0.34);
+      border-radius: var(--radius-lg);
+      color: #ffd3d3;
+      background: rgba(255, 98, 98, 0.06);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1120px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .app { width: min(100% - 24px, 1320px); padding-top: 18px; }
+      .header { flex-direction: column; padding: 24px; }
+      .status-card { width: 100%; min-width: 0; }
+      .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" data-component="AppLayout">
+    <header class="header" data-component="AppHeader" data-section="header">
+      <div>
+        <p class="eyebrow">PPT Agent</p>
+        <h1>PPT Generation Agent</h1>
+        <p class="subtitle">Plan, create visual assets, generate code, and export PPTX in one pipeline.</p>
+      </div>
+
+      <aside class="status-card" data-section="server-status" data-state="connected" aria-label="Server status">
+        <span class="badge">Connected</span>
+        <p class="job-id">Job ID: <strong data-bind="job.id">job_001</strong></p>
+      </aside>
+    </header>
+
+    <main class="grid" data-component="MainGrid">
+      <section class="panel" data-component="RequestFormSection" data-section="request-form">
+        <div class="panel-head">
+          <div>
+            <h2>Request</h2>
+            <p class="panel-note">Create a new PPT job.</p>
+          </div>
+          <span class="num">1</span>
+        </div>
+
+        <form action="/jobs" method="post" data-api="POST /jobs">
+          <div class="field">
+            <label for="topic">Topic *</label>
+            <input id="topic" name="topic" type="text" required placeholder="AI PPT Agent" data-bind="request.topic" />
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="audience">Audience</label>
+              <input id="audience" name="audience" type="text" placeholder="Developers" data-bind="request.audience" />
+            </div>
+
+            <div class="field">
+              <label for="slides">Slides *</label>
+              <input id="slides" name="slideCount" type="number" min="1" max="30" value="8" required data-bind="request.slideCount" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="tone">Tone</label>
+            <select id="tone" name="tone" data-bind="request.tone">
+              <option value="modern">Modern</option>
+              <option value="professional">Professional</option>
+              <option value="educational">Educational</option>
+              <option value="premium">Premium</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="requirements" placeholder="Visual-first, clean layout, yellow accent" data-bind="request.requirements"></textarea>
+          </div>
+
+          <button class="primary" type="submit" data-action="create-job">Run Pipeline</button>
+          <p class="hint" aria-live="polite" data-bind="job.loadingText">Ready.</p>
+        </form>
+      </section>
+
+      <section class="panel" data-component="PipelineStatusSection" data-section="pipeline-status" data-state="running" aria-labelledby="status-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="status-title">Pipeline</h2>
+            <p class="panel-note">Live job status.</p>
+          </div>
+          <span class="num">2</span>
+        </div>
+
+        <ol class="steps" aria-live="polite" data-api="GET /jobs/{id}" data-bind="job.status">
+          <li class="step" data-step="queued" data-state="done">
+            <span class="dot">1</span>
+            <strong>Queued</strong>
+            <span class="state">Done</span>
+          </li>
+          <li class="step" data-step="planning" data-state="done">
+            <span class="dot">2</span>
+            <strong>Planning</strong>
+            <span class="state">Done</span>
+          </li>
+          <li class="step" data-step="visual_generating" data-state="active">
+            <span class="dot">3</span>
+            <strong>Visuals</strong>
+            <span class="state">Active</span>
+          </li>
+          <li class="step" data-step="code_generating" data-state="idle">
+            <span class="dot">4</span>
+            <strong>Code</strong>
+            <span class="state">Idle</span>
+          </li>
+          <li class="step" data-step="executing" data-state="idle">
+            <span class="dot">5</span>
+            <strong>Execute</strong>
+            <span class="state">Idle</span>
+          </li>
+          <li class="step" data-step="completed" data-state="idle">
+            <span class="dot">6</span>
+            <strong>Complete</strong>
+            <span class="state">Idle</span>
+          </li>
+        </ol>
+
+        <div class="current" role="status" data-bind="job.currentStep">Current: Visuals</div>
+      </section>
+
+      <section class="panel" data-component="ResultSection" data-section="result" data-state="partial" aria-labelledby="result-title">
+        <div class="panel-head">
+          <div>
+            <h2 id="result-title">Result</h2>
+            <p class="panel-note">Assets, logs, and PPTX.</p>
+          </div>
+          <span class="num">3</span>
+        </div>
+
+        <div class="stack">
+          <article class="card" data-api="GET /jobs/{id}/artifacts" data-section="assets">
+            <h3>Assets</h3>
+            <ul class="assets" data-bind="artifacts.assets">
+              <li class="asset"><span>flow.svg</span><span class="type">SVG</span></li>
+              <li class="asset"><span>chart.html</span><span class="type">HTML</span></li>
+              <li class="asset"><span>diagram.png</span><span class="type">PNG</span></li>
+            </ul>
+          </article>
+
+          <article class="card" data-section="logs">
+            <h3>Logs</h3>
+            <pre data-bind="artifacts.logs">[planning] done
+[visuals] running
+[code] waiting</pre>
+          </article>
+
+          <article class="card" data-section="download">
+            <h3>Download</h3>
+            <a class="download" href="/jobs/job_001/pptx" data-api="GET /jobs/{id}/pptx" data-bind="artifacts.pptxUrl">Download PPTX</a>
+          </article>
+
+          <div class="error" data-section="error" data-state="hidden">
+            Error details and retry guide appear here.
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
