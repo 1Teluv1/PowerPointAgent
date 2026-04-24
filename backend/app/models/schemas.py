@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -77,3 +77,47 @@ class JobState(BaseModel):
     visual_assets_bundle: Optional[VisualAssetsBundle] = None
     ppt_code_bundle: Optional[PPTCodeBundle] = None
     runner_result: Optional[RunnerResult] = None
+
+
+class DatasetUpsertRequest(BaseModel):
+    user_prompt: str = Field(min_length=1)
+    asset_system_prompt: str = Field(min_length=1)
+    python_system_prompt: str = Field(min_length=1)
+    asset_code: str = Field(min_length=1)
+    python_code: str = Field(min_length=1)
+
+
+class DatasetUpsertResponse(BaseModel):
+    key: str
+    asset_updated: bool
+    python_updated: bool
+    validation: Optional["PythonValidationResponse"] = None
+
+
+class DatasetFileStats(BaseModel):
+    name: str
+    path: str
+    records: int
+    size_bytes: int
+    updated_at: Optional[str] = None
+
+
+class DatasetStatsResponse(BaseModel):
+    files: List[DatasetFileStats]
+
+
+class DatasetPreviewResponse(BaseModel):
+    file: str
+    records: List[Dict[str, Any]]
+
+
+class PythonValidationRequest(BaseModel):
+    python_code: str = Field(min_length=1)
+
+
+class PythonValidationResponse(BaseModel):
+    status: Literal["ok", "error"]
+    logs: List[str]
+    error_type: Optional[str] = None
+    traceback: Optional[str] = None
+    pptx_download_url: Optional[str] = None

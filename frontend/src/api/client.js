@@ -1,23 +1,80 @@
 const API_BASE = "http://localhost:8000";
 
+async function requestJson(path, options = {}, fallbackMessage = "요청 실패") {
+  try {
+    const res = await fetch(`${API_BASE}${path}`, options);
+    if (!res.ok) {
+      let detail = "";
+      try {
+        const payload = await res.json();
+        detail = payload?.detail ? `: ${payload.detail}` : "";
+      } catch {
+        detail = "";
+      }
+      throw new Error(`${fallbackMessage}${detail}`);
+    }
+    return res.json();
+  } catch (error) {
+    if (error instanceof TypeError && String(error.message).includes("Failed to fetch")) {
+      throw new Error("백엔드 서버 연결에 실패했습니다. 서버 실행 상태와 CORS 설정을 확인해 주세요.");
+    }
+    throw error instanceof Error ? error : new Error(fallbackMessage);
+  }
+}
+
 export async function createJob(payload) {
-  const res = await fetch(`${API_BASE}/jobs`, {
+  return requestJson(
+    "/jobs",
+    {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
-  });
-  if (!res.ok) throw new Error("작업 생성 실패");
-  return res.json();
+    },
+    "작업 생성 실패"
+  );
 }
 
 export async function getJob(jobId) {
-  const res = await fetch(`${API_BASE}/jobs/${jobId}`);
-  if (!res.ok) throw new Error("작업 조회 실패");
-  return res.json();
+  return requestJson(`/jobs/${jobId}`, {}, "작업 조회 실패");
 }
 
 export async function getArtifacts(jobId) {
-  const res = await fetch(`${API_BASE}/jobs/${jobId}/artifacts`);
-  if (!res.ok) throw new Error("아티팩트 조회 실패");
-  return res.json();
+  return requestJson(`/jobs/${jobId}/artifacts`, {}, "아티팩트 조회 실패");
+}
+
+export async function upsertDataset(payload) {
+  return requestJson(
+    "/tools/dataset",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    },
+    "데이터셋 저장 실패"
+  );
+}
+
+export async function getDatasetStats() {
+  return requestJson("/tools/dataset/stats", {}, "데이터셋 통계 조회 실패");
+}
+
+export async function getDatasetPreview(datasetType, options = {}) {
+  const params = new URLSearchParams();
+  if (options.limit) params.set("limit", String(options.limit));
+  if (options.query) params.set("query", options.query);
+  const queryString = params.toString();
+  const path = `/tools/dataset/${datasetType}/preview${queryString ? `?${queryString}` : ""}`;
+  return requestJson(path, {}, "데이터셋 미리보기 조회 실패");
+}
+
+export async function validatePythonCode(payload) {
+  return requestJson(
+    "/tools/dataset/python/validate",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    },
+    "Python 코드 검증 실패"
+  );
 }

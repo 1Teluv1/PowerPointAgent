@@ -24,6 +24,38 @@
   text-transform: uppercase;
 }
 
+.head-panel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.head-panel__item {
+  border: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: transparent;
+  color: #d8d6ca;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.head-panel__item:hover {
+  background: rgba(255, 212, 59, 0.08);
+  color: var(--yellow);
+}
+
+.head-panel__item--active {
+  background: rgba(255, 212, 59, 0.14);
+  color: var(--yellow);
+}
+
 h1 {
   margin: 0;
   font-size: clamp(40px, 6vw, 72px);
@@ -197,6 +229,16 @@ textarea:focus {
   cursor: not-allowed;
 }
 
+.secondary {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: #d8d6ca;
+  background: #151518;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .hint {
   margin: 0;
   color: var(--muted);
@@ -365,8 +407,49 @@ pre {
   font-size: 13px;
 }
 
+.success {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid rgba(97, 229, 159, 0.4);
+  border-radius: var(--radius-lg);
+  color: #d6ffec;
+  background: rgba(97, 229, 159, 0.08);
+  font-size: 13px;
+}
+
+.tools-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.dataset-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.dataset-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dataset-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
 @media (max-width: 1120px) {
   .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dataset-preview-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -388,6 +471,14 @@ pre {
   }
 
   .row {
+    grid-template-columns: 1fr;
+  }
+
+  .dataset-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .dataset-stats {
     grid-template-columns: 1fr;
   }
 }

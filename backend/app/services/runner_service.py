@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path
+import shutil
 
 from app.models.schemas import PPTCodeBundle, RunnerResult
 
@@ -30,7 +31,19 @@ def run_ppt_code(job_dir: Path, code_bundle: PPTCodeBundle) -> RunnerResult:
         pptx_path = job_dir / "output.pptx"
         if pptx_path.exists():
             return RunnerResult(status="ok", logs=logs, pptx_path=str(pptx_path))
-        return RunnerResult(status="error", logs=logs, error_type="MissingOutput", traceback="output.pptx not found")
+        # Allow user code to save PPTX with custom filename.
+        generated = sorted(job_dir.glob("*.pptx"), key=lambda path: path.stat().st_mtime, reverse=True)
+        if generated:
+            source = generated[0]
+            if source != pptx_path:
+                shutil.copy2(source, pptx_path)
+            return RunnerResult(status="ok", logs=logs, pptx_path=str(pptx_path))
+        return RunnerResult(
+            status="error",
+            logs=logs,
+            error_type="MissingOutput",
+            traceback="output.pptx not found (no .pptx file generated in working directory)",
+        )
 
     return RunnerResult(
         status="error",
