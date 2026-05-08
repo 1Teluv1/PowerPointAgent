@@ -121,3 +121,94 @@ class PythonValidationResponse(BaseModel):
     error_type: Optional[str] = None
     traceback: Optional[str] = None
     pptx_download_url: Optional[str] = None
+
+
+class DatasetAutoGenerateRequest(BaseModel):
+    raw_prompt: str = Field(min_length=1)
+    lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
+    lmstudio_model: str = Field(default="local-model", min_length=1)
+    max_retries: int = Field(default=2, ge=0, le=5)
+    system_prompt: Optional[str] = None
+
+
+class DatasetAutoAttempt(BaseModel):
+    attempt: int
+    stage: Literal["generate", "repair"]
+    status: Literal["ok", "error"]
+    error_type: Optional[str] = None
+    traceback: Optional[str] = None
+    logs: List[str] = Field(default_factory=list)
+
+
+class DatasetAutoGenerateResponse(BaseModel):
+    status: Literal["ok", "error"]
+    key: Optional[str] = None
+    generated_markdown: Optional[str] = None
+    parsed_user_prompt: Optional[str] = None
+    parsed_thinking: Optional[str] = None
+    parsed_python_code: Optional[str] = None
+    attempts: List[DatasetAutoAttempt] = Field(default_factory=list)
+    validation: Optional[PythonValidationResponse] = None
+    dataset_row: Optional[Dict[str, Any]] = None
+    error_type: Optional[str] = None
+    traceback: Optional[str] = None
+
+
+class RawPromptPoolGenerateRequest(BaseModel):
+    lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
+    lmstudio_model: str = Field(default="local-model", min_length=1)
+    prompt_count: int = Field(default=100, ge=1, le=200)
+    topic_seed: str = Field(default="diverse business PowerPoint presentation requests", min_length=1)
+
+
+class RawPromptPoolConsumeRequest(BaseModel):
+    count: int = Field(default=1, ge=1, le=50)
+    lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
+    lmstudio_model: str = Field(default="local-model", min_length=1)
+    max_retries: int = Field(default=2, ge=0, le=5)
+
+
+class RawPromptPoolItem(BaseModel):
+    id: str
+    index: int
+    prompt: str
+    status: Literal["pending", "processing", "done", "failed"]
+    key: Optional[str] = None
+    pptx_download_url: Optional[str] = None
+    thumbnail_urls: List[str] = Field(default_factory=list)
+    error_type: Optional[str] = None
+    traceback: Optional[str] = None
+
+
+class RawPromptPoolSummary(BaseModel):
+    total: int
+    pending: int
+    processing: int
+    done: int
+    failed: int
+
+
+class RawPromptPoolResponse(BaseModel):
+    system_prompt: Optional[str] = None
+    summary: RawPromptPoolSummary
+    items: List[RawPromptPoolItem] = Field(default_factory=list)
+
+
+class RawPromptPoolConsumeItemResult(BaseModel):
+    prompt_id: str
+    status: Literal["ok", "error"]
+    key: Optional[str] = None
+    prompt: str
+    pptx_download_url: Optional[str] = None
+    thumbnail_urls: List[str] = Field(default_factory=list)
+    attempts: List[DatasetAutoAttempt] = Field(default_factory=list)
+    error_type: Optional[str] = None
+    traceback: Optional[str] = None
+
+
+class RawPromptPoolConsumeResponse(BaseModel):
+    processed: int
+    success: int
+    failed: int
+    summary: RawPromptPoolSummary
+    results: List[RawPromptPoolConsumeItemResult] = Field(default_factory=list)

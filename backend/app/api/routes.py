@@ -8,6 +8,8 @@ from fastapi.responses import FileResponse
 
 from app.core.orchestrator import ARTIFACT_ROOT, run_serial_pipeline
 from app.models.schemas import (
+    DatasetAutoGenerateRequest,
+    DatasetAutoGenerateResponse,
     DatasetPreviewResponse,
     DatasetStatsResponse,
     DatasetUpsertRequest,
@@ -16,8 +18,23 @@ from app.models.schemas import (
     JobState,
     PythonValidationRequest,
     PythonValidationResponse,
+    RawPromptPoolConsumeRequest,
+    RawPromptPoolConsumeResponse,
+    RawPromptPoolGenerateRequest,
+    RawPromptPoolResponse,
 )
-from app.services.dataset_service import TOOL_ARTIFACT_ROOT, get_preview, get_stats, upsert_pair, validate_python_and_save_ppt
+from app.services.dataset_service import (
+    TOOL_ARTIFACT_ROOT,
+    auto_generate_dataset_entry,
+    consume_raw_prompt_pool,
+    generate_raw_prompt_pool,
+    get_preview,
+    get_raw_prompt_pool,
+    get_stats,
+    upsert_pair,
+    validate_python_and_save_ppt,
+)
+from app.services.lm_studio_service import LMStudioError
 
 router = APIRouter()
 JOB_STORE: Dict[str, JobState] = {}
@@ -92,9 +109,47 @@ def validate_python(payload: PythonValidationRequest) -> PythonValidationRespons
     return validate_python_and_save_ppt(payload.python_code)
 
 
+@router.post("/tools/dataset/auto-generate", response_model=DatasetAutoGenerateResponse)
+def auto_generate_dataset(payload: DatasetAutoGenerateRequest) -> DatasetAutoGenerateResponse:
+    return auto_generate_dataset_entry(payload)
+
+
+@router.post("/tools/dataset/raw-prompts/generate", response_model=RawPromptPoolResponse)
+def generate_raw_prompts(payload: RawPromptPoolGenerateRequest) -> RawPromptPoolResponse:
+    try:
+        return generate_raw_prompt_pool(payload)
+    except LMStudioError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.get("/tools/dataset/raw-prompts", response_model=RawPromptPoolResponse)
+def raw_prompt_pool() -> RawPromptPoolResponse:
+    return get_raw_prompt_pool()
+
+
+@router.post("/tools/dataset/raw-prompts/consume", response_model=RawPromptPoolConsumeResponse)
+def consume_raw_prompts(payload: RawPromptPoolConsumeRequest) -> RawPromptPoolConsumeResponse:
+    try:
+        return consume_raw_prompt_pool(payload)
+    except LMStudioError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
 @router.get("/tools/dataset/python-runs/{run_id}/pptx")
 def download_python_run_pptx(run_id: str) -> FileResponse:
     path = TOOL_ARTIFACT_ROOT / run_id / "output.pptx"
     if not Path(path).exists():
         raise HTTPException(status_code=404, detail="PPT file not found")
     return FileResponse(path, media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation")
+
+
+@router.get("/tools/dataset/previews/{run_id}/{file_name}")
+def download_python_run_preview(run_id: str, file_name: str) -> FileResponse:
+    if Path(file_name).name != file_name:
+        raise HTTPException(status_code=400, detail="Invalid preview file name")
+    path = TOOL_ARTIFACT_ROOT / run_id / "thumbnails" / file_name
+    if not Path(path).exists():
+        raise HTTPException(status_code=404, detail="Preview image not found")
+    return FileResponse(path, media_type="image/png")
