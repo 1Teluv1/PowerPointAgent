@@ -16,6 +16,7 @@ from app.models.schemas import (
     RawPromptPoolConsumeRequest,
     RawPromptPoolConsumeResponse,
     RawPromptPoolGenerateRequest,
+    RawPromptPoolRestoreRequest,
     RawPromptPoolItem,
     RawPromptPoolResponse,
     RawPromptPoolSummary,
@@ -26,7 +27,9 @@ from app.services.lm_studio_service import (
     generate_markdown_sample,
     generate_raw_prompt_list,
     generate_raw_prompt_system_prompt,
+    repair_assistant_python_only,
     repair_markdown_sample,
+    repair_thinking_only,
 )
 from app.services.ppt_preview_service import export_pptx_thumbnails
 from app.services.runner_service import run_ppt_code
@@ -36,9 +39,17 @@ ASSET_DATASET_FILE = DATASET_DIR / "asset_lora.jsonl"
 PYTHON_DATASET_FILE = DATASET_DIR / "python_lora.jsonl"
 TOOL_ARTIFACT_ROOT = Path(__file__).resolve().parents[2] / "artifacts" / "tools"
 ASSET_SYSTEM_PROMPT = "You generate only valid SVG code."
-PYTHON_SYSTEM_PROMPT = "You generate only valid python-pptx code."
+PYTHON_SYSTEM_PROMPT = (
+    "You generate only valid python-pptx code. "
+    "Use XL_CHART_TYPE (not ChartType) for charts; guard slide.shapes.title for None; "
+    "use exact # User Prompt / # Thinking / # Assistant sections with ```text and ```python fences."
+)
 RAW_PROMPT_POOL: List[Dict] = []
+
+# LM Studio 한 번에 요청할 Raw Prompt 개수 상한 (토큰·안정성)
+RAW_PROMPT_LIST_CHUNK_SIZE = 20
 RAW_PROMPT_SYSTEM_PROMPT: Optional[str] = None
+THINKING_SECTION_PARSE_ERROR = "섹션 파싱 실패: Thinking"
 
 
 def normalize_prompt(prompt: str) -> str:
@@ -200,12 +211,81 @@ def _extract_section_block(markdown: str, section_title: str, block_lang: str) -
     return match.group(1).strip()
 
 
-def parse_markdown_dataset(markdown: str) -> Dict[str, str]:
+def _try_extract_section_block(markdown: str, section_title: str, block_lang: str) -> Optional[str]:
+    try:
+        return _extract_section_block(markdown, section_title, block_lang)
+    except ValueError:
+        return None
+
+
+def parse_markdown_dataset(markdown: str, *, raw_prompt: Optional[str] = None) -> Dict[str, str]:
+    user_prompt = _try_extract_section_block(markdown, "User Prompt", "text")
+    if not user_prompt:
+        user_prompt = (raw_prompt or "").strip()
+    if not user_prompt:
+        raise ValueError("섹션 파싱 실패: User Prompt")
     return {
-        "user_prompt": _extract_section_block(markdown, "User Prompt", "text"),
+        "user_prompt": user_prompt,
         "thinking": _extract_section_block(markdown, "Thinking", "text"),
         "assistant_python": _extract_section_block(markdown, "Assistant", "python"),
     }
+
+
+def _assemble_dataset_markdown(fixed_user_prompt: str, fixed_thinking: str, assistant_python: str) -> str:
+    return (
+        "# User Prompt\n```text\n"
+        + fixed_user_prompt.strip()
+        + "\n```\n\n# Thinking\n```text\n"
+        + fixed_thinking.strip()
+        + "\n```\n\n# Assistant\n```python\n"
+        + assistant_python.strip()
+        + "\n```\n"
+    )
+
+
+def _is_thinking_section_parse_error(exc: ValueError) -> bool:
+    return str(exc) == THINKING_SECTION_PARSE_ERROR
+
+
+def _parse_markdown_with_raw_prompt(
+    *,
+    markdown: str,
+    raw_prompt: str,
+    endpoint: str,
+    model: str,
+) -> Tuple[str, Dict[str, str]]:
+    try:
+        parsed = parse_markdown_dataset(markdown, raw_prompt=raw_prompt)
+    except ValueError as exc:
+        if not _is_thinking_section_parse_error(exc):
+            raise
+
+        assistant_python = _try_extract_section_block(markdown, "Assistant", "python")
+        if not assistant_python:
+            raise
+
+        fixed_user_prompt = raw_prompt.strip()
+        repaired_thinking = repair_thinking_only(
+            endpoint=endpoint,
+            model=model,
+            raw_prompt=raw_prompt,
+            fixed_user_prompt=fixed_user_prompt,
+            previous_markdown=markdown,
+        )
+        repaired_markdown = _assemble_dataset_markdown(
+            fixed_user_prompt,
+            repaired_thinking,
+            assistant_python,
+        )
+        return repaired_markdown, parse_markdown_dataset(repaired_markdown, raw_prompt=raw_prompt)
+
+    raw_user_prompt = raw_prompt.strip()
+    normalized_markdown = _assemble_dataset_markdown(
+        raw_user_prompt,
+        parsed["thinking"],
+        parsed["assistant_python"],
+    )
+    return normalized_markdown, parse_markdown_dataset(normalized_markdown, raw_prompt=raw_prompt)
 
 
 def build_data_messages_row(system_prompt: str, user_prompt: str, assistant_markdown: str) -> Dict:
@@ -257,6 +337,31 @@ def get_raw_prompt_pool() -> RawPromptPoolResponse:
     )
 
 
+def restore_raw_prompt_pool(payload: RawPromptPoolRestoreRequest) -> RawPromptPoolResponse:
+    global RAW_PROMPT_SYSTEM_PROMPT
+
+    restored_items = [item for item in payload.items if item.prompt.strip()]
+    if not restored_items:
+        raise ValueError("복원할 Raw Prompt 항목이 없습니다.")
+
+    RAW_PROMPT_POOL.clear()
+    for index, item in enumerate(restored_items, start=1):
+        RAW_PROMPT_POOL.append(
+            {
+                "id": str(uuid.uuid4()),
+                "index": index,
+                "prompt": item.prompt.strip(),
+                "status": item.status,
+                "thumbnail_urls": [],
+            }
+        )
+
+    if payload.system_prompt and payload.system_prompt.strip():
+        RAW_PROMPT_SYSTEM_PROMPT = payload.system_prompt.strip()
+
+    return get_raw_prompt_pool()
+
+
 def _parse_raw_prompt_list(content: str, expected_count: int) -> List[str]:
     text = content.strip()
     if text.startswith("```"):
@@ -284,19 +389,29 @@ def _parse_raw_prompt_list(content: str, expected_count: int) -> List[str]:
 def generate_raw_prompt_pool(payload: RawPromptPoolGenerateRequest) -> RawPromptPoolResponse:
     global RAW_PROMPT_SYSTEM_PROMPT
 
+    total = payload.prompt_count
     RAW_PROMPT_SYSTEM_PROMPT = generate_raw_prompt_system_prompt(
         endpoint=payload.lmstudio_endpoint,
         model=payload.lmstudio_model,
         topic_seed=payload.topic_seed,
     )
-    raw_list = generate_raw_prompt_list(
-        endpoint=payload.lmstudio_endpoint,
-        model=payload.lmstudio_model,
-        system_prompt=RAW_PROMPT_SYSTEM_PROMPT,
-        prompt_count=payload.prompt_count,
-        topic_seed=payload.topic_seed,
-    )
-    prompts = _parse_raw_prompt_list(raw_list, payload.prompt_count)
+
+    prompts: List[str] = []
+    remaining = total
+    while remaining > 0:
+        chunk = min(RAW_PROMPT_LIST_CHUNK_SIZE, remaining)
+        raw_list = generate_raw_prompt_list(
+            endpoint=payload.lmstudio_endpoint,
+            model=payload.lmstudio_model,
+            system_prompt=RAW_PROMPT_SYSTEM_PROMPT,
+            prompt_count=chunk,
+            topic_seed=payload.topic_seed,
+        )
+        batch = _parse_raw_prompt_list(raw_list, chunk)
+        prompts.extend(batch)
+        remaining -= chunk
+
+    prompts = prompts[:total]
 
     RAW_PROMPT_POOL.clear()
     for index, prompt in enumerate(prompts, start=1):
@@ -331,6 +446,8 @@ def _generate_validate_save_for_prompt(
     parsed_user_prompt = None
     parsed_thinking = None
     parsed_python_code = None
+    frozen_user_prompt: Optional[str] = None
+    frozen_thinking: Optional[str] = None
     last_error_type = None
     last_traceback = None
 
@@ -344,6 +461,23 @@ def _generate_validate_save_for_prompt(
                     raw_prompt=raw_prompt,
                     system_prompt=system_prompt,
                 )
+            elif (
+                frozen_user_prompt is not None
+                and frozen_thinking is not None
+                and (parsed_python_code or "").strip()
+            ):
+                new_python = repair_assistant_python_only(
+                    endpoint=endpoint,
+                    model=model,
+                    raw_prompt=raw_prompt,
+                    fixed_user_prompt=frozen_user_prompt,
+                    fixed_thinking=frozen_thinking,
+                    failed_python_code=parsed_python_code or "",
+                    traceback_text=last_traceback or "Unknown execution error",
+                )
+                generated_markdown = _assemble_dataset_markdown(
+                    frozen_user_prompt, frozen_thinking, new_python
+                )
             else:
                 generated_markdown = repair_markdown_sample(
                     endpoint=endpoint,
@@ -354,15 +488,23 @@ def _generate_validate_save_for_prompt(
                     traceback_text=last_traceback or "Unknown execution error",
                 )
 
-            parsed = parse_markdown_dataset(generated_markdown)
+            generated_markdown, parsed = _parse_markdown_with_raw_prompt(
+                markdown=generated_markdown,
+                raw_prompt=raw_prompt,
+                endpoint=endpoint,
+                model=model,
+            )
             parsed_user_prompt = parsed["user_prompt"]
             parsed_thinking = parsed["thinking"]
             parsed_python_code = parsed["assistant_python"]
+            if frozen_user_prompt is None:
+                frozen_user_prompt = raw_prompt.strip()
+                frozen_thinking = parsed_thinking
 
             validation, run_id, pptx_path = _run_python_and_save_ppt(parsed_python_code)
             if validation.status == "ok":
                 key = upsert_pair(
-                    user_prompt=parsed_user_prompt,
+                    user_prompt=raw_prompt.strip(),
                     asset_code="",
                     python_code=generated_markdown,
                     asset_system_prompt=ASSET_SYSTEM_PROMPT,
@@ -492,6 +634,8 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
     parsed_user_prompt = None
     parsed_thinking = None
     parsed_python_code = None
+    frozen_user_prompt: Optional[str] = None
+    frozen_thinking: Optional[str] = None
     last_error_type = None
     last_traceback = None
 
@@ -505,6 +649,23 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
                     raw_prompt=payload.raw_prompt,
                     system_prompt=payload.system_prompt,
                 )
+            elif (
+                frozen_user_prompt is not None
+                and frozen_thinking is not None
+                and (parsed_python_code or "").strip()
+            ):
+                new_python = repair_assistant_python_only(
+                    endpoint=payload.lmstudio_endpoint,
+                    model=payload.lmstudio_model,
+                    raw_prompt=payload.raw_prompt,
+                    fixed_user_prompt=frozen_user_prompt,
+                    fixed_thinking=frozen_thinking,
+                    failed_python_code=parsed_python_code or "",
+                    traceback_text=last_traceback or "Unknown execution error",
+                )
+                generated_markdown = _assemble_dataset_markdown(
+                    frozen_user_prompt, frozen_thinking, new_python
+                )
             else:
                 generated_markdown = repair_markdown_sample(
                     endpoint=payload.lmstudio_endpoint,
@@ -515,15 +676,23 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
                     traceback_text=last_traceback or "Unknown execution error",
                 )
 
-            parsed = parse_markdown_dataset(generated_markdown)
+            generated_markdown, parsed = _parse_markdown_with_raw_prompt(
+                markdown=generated_markdown,
+                raw_prompt=payload.raw_prompt,
+                endpoint=payload.lmstudio_endpoint,
+                model=payload.lmstudio_model,
+            )
             parsed_user_prompt = parsed["user_prompt"]
             parsed_thinking = parsed["thinking"]
             parsed_python_code = parsed["assistant_python"]
+            if frozen_user_prompt is None:
+                frozen_user_prompt = payload.raw_prompt.strip()
+                frozen_thinking = parsed_thinking
 
             validation = validate_python_and_save_ppt(parsed_python_code)
             if validation.status == "ok":
                 key = upsert_pair(
-                    user_prompt=parsed_user_prompt,
+                    user_prompt=payload.raw_prompt.strip(),
                     asset_code="",
                     python_code=generated_markdown,
                     asset_system_prompt=ASSET_SYSTEM_PROMPT,

@@ -431,6 +431,11 @@ pre {
   margin-bottom: 14px;
 }
 
+.dataset-toolbar--actions {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 0;
+}
+
 .dataset-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -442,6 +447,30 @@ pre {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.dataset-live-results {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.stream-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.stream-output-card {
+  margin-top: 12px;
+}
+
+.stream-output {
+  min-height: 180px;
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
 }
 
 .thumbnail-grid {
@@ -464,6 +493,10 @@ pre {
   }
 
   .dataset-preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stream-meta-grid {
     grid-template-columns: 1fr;
   }
 }

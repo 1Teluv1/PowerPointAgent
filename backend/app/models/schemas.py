@@ -131,6 +131,15 @@ class DatasetAutoGenerateRequest(BaseModel):
     system_prompt: Optional[str] = None
 
 
+class LMStudioChatStreamRequest(BaseModel):
+    endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
+    model: str = Field(default="local-model", min_length=1)
+    messages: List[Dict[str, Any]] = Field(min_length=1)
+    temperature: float = Field(default=0.2, ge=0, le=2)
+    max_tokens: Optional[int] = Field(default=None, ge=1)
+    top_p: Optional[float] = Field(default=None, ge=0, le=1)
+
+
 class DatasetAutoAttempt(BaseModel):
     attempt: int
     stage: Literal["generate", "repair"]
@@ -166,6 +175,16 @@ class RawPromptPoolConsumeRequest(BaseModel):
     lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
     lmstudio_model: str = Field(default="local-model", min_length=1)
     max_retries: int = Field(default=2, ge=0, le=5)
+
+
+class RawPromptPoolRestoreItem(BaseModel):
+    prompt: str = Field(min_length=1)
+    status: Literal["pending", "processing", "done", "failed"] = "pending"
+
+
+class RawPromptPoolRestoreRequest(BaseModel):
+    system_prompt: Optional[str] = None
+    items: List[RawPromptPoolRestoreItem] = Field(default_factory=list)
 
 
 class RawPromptPoolItem(BaseModel):

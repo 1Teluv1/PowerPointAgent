@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Dict
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 from app.core.orchestrator import ARTIFACT_ROOT, run_serial_pipeline
 from app.models.schemas import (
@@ -16,11 +18,13 @@ from app.models.schemas import (
     DatasetUpsertResponse,
     JobCreateRequest,
     JobState,
+    LMStudioChatStreamRequest,
     PythonValidationRequest,
     PythonValidationResponse,
     RawPromptPoolConsumeRequest,
     RawPromptPoolConsumeResponse,
     RawPromptPoolGenerateRequest,
+    RawPromptPoolRestoreRequest,
     RawPromptPoolResponse,
 )
 from app.services.dataset_service import (
@@ -31,13 +35,64 @@ from app.services.dataset_service import (
     get_preview,
     get_raw_prompt_pool,
     get_stats,
+    restore_raw_prompt_pool,
     upsert_pair,
     validate_python_and_save_ppt,
 )
-from app.services.lm_studio_service import LMStudioError
+from app.services.lm_studio_service import LMStudioError, post_chat_completion_stream, subscribe_live_answer_events
 
 router = APIRouter()
 JOB_STORE: Dict[str, JobState] = {}
+
+
+def _ensure_local_lmstudio_endpoint(endpoint: str) -> None:
+    parsed = urlparse(endpoint)
+    if parsed.scheme not in {"http", "https"}:
+        raise HTTPException(status_code=400, detail="LM Studio endpoint must use http or https")
+    if parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
+        raise HTTPException(status_code=400, detail="Only local LM Studio endpoints are allowed")
+
+
+@router.post("/tools/lm-studio/openai-chat-stream")
+def stream_lmstudio_chat(payload: LMStudioChatStreamRequest) -> StreamingResponse:
+    _ensure_local_lmstudio_endpoint(payload.endpoint)
+
+    lm_payload = {
+        "model": payload.model,
+        "messages": payload.messages,
+        "temperature": payload.temperature,
+    }
+    if payload.max_tokens is not None:
+        lm_payload["max_tokens"] = payload.max_tokens
+    if payload.top_p is not None:
+        lm_payload["top_p"] = payload.top_p
+
+    def event_stream():
+        try:
+            yield from post_chat_completion_stream(payload.endpoint, lm_payload)
+        except LMStudioError as exc:
+            error_payload = {"error": {"message": str(exc)}}
+            yield f"data: {json.dumps(error_payload, ensure_ascii=False)}\n\n".encode("utf-8")
+            yield b"data: [DONE]\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@router.get("/tools/lm-studio/live-answer/events")
+def live_answer_events() -> StreamingResponse:
+    def event_stream():
+        for event in subscribe_live_answer_events():
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n".encode("utf-8")
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.post("/jobs", response_model=JobState)
@@ -135,6 +190,14 @@ def consume_raw_prompts(payload: RawPromptPoolConsumeRequest) -> RawPromptPoolCo
         return consume_raw_prompt_pool(payload)
     except LMStudioError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@router.post("/tools/dataset/raw-prompts/restore", response_model=RawPromptPoolResponse)
+def restore_raw_prompts(payload: RawPromptPoolRestoreRequest) -> RawPromptPoolResponse:
+    try:
+        return restore_raw_prompt_pool(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.get("/tools/dataset/python-runs/{run_id}/pptx")

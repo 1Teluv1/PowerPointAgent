@@ -118,3 +118,132 @@ export async function consumeRawPromptPool(payload) {
     "Raw Prompt 풀 소비 실패"
   );
 }
+
+export async function restoreRawPromptPool(payload) {
+  return requestJson(
+    "/tools/dataset/raw-prompts/restore",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    },
+    "Raw Prompt 풀 복원 실패"
+  );
+}
+
+export async function streamLmStudioChat({ payload, onDelta, onError, signal }) {
+  const res = await fetch(`${API_BASE}/tools/lm-studio/openai-chat-stream`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    signal
+  });
+
+  if (!res.ok) {
+    let detail = "";
+    try {
+      const errorPayload = await res.json();
+      detail = errorPayload?.detail ? `: ${errorPayload.detail}` : "";
+    } catch {
+      detail = "";
+    }
+    throw new Error(`LM Studio 스트리밍 요청 실패${detail}`);
+  }
+  if (!res.body) {
+    throw new Error("브라우저가 스트리밍 응답을 지원하지 않습니다.");
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  function handleEventBlock(block) {
+    const dataLines = block
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trimStart());
+    if (dataLines.length === 0) return false;
+
+    const data = dataLines.join("\n").trim();
+    if (!data) return false;
+    if (data === "[DONE]") return true;
+
+    try {
+      const parsed = JSON.parse(data);
+      if (parsed?.error) {
+        onError?.(parsed.error.message ?? "LM Studio 스트리밍 오류");
+        return false;
+      }
+      const delta = parsed?.choices?.[0]?.delta ?? {};
+      const content = delta.content ?? "";
+      if (content) onDelta?.(content);
+    } catch {
+      // Ignore malformed keep-alive or vendor-specific event data.
+    }
+    return false;
+  }
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const blocks = buffer.split(/\r?\n\r?\n/);
+    buffer = blocks.pop() ?? "";
+    for (const block of blocks) {
+      if (handleEventBlock(block)) return;
+    }
+  }
+
+  buffer += decoder.decode();
+  if (buffer.trim()) {
+    handleEventBlock(buffer);
+  }
+}
+
+export async function subscribeLmStudioLiveAnswer({ onEvent, signal }) {
+  const res = await fetch(`${API_BASE}/tools/lm-studio/live-answer/events`, { signal });
+  if (!res.ok) {
+    throw new Error("LM Studio Live Answer 구독 실패");
+  }
+  if (!res.body) {
+    throw new Error("브라우저가 스트리밍 응답을 지원하지 않습니다.");
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  function handleEventBlock(block) {
+    const dataLines = block
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trimStart());
+    if (dataLines.length === 0) return;
+
+    const data = dataLines.join("\n").trim();
+    if (!data) return;
+    try {
+      onEvent?.(JSON.parse(data));
+    } catch {
+      // Ignore malformed keep-alive or partial event data.
+    }
+  }
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const blocks = buffer.split(/\r?\n\r?\n/);
+    buffer = blocks.pop() ?? "";
+    for (const block of blocks) {
+      handleEventBlock(block);
+    }
+  }
+
+  buffer += decoder.decode();
+  if (buffer.trim()) {
+    handleEventBlock(buffer);
+  }
+}

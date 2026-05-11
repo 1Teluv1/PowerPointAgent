@@ -45,9 +45,12 @@ def run_ppt_code(job_dir: Path, code_bundle: PPTCodeBundle) -> RunnerResult:
             traceback="output.pptx not found (no .pptx file generated in working directory)",
         )
 
+    err_parts = [part for part in (proc.stderr, proc.stdout) if part and str(part).strip()]
+    traceback_text = "\n\n".join(err_parts) if err_parts else "Unknown execution error"
+
     return RunnerResult(
         status="error",
         logs=logs,
         error_type="ExecutionError",
-        traceback=proc.stderr or "Unknown execution error",
+        traceback=traceback_text,
     )
