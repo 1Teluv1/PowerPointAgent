@@ -203,6 +203,14 @@ def _dataset_system_content(system_prompt: Optional[str]) -> str:
     return f"{base}\n\n--- Mandatory python-pptx and markdown output (always follow) ---\n{extra}"
 
 
+def _merge_error_memory_into_system(system_content: str, error_memory_addon: Optional[str]) -> str:
+    """Place error memory before the main system text so the model attends to it first."""
+    addon = (error_memory_addon or "").strip()
+    if not addon:
+        return system_content
+    return f"{addon}\n\n---\n\n{system_content.rstrip()}"
+
+
 class LMStudioError(RuntimeError):
     pass
 
@@ -381,14 +389,19 @@ def generate_markdown_sample(
     model: str,
     raw_prompt: str,
     system_prompt: Optional[str] = None,
+    error_memory_addon: Optional[str] = None,
 ) -> str:
+    system = _merge_error_memory_into_system(
+        _dataset_system_content(system_prompt),
+        error_memory_addon,
+    )
     payload = {
         "model": model,
         "temperature": 0.1,
         "repeat_penalty": 1.1,
         "max_tokens": 12000,
         "messages": [
-            {"role": "system", "content": _dataset_system_content(system_prompt)},
+            {"role": "system", "content": system},
             {"role": "user", "content": raw_prompt},
         ],
     }
@@ -471,6 +484,7 @@ def repair_thinking_only(
     raw_prompt: str,
     fixed_user_prompt: str,
     previous_markdown: str,
+    error_memory_addon: Optional[str] = None,
 ) -> str:
     user_message = f"""Regenerate ONLY the missing or malformed Thinking section body.
 
@@ -484,13 +498,17 @@ Original raw request:
 {previous_markdown}
 
 Return only the Thinking text body."""
+    system = _merge_error_memory_into_system(
+        DEFAULT_DATASET_THINKING_RETRY_SYSTEM_PROMPT.strip(),
+        error_memory_addon,
+    )
     payload = {
         "model": model,
         "temperature": 0.05,
         "repeat_penalty": 1.1,
         "max_tokens": 4000,
         "messages": [
-            {"role": "system", "content": DEFAULT_DATASET_THINKING_RETRY_SYSTEM_PROMPT.strip()},
+            {"role": "system", "content": system},
             {"role": "user", "content": user_message},
         ],
     }
@@ -511,6 +529,7 @@ def repair_assistant_python_only(
     fixed_thinking: str,
     failed_python_code: str,
     traceback_text: str,
+    error_memory_addon: Optional[str] = None,
 ) -> str:
     user_message = f"""Python execution failed. Regenerate ONLY the Assistant Python script.
 
@@ -534,13 +553,17 @@ Original raw request (context):
 ```
 
 Return one ```python fenced block with the full fixed script."""
+    system = _merge_error_memory_into_system(
+        DEFAULT_DATASET_RETRY_SYSTEM_PROMPT.strip(),
+        error_memory_addon,
+    )
     payload = {
         "model": model,
         "temperature": 0.05,
         "repeat_penalty": 1.1,
         "max_tokens": 12000,
         "messages": [
-            {"role": "system", "content": DEFAULT_DATASET_RETRY_SYSTEM_PROMPT.strip()},
+            {"role": "system", "content": system},
             {"role": "user", "content": user_message},
         ],
     }
@@ -560,6 +583,7 @@ def repair_markdown_sample(
     previous_markdown: str,
     failed_python_code: str,
     traceback_text: str,
+    error_memory_addon: Optional[str] = None,
 ) -> str:
     repair_prompt = f"""The previous output failed runtime validation.
 
@@ -587,13 +611,17 @@ Do not import ChartType from pptx.enum.chart; use XL_CHART_TYPE. Never assign to
 Use headings exactly `# Thinking`, `# Assistant` with ```text / ```python fences as in the system prompt.
 Do not output inner deliberation or meta commentary. Output only the required 2 sections.
 """
+    system = _merge_error_memory_into_system(
+        DEFAULT_DATASET_SYSTEM_PROMPT.strip(),
+        error_memory_addon,
+    )
     payload = {
         "model": model,
         "temperature": 0.05,
         "repeat_penalty": 1.1,
         "max_tokens": 12000,
         "messages": [
-            {"role": "system", "content": DEFAULT_DATASET_SYSTEM_PROMPT.strip()},
+            {"role": "system", "content": system},
             {"role": "user", "content": repair_prompt},
         ],
     }

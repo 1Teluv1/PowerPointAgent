@@ -44,7 +44,8 @@ const initialForm = {
   prompt_count: 100,
   topic_seed: "diverse business PowerPoint presentation requests",
   count: 1,
-  max_retries: 2
+  max_retries: 2,
+  dataset_system_prompt: ""
 };
 
 function formatBytes(bytes) {
@@ -262,10 +263,12 @@ export default function DatasetToolPanel() {
       }
 
       const requestedCount = Math.max(1, Number(form.count) || 1);
+      const datasetSystemPrompt = typeof form.dataset_system_prompt === "string" ? form.dataset_system_prompt.trim() : "";
       const payload = {
         lmstudio_endpoint: form.lmstudio_endpoint.trim(),
         lmstudio_model: form.lmstudio_model.trim(),
-        max_retries: Number(form.max_retries)
+        max_retries: Number(form.max_retries),
+        ...(datasetSystemPrompt ? { system_prompt: datasetSystemPrompt } : {})
       };
       let aggregate = {
         processed: 0,
@@ -520,6 +523,19 @@ export default function DatasetToolPanel() {
                 onChange={(event) => setForm((prev) => ({ ...prev, max_retries: event.target.value }))}
               />
             </div>
+          </div>
+          <div className="field">
+            <label htmlFor="dataset-consume-system-prompt">데이터셋 생성 시스템 프롬프트 (선택)</label>
+            <textarea
+              id="dataset-consume-system-prompt"
+              rows={6}
+              placeholder="비워 두면 서버 기본(Raw Prompt 풀 생성 시 사용된 시스템 프롬프트와 동일 계열)이 적용됩니다. LM Studio markdown 생성에 사용됩니다."
+              value={form.dataset_system_prompt ?? ""}
+              onChange={(event) => setForm((prev) => ({ ...prev, dataset_system_prompt: event.target.value }))}
+            />
+            <p className="hint">
+              입력 내용은 브라우저 로컬 스토리지에 자동 저장되어 다음 실행 시에도 유지됩니다.
+            </p>
           </div>
           <button disabled={saving || (summary.pending === 0 && !poolCacheActive)} className="primary" type="submit">
             {consuming ? "Count 실행 중..." : "Count 만큼 실행"}

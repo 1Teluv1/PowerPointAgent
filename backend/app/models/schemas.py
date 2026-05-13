@@ -175,6 +175,7 @@ class RawPromptPoolConsumeRequest(BaseModel):
     lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
     lmstudio_model: str = Field(default="local-model", min_length=1)
     max_retries: int = Field(default=2, ge=0, le=5)
+    system_prompt: Optional[str] = None
 
 
 class RawPromptPoolRestoreItem(BaseModel):

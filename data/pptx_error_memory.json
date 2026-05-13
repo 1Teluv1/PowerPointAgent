@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "fingerprint": "e506dc07db250de61b4bc356ef1c98e0607f54c22101df956d502c67b46a3289",
+      "error_type": "GenerationError",
+      "summary": "LM Studio 응답 content가 비어 있습니다.",
+      "representative_excerpt": "LM Studio 응답 content가 비어 있습니다.",
+      "occurrence_count": 3,
+      "first_seen_at": "2026-05-13T06:43:41+00:00",
+      "last_seen_at": "2026-05-13T07:46:31+00:00"
+    },
+    {
+      "fingerprint": "d2635100bd82adbf88419e49e00ae1b6ad72bfb0fec449ee4843d8bdff6de69f",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 787, in <module> main() File \"<PATH>\", line 770, in main slide_3_program_impact(prs) File \"<PATH>\", line 234, in slide_3_program_impact add_pie_chart(slide, chart_data, \"Beneficiary Distribution by Program\") File \"<PATH>\", line 113, in add_pie_chart chart_frame = slide.shapes.add_chart(XL_CHART_TYPE.PIE, left, top, width, height, chart_data) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ File \"<PATH>\", line 2",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\61ba9beb-2ddb-4fbe-96af-94248ee08e4d\\generate_ppt.py\", line 787, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\61ba9beb-2ddb-4fbe-96af-94248ee08e4d\\generate_ppt.py\", line 770, in main\n    slide_3_program_impact(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\61ba9beb-2ddb-4fbe-96af-94248ee08e4d\\generate_ppt.py\", line 234, in slide_3_program_impact\n    add_pie_chart(slide, chart_data, \"Beneficiary Distribution by Program\")\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\61ba9beb-2ddb-4fbe-96af-94248ee08e4d\\generate_ppt.py\", line 113, in add_pie_chart\n    chart_frame = slide.shapes.add_chart(XL_CHART_TYPE.PIE, left, top, w...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T06:52:45+00:00",
+      "last_seen_at": "2026-05-13T06:52:45+00:00"
+    },
+    {
+      "fingerprint": "e2dce0d2cbe4a592b54aba91dbd574a621a480d4ea20397f8702e623855ba6e9",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 806, in <module> main() File \"<PATH>\", line 789, in main slide_3_program_impact(prs) File \"<PATH>\", line 253, in slide_3_program_impact add_pie_chart(slide, chart_data, \"Beneficiary Distribution by Program\") File \"<PATH>\", line 116, in add_pie_chart data_obj.categories.append(str(row[0])) ^^^^^^^^^^^^^^^^^^^^^^^^^^ AttributeError: 'Categories' object has no attribute 'append'",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\ae00275f-d24c-4e27-806b-ebec22c407fe\\generate_ppt.py\", line 806, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\ae00275f-d24c-4e27-806b-ebec22c407fe\\generate_ppt.py\", line 789, in main\n    slide_3_program_impact(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\ae00275f-d24c-4e27-806b-ebec22c407fe\\generate_ppt.py\", line 253, in slide_3_program_impact\n    add_pie_chart(slide, chart_data, \"Beneficiary Distribution by Program\")\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\ae00275f-d24c-4e27-806b-ebec22c407fe\\generate_ppt.py\", line 116, in add_pie_chart\n    data_obj.categories.append(str(row[0]))\n    ^^^^^^^^^^^^^^^^^^^^^^^^...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T07:03:13+00:00",
+      "last_seen_at": "2026-05-13T07:03:13+00:00"
+    },
+    {
+      "fingerprint": "9fe32c1d178e05a521e95728222778d98b739ca651b587586e0263a422173c93",
+      "error_type": "GenerationError",
+      "summary": "섹션 파싱 실패: Thinking",
+      "representative_excerpt": "섹션 파싱 실패: Thinking",
+      "occurrence_count": 4,
+      "first_seen_at": "2026-05-13T07:03:31+00:00",
+      "last_seen_at": "2026-05-13T09:01:10+00:00"
+    },
+    {
+      "fingerprint": "7a974dee412dcd893d5e30f5d8d2a065141644fd49b0f4daf925b9a900b68bc5",
+      "error_type": "ExecutionError",
+      "summary": "File \"<PATH>\", line 353 \"Customer Service\", 85), ^ SyntaxError: closing parenthesis ')' does not match opening parenthesis '[' on line 350",
+      "representative_excerpt": "File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\74ac9c7d-2da3-4ac6-a04a-53212e3765d8\\generate_ppt.py\", line 353\n    \"Customer Service\", 85),\n                          ^\nSyntaxError: closing parenthesis ')' does not match opening parenthesis '[' on line 350",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T07:09:10+00:00",
+      "last_seen_at": "2026-05-13T07:09:10+00:00"
+    },
+    {
+      "fingerprint": "792de796e7d938b1c695502da479322cd1276c385a09a5ea72752ab133e51f0b",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 443, in <module> main() File \"<PATH>\", line 432, in main slide_2_same_store_sales(prs) File \"<PATH>\", line 190, in slide_2_same_store_sales chart_frame = add_chart(slide, XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.8), Inches(1.4), Inches(11.7), Inches(5.2), categories, series_data, \"Same-Store Sales by Region (Millions USD)\") ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\50a73e78-16cd-491f-ab3c-f8a893db3bf8\\generate_ppt.py\", line 443, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\50a73e78-16cd-491f-ab3c-f8a893db3bf8\\generate_ppt.py\", line 432, in main\n    slide_2_same_store_sales(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\50a73e78-16cd-491f-ab3c-f8a893db3bf8\\generate_ppt.py\", line 190, in slide_2_same_store_sales\n    chart_frame = add_chart(slide, XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.8), Inches(1.4), Inches(11.7), Inches(5.2), categories, series_data, \"Same-Store Sales by Region (Millions USD)\")\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T07:15:30+00:00",
+      "last_seen_at": "2026-05-13T07:15:30+00:00"
+    },
+    {
+      "fingerprint": "6f3c5a8d05b5d1ea12472f25b4bbd35fd4c066d269ea94084ff84f8935e9ab42",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 515, in <module> main() File \"<PATH>\", line 503, in main slide_06_competitive_landscape(prs) File \"<PATH>\", line 302, in slide_06_competitive_landscape chart_frame = slide.shapes.add_chart(XL_CHART_TYPE.BUBBLE, Inches(0.8), Inches(1.6), Inches(11.7), Inches(5.2)) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ TypeError: _BaseGroupShapes.add_chart() missing 1 required positional argument: 'ch",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\18de6187-51e2-460f-b0f6-390668dd058b\\generate_ppt.py\", line 515, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\18de6187-51e2-460f-b0f6-390668dd058b\\generate_ppt.py\", line 503, in main\n    slide_06_competitive_landscape(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\18de6187-51e2-460f-b0f6-390668dd058b\\generate_ppt.py\", line 302, in slide_06_competitive_landscape\n    chart_frame = slide.shapes.add_chart(XL_CHART_TYPE.BUBBLE, Inches(0.8), Inches(1.6), Inches(11.7), Inches(5.2))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: _BaseGroupShapes.add_chart() miss...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T07:23:53+00:00",
+      "last_seen_at": "2026-05-13T07:23:53+00:00"
+    },
+    {
+      "fingerprint": "e3c14c3c15afcf2ca20f15399f35e10addd0d79c3f2a82d8c58bfd68da1e91b6",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 563, in <module> main() File \"<PATH>\", line 542, in main slide_01_title(prs) File \"<PATH>\", line 228, in slide_01_title add_line(slide, Inches(0.8), Inches(5.3), Inches(3.5), Inches(5.3), PALETTE[\"teal\"], Pt(3)) File \"<PATH>\", line 160, in add_line connector = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, start_x, start_y, end_x, end_y) ^^^^^^^^^^^^^ NameError: name 'MSO_CONNECTOR' is not defined",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\8f76a522-40b4-4aaf-9ae7-10e3b3ca74ab\\generate_ppt.py\", line 563, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\8f76a522-40b4-4aaf-9ae7-10e3b3ca74ab\\generate_ppt.py\", line 542, in main\n    slide_01_title(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\8f76a522-40b4-4aaf-9ae7-10e3b3ca74ab\\generate_ppt.py\", line 228, in slide_01_title\n    add_line(slide, Inches(0.8), Inches(5.3), Inches(3.5), Inches(5.3), PALETTE[\"teal\"], Pt(3))\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\8f76a522-40b4-4aaf-9ae7-10e3b3ca74ab\\generate_ppt.py\", line 160, in add_line\n    connector = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, start_...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T07:46:22+00:00",
+      "last_seen_at": "2026-05-13T07:46:22+00:00"
+    },
+    {
+      "fingerprint": "3875ea205905cb4bcc4527bd6cf85f349c25f8ea441143fb59121db3fc4fa6df",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 476, in <module> main() File \"<PATH>\", line 462, in main slide_02_revenue_projections(prs) File \"<PATH>\", line 251, in slide_02_revenue_projections add_chart(slide, chart_data, \"Revenue Projections \\u2014 Base Case vs Upside\", Inches(0.8), Inches(1.0), Inches(8.5), Inches(4.5)) File \"<PATH>\", line 100, in add_chart plot.legend.include_in_layout = False ^^^^^^^^^^^ AttributeError: 'LinePlot' object has no attribute 'legend'",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\6623b520-47a9-4c2e-8f08-89291d72db17\\generate_ppt.py\", line 476, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\6623b520-47a9-4c2e-8f08-89291d72db17\\generate_ppt.py\", line 462, in main\n    slide_02_revenue_projections(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\6623b520-47a9-4c2e-8f08-89291d72db17\\generate_ppt.py\", line 251, in slide_02_revenue_projections\n    add_chart(slide, chart_data, \"Revenue Projections \\u2014 Base Case vs Upside\", Inches(0.8), Inches(1.0), Inches(8.5), Inches(4.5))\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\6623b520-47a9-4c2e-8f08-89291d72db17\\generate_ppt.py\", line 100, in add_chart\n    p...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T07:58:08+00:00",
+      "last_seen_at": "2026-05-13T07:58:08+00:00"
+    },
+    {
+      "fingerprint": "a2c0066ea707fac4c3f1734fb3aa69d2ebddd237c097529d50dabc5c069b4087",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 474, in <module> main() File \"<PATH>\", line 460, in main slide_02_revenue_projections(prs) File \"<PATH>\", line 249, in slide_02_revenue_projections add_chart(slide, chart_data, \"Revenue Projections \\u2014 Base Case vs Upside\", Inches(0.8), Inches(1.0), Inches(8.5), Inches(4.5)) File \"<PATH>\", line 100, in add_chart for entry in legend.entries: ^^^^^^^^^^^^^^ AttributeError: 'Legend' object has no attribute 'entries'",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\58dc9c53-9f05-41f1-83ae-ab406537ff99\\generate_ppt.py\", line 474, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\58dc9c53-9f05-41f1-83ae-ab406537ff99\\generate_ppt.py\", line 460, in main\n    slide_02_revenue_projections(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\58dc9c53-9f05-41f1-83ae-ab406537ff99\\generate_ppt.py\", line 249, in slide_02_revenue_projections\n    add_chart(slide, chart_data, \"Revenue Projections \\u2014 Base Case vs Upside\", Inches(0.8), Inches(1.0), Inches(8.5), Inches(4.5))\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\58dc9c53-9f05-41f1-83ae-ab406537ff99\\generate_ppt.py\", line 100, in add_chart\n    f...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T08:05:39+00:00",
+      "last_seen_at": "2026-05-13T08:05:39+00:00"
+    },
+    {
+      "fingerprint": "ed043998b798e3b635f33aecd1f4974b30c28b160636527e7b5f5e00eead4656",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 254, in __getitem__ sldId = self._sldIdLst.sldId_lst[idx] ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^ IndexError: list index out of range During handling of the above exception, another exception occurred: Traceback (most recent call last): File \"<PATH>\", line 415, in <module> main() File \"<PATH>\", line 398, in main slide_1_title(prs) File \"<PATH>\", line 147, in slide_1_title set_slide_background(prs.slides[0], RGBColor(30, 58, 138)) ~~~~~~~~~~^^^ File \"<",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pptx\\slide.py\", line 254, in __getitem__\n    sldId = self._sldIdLst.sldId_lst[idx]\n            ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^\nIndexError: list index out of range\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\73ccbbcb-48a4-44b9-a3f9-3516af09f284\\generate_ppt.py\", line 415, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\73ccbbcb-48a4-44b9-a3f9-3516af09f284\\generate_ppt.py\", line 398, in main\n    slide_1_title(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\73ccbbcb-48a4-44b9-a3f9-3516af09f284\\generate_...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T08:24:24+00:00",
+      "last_seen_at": "2026-05-13T08:24:24+00:00"
+    },
+    {
+      "fingerprint": "3341b6983f9eb611d04022352b078ce62305366810705d184c0bfc8bde5a3d7e",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 423, in <module> main() File \"<PATH>\", line 408, in main slide_3_competitor_landscape(prs) File \"<PATH>\", line 202, in slide_3_competitor_landscape add_bullet_chart(slide, categories, series_data_list[0], \"Competitor Revenue Scale (B USD)\") File \"<PATH>\", line 135, in add_bullet_chart chart_data = slide.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, left, top, width, height).chart ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\66e032e8-0faf-4ec5-9a80-89377569708c\\generate_ppt.py\", line 423, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\66e032e8-0faf-4ec5-9a80-89377569708c\\generate_ppt.py\", line 408, in main\n    slide_3_competitor_landscape(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\66e032e8-0faf-4ec5-9a80-89377569708c\\generate_ppt.py\", line 202, in slide_3_competitor_landscape\n    add_bullet_chart(slide, categories, series_data_list[0], \"Competitor Revenue Scale (B USD)\")\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\66e032e8-0faf-4ec5-9a80-89377569708c\\generate_ppt.py\", line 135, in add_bullet_chart\n    chart_data = slide.shapes.add_ch...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T08:32:47+00:00",
+      "last_seen_at": "2026-05-13T08:32:47+00:00"
+    },
+    {
+      "fingerprint": "50747a737a0f1e5bbcdf556b0a13158417c6fd3585af1c7cc385265af6b5c02b",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 529, in <module> main() File \"<PATH>\", line 520, in main slide_03_top_drivers(prs) File \"<PATH>\", line 358, in slide_03_top_drivers add_horizontal_bar_chart(slide, chart_data, \"Top Drivers of Employee Engagement\") File \"<PATH>\", line 147, in add_horizontal_bar_chart chart_frame = slide.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, left, top, width, height, chart_data) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\63d3a5ef-7025-4e72-b09e-549ec913cb7a\\generate_ppt.py\", line 529, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\63d3a5ef-7025-4e72-b09e-549ec913cb7a\\generate_ppt.py\", line 520, in main\n    slide_03_top_drivers(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\63d3a5ef-7025-4e72-b09e-549ec913cb7a\\generate_ppt.py\", line 358, in slide_03_top_drivers\n    add_horizontal_bar_chart(slide, chart_data, \"Top Drivers of Employee Engagement\")\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\63d3a5ef-7025-4e72-b09e-549ec913cb7a\\generate_ppt.py\", line 147, in add_horizontal_bar_chart\n    chart_frame = slide.shapes.add_chart(XL_CHART_TYPE....",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T08:46:47+00:00",
+      "last_seen_at": "2026-05-13T08:46:47+00:00"
+    },
+    {
+      "fingerprint": "43c14e95541bd9d9f9b2729be7ed5bda93744b108617e888d48edc1ee276846c",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 551, in <module> main() File \"<PATH>\", line 542, in main slide_03_top_drivers(prs) File \"<PATH>\", line 380, in slide_03_top_drivers add_horizontal_bar_chart(slide, categories, \"Engagement Score\", values, \"Top Drivers of Employee Engagement\") File \"<PATH>\", line 153, in add_horizontal_bar_chart chart_data = _build_chart_data(categories, series_name, values) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ File \"<PATH>\", line 198, in _build_",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\e66accf1-422c-4740-90cc-17a4e22cb2ba\\generate_ppt.py\", line 551, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\e66accf1-422c-4740-90cc-17a4e22cb2ba\\generate_ppt.py\", line 542, in main\n    slide_03_top_drivers(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\e66accf1-422c-4740-90cc-17a4e22cb2ba\\generate_ppt.py\", line 380, in slide_03_top_drivers\n    add_horizontal_bar_chart(slide, categories, \"Engagement Score\", values, \"Top Drivers of Employee Engagement\")\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\e66accf1-422c-4740-90cc-17a4e22cb2ba\\generate_ppt.py\", line 153, in add_horizontal_bar_chart\n    chart_data = _build_cha...",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-05-13T08:53:23+00:00",
+      "last_seen_at": "2026-05-13T08:53:23+00:00"
+    },
+    {
+      "fingerprint": "cb36c2373e57839a3544dbf6ce7646ad7d6afda645a0a98413f5c73c1bcaf2aa",
+      "error_type": "GenerationError",
+      "summary": "LM Studio 연결 실패: [WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다",
+      "representative_excerpt": "LM Studio 연결 실패: [WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다",
+      "occurrence_count": 3,
+      "first_seen_at": "2026-05-13T09:01:14+00:00",
+      "last_seen_at": "2026-05-13T09:01:22+00:00"
+    }
+  ]
+}

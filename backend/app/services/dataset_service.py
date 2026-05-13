@@ -32,6 +32,7 @@ from app.services.lm_studio_service import (
     repair_thinking_only,
 )
 from app.services.ppt_preview_service import export_pptx_thumbnails
+from app.services.pptx_error_memory import format_error_memory_for_prompt, record_error
 from app.services.runner_service import run_ppt_code
 
 DATASET_DIR = Path("data/datasets")
@@ -253,6 +254,7 @@ def _parse_markdown_with_raw_prompt(
     raw_prompt: str,
     endpoint: str,
     model: str,
+    error_memory_addon: Optional[str] = None,
 ) -> Tuple[str, Dict[str, str]]:
     try:
         parsed = parse_markdown_dataset(markdown, raw_prompt=raw_prompt)
@@ -271,6 +273,7 @@ def _parse_markdown_with_raw_prompt(
             raw_prompt=raw_prompt,
             fixed_user_prompt=fixed_user_prompt,
             previous_markdown=markdown,
+            error_memory_addon=error_memory_addon,
         )
         repaired_markdown = _assemble_dataset_markdown(
             fixed_user_prompt,
@@ -453,6 +456,7 @@ def _generate_validate_save_for_prompt(
 
     for attempt in range(1, max_retries + 2):
         stage = "generate" if attempt == 1 else "repair"
+        error_memory_addon = format_error_memory_for_prompt()
         try:
             if stage == "generate":
                 generated_markdown = generate_markdown_sample(
@@ -460,6 +464,7 @@ def _generate_validate_save_for_prompt(
                     model=model,
                     raw_prompt=raw_prompt,
                     system_prompt=system_prompt,
+                    error_memory_addon=error_memory_addon or None,
                 )
             elif (
                 frozen_user_prompt is not None
@@ -474,6 +479,7 @@ def _generate_validate_save_for_prompt(
                     fixed_thinking=frozen_thinking,
                     failed_python_code=parsed_python_code or "",
                     traceback_text=last_traceback or "Unknown execution error",
+                    error_memory_addon=error_memory_addon or None,
                 )
                 generated_markdown = _assemble_dataset_markdown(
                     frozen_user_prompt, frozen_thinking, new_python
@@ -486,6 +492,7 @@ def _generate_validate_save_for_prompt(
                     previous_markdown=generated_markdown,
                     failed_python_code=parsed_python_code or "",
                     traceback_text=last_traceback or "Unknown execution error",
+                    error_memory_addon=error_memory_addon or None,
                 )
 
             generated_markdown, parsed = _parse_markdown_with_raw_prompt(
@@ -493,6 +500,7 @@ def _generate_validate_save_for_prompt(
                 raw_prompt=raw_prompt,
                 endpoint=endpoint,
                 model=model,
+                error_memory_addon=error_memory_addon or None,
             )
             parsed_user_prompt = parsed["user_prompt"]
             parsed_thinking = parsed["thinking"]
@@ -533,6 +541,7 @@ def _generate_validate_save_for_prompt(
 
             last_error_type = validation.error_type or "ExecutionError"
             last_traceback = validation.traceback or "Python execution failed"
+            record_error(error_type=last_error_type, traceback_text=last_traceback)
             attempts.append(
                 DatasetAutoAttempt(
                     attempt=attempt,
@@ -546,6 +555,7 @@ def _generate_validate_save_for_prompt(
         except (LMStudioError, ValueError) as exc:
             last_error_type = "GenerationError"
             last_traceback = str(exc)
+            record_error(error_type=last_error_type, traceback_text=last_traceback)
             attempts.append(
                 DatasetAutoAttempt(
                     attempt=attempt,
@@ -580,12 +590,14 @@ def consume_raw_prompt_pool(payload: RawPromptPoolConsumeRequest) -> RawPromptPo
 
     for item in selected:
         item["status"] = "processing"
+        custom_sp = (payload.system_prompt or "").strip()
+        system_for_run = custom_sp if custom_sp else RAW_PROMPT_SYSTEM_PROMPT
         response, run_id, pptx_path = _generate_validate_save_for_prompt(
             raw_prompt=str(item["prompt"]),
             endpoint=payload.lmstudio_endpoint,
             model=payload.lmstudio_model,
             max_retries=payload.max_retries,
-            system_prompt=RAW_PROMPT_SYSTEM_PROMPT,
+            system_prompt=system_for_run,
         )
 
         thumbnail_urls: List[str] = []
@@ -641,6 +653,7 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
 
     for attempt in range(1, payload.max_retries + 2):
         stage = "generate" if attempt == 1 else "repair"
+        error_memory_addon = format_error_memory_for_prompt()
         try:
             if stage == "generate":
                 generated_markdown = generate_markdown_sample(
@@ -648,6 +661,7 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
                     model=payload.lmstudio_model,
                     raw_prompt=payload.raw_prompt,
                     system_prompt=payload.system_prompt,
+                    error_memory_addon=error_memory_addon or None,
                 )
             elif (
                 frozen_user_prompt is not None
@@ -662,6 +676,7 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
                     fixed_thinking=frozen_thinking,
                     failed_python_code=parsed_python_code or "",
                     traceback_text=last_traceback or "Unknown execution error",
+                    error_memory_addon=error_memory_addon or None,
                 )
                 generated_markdown = _assemble_dataset_markdown(
                     frozen_user_prompt, frozen_thinking, new_python
@@ -674,6 +689,7 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
                     previous_markdown=generated_markdown,
                     failed_python_code=parsed_python_code or "",
                     traceback_text=last_traceback or "Unknown execution error",
+                    error_memory_addon=error_memory_addon or None,
                 )
 
             generated_markdown, parsed = _parse_markdown_with_raw_prompt(
@@ -681,6 +697,7 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
                 raw_prompt=payload.raw_prompt,
                 endpoint=payload.lmstudio_endpoint,
                 model=payload.lmstudio_model,
+                error_memory_addon=error_memory_addon or None,
             )
             parsed_user_prompt = parsed["user_prompt"]
             parsed_thinking = parsed["thinking"]
@@ -725,6 +742,7 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
 
             last_error_type = validation.error_type or "ExecutionError"
             last_traceback = validation.traceback or "Python execution failed"
+            record_error(error_type=last_error_type, traceback_text=last_traceback)
             attempts.append(
                 DatasetAutoAttempt(
                     attempt=attempt,
@@ -738,6 +756,7 @@ def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetA
         except (LMStudioError, ValueError) as exc:
             last_error_type = "GenerationError"
             last_traceback = str(exc)
+            record_error(error_type=last_error_type, traceback_text=last_traceback)
             attempts.append(
                 DatasetAutoAttempt(
                     attempt=attempt,
