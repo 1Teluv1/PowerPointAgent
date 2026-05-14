@@ -29,7 +29,6 @@ from app.services.lm_studio_service import (
     generate_raw_prompt_system_prompt,
     repair_assistant_python_only,
     repair_markdown_sample,
-    repair_thinking_only,
 )
 from app.services.ppt_preview_service import export_pptx_thumbnails
 from app.services.pptx_error_memory import format_error_memory_for_prompt, record_error
@@ -50,7 +49,6 @@ RAW_PROMPT_POOL: List[Dict] = []
 # LM Studio 한 번에 요청할 Raw Prompt 개수 상한 (토큰·안정성)
 RAW_PROMPT_LIST_CHUNK_SIZE = 20
 RAW_PROMPT_SYSTEM_PROMPT: Optional[str] = None
-THINKING_SECTION_PARSE_ERROR = "섹션 파싱 실패: Thinking"
 
 
 def normalize_prompt(prompt: str) -> str:
@@ -225,10 +223,12 @@ def parse_markdown_dataset(markdown: str, *, raw_prompt: Optional[str] = None) -
         user_prompt = (raw_prompt or "").strip()
     if not user_prompt:
         raise ValueError("섹션 파싱 실패: User Prompt")
+    thinking = _try_extract_section_block(markdown, "Thinking", "text") or ""
+    assistant_python = _try_extract_section_block(markdown, "Assistant", "python") or ""
     return {
         "user_prompt": user_prompt,
-        "thinking": _extract_section_block(markdown, "Thinking", "text"),
-        "assistant_python": _extract_section_block(markdown, "Assistant", "python"),
+        "thinking": thinking,
+        "assistant_python": assistant_python,
     }
 
 
@@ -244,10 +244,6 @@ def _assemble_dataset_markdown(fixed_user_prompt: str, fixed_thinking: str, assi
     )
 
 
-def _is_thinking_section_parse_error(exc: ValueError) -> bool:
-    return str(exc) == THINKING_SECTION_PARSE_ERROR
-
-
 def _parse_markdown_with_raw_prompt(
     *,
     markdown: str,
@@ -256,32 +252,7 @@ def _parse_markdown_with_raw_prompt(
     model: str,
     error_memory_addon: Optional[str] = None,
 ) -> Tuple[str, Dict[str, str]]:
-    try:
-        parsed = parse_markdown_dataset(markdown, raw_prompt=raw_prompt)
-    except ValueError as exc:
-        if not _is_thinking_section_parse_error(exc):
-            raise
-
-        assistant_python = _try_extract_section_block(markdown, "Assistant", "python")
-        if not assistant_python:
-            raise
-
-        fixed_user_prompt = raw_prompt.strip()
-        repaired_thinking = repair_thinking_only(
-            endpoint=endpoint,
-            model=model,
-            raw_prompt=raw_prompt,
-            fixed_user_prompt=fixed_user_prompt,
-            previous_markdown=markdown,
-            error_memory_addon=error_memory_addon,
-        )
-        repaired_markdown = _assemble_dataset_markdown(
-            fixed_user_prompt,
-            repaired_thinking,
-            assistant_python,
-        )
-        return repaired_markdown, parse_markdown_dataset(repaired_markdown, raw_prompt=raw_prompt)
-
+    parsed = parse_markdown_dataset(markdown, raw_prompt=raw_prompt)
     raw_user_prompt = raw_prompt.strip()
     normalized_markdown = _assemble_dataset_markdown(
         raw_user_prompt,
