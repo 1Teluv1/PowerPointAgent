@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "start": "npm run start:all",
-    "start:all": "concurrently -k -n FRONTEND,BACKEND \"npm --prefix frontend run dev\" \"python -m uvicorn app.main:app --reload --reload-dir backend/app --app-dir backend\"",
+    "start:all": "concurrently -k -n FRONTEND,BACKEND \"npm --prefix frontend run dev\" \"python -m uvicorn app.main:app --host 127.0.0.1 --port 8080 --reload --reload-dir backend/app --app-dir backend\"",
     "install:all": "npm install && npm --prefix frontend install",
     "start:frontend": "npm --prefix frontend run dev",
-    "start:backend": "python -m uvicorn app.main:app --reload --reload-dir backend/app --app-dir backend"
+    "start:backend": "python -m uvicorn app.main:app --host 127.0.0.1 --port 8080 --reload --reload-dir backend/app --app-dir backend"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

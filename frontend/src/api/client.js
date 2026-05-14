@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000";
+const API_BASE = "http://localhost:8080";
 
 async function requestJson(path, options = {}, fallbackMessage = "요청 실패") {
   try {

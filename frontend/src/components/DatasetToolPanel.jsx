@@ -11,7 +11,7 @@ import {
 
 const DATASET_FORM_STORAGE_KEY = "ppt-agent:tools:dataset-form";
 const RAW_PROMPT_POOL_STORAGE_KEY = "ppt-agent:tools:raw-prompt-pool-snapshot";
-const API_BASE = "http://localhost:8000";
+const API_BASE = "http://localhost:8080";
 
 function loadRawPromptPoolSnapshot() {
   try {

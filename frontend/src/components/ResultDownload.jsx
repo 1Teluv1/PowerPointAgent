@@ -5,7 +5,7 @@ export default function ResultDownload({ jobId, status }) {
     <article className="card">
       <h3>Download</h3>
       {canDownload ? (
-        <a className="download" href={`http://localhost:8000/jobs/${jobId}/pptx`}>
+        <a className="download" href={`http://localhost:8080/jobs/${jobId}/pptx`}>
           Download PPTX
         </a>
       ) : (
