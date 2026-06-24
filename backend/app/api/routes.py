@@ -26,6 +26,7 @@ from app.models.schemas import (
     RawPromptPoolGenerateRequest,
     RawPromptPoolRestoreRequest,
     RawPromptPoolResponse,
+    SavedRawPromptPoolListResponse,
 )
 from app.services.dataset_service import (
     TOOL_ARTIFACT_ROOT,
@@ -35,6 +36,8 @@ from app.services.dataset_service import (
     get_preview,
     get_raw_prompt_pool,
     get_stats,
+    list_saved_raw_prompt_pools,
+    load_raw_prompt_pool_from_file,
     restore_raw_prompt_pool,
     upsert_pair,
     validate_python_and_save_ppt,
@@ -196,6 +199,21 @@ def consume_raw_prompts(payload: RawPromptPoolConsumeRequest) -> RawPromptPoolCo
 def restore_raw_prompts(payload: RawPromptPoolRestoreRequest) -> RawPromptPoolResponse:
     try:
         return restore_raw_prompt_pool(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.get("/tools/dataset/raw-prompts/saved", response_model=SavedRawPromptPoolListResponse)
+def list_saved_raw_prompts() -> SavedRawPromptPoolListResponse:
+    return SavedRawPromptPoolListResponse(files=list_saved_raw_prompt_pools())
+
+
+@router.post("/tools/dataset/raw-prompts/load/{filename}", response_model=RawPromptPoolResponse)
+def load_saved_raw_prompts(filename: str) -> RawPromptPoolResponse:
+    try:
+        return load_raw_prompt_pool_from_file(filename)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

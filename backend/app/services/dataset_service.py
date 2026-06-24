@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import uuid
@@ -16,25 +17,40 @@ from app.models.schemas import (
     RawPromptPoolConsumeRequest,
     RawPromptPoolConsumeResponse,
     RawPromptPoolGenerateRequest,
+    RawPromptPoolRestoreItem,
     RawPromptPoolRestoreRequest,
     RawPromptPoolItem,
     RawPromptPoolResponse,
     RawPromptPoolSummary,
 )
 from app.models.schemas import PPTCodeBundle, PythonValidationResponse
+from app.services.dataset_repair import (
+    assemble_dataset_markdown,
+    build_repair_context,
+    classify_dataset_failure,
+    execute_field_repair,
+    missing_repair_target,
+)
+from app.services.dataset_repair_session import (
+    clear_repair_session,
+    format_session_memory_for_prompt,
+    load_repair_session,
+    merge_repair_memory_addons,
+    record_repair_session_error,
+)
 from app.services.lm_studio_service import (
     LMStudioError,
     generate_markdown_sample,
     generate_raw_prompt_list,
     generate_raw_prompt_system_prompt,
-    repair_assistant_python_only,
-    repair_markdown_sample,
+    publish_live_answer_event,
 )
 from app.services.ppt_preview_service import export_pptx_thumbnails
 from app.services.pptx_error_memory import format_error_memory_for_prompt, record_error
 from app.services.runner_service import run_ppt_code
 
 DATASET_DIR = Path("data/datasets")
+RAW_PROMPT_POOL_DIR = DATASET_DIR / "raw_prompt_pools"
 ASSET_DATASET_FILE = DATASET_DIR / "asset_lora.jsonl"
 PYTHON_DATASET_FILE = DATASET_DIR / "python_lora.jsonl"
 TOOL_ARTIFACT_ROOT = Path(__file__).resolve().parents[2] / "artifacts" / "tools"
@@ -62,6 +78,121 @@ def build_key(user_prompt: str) -> str:
 
 def ensure_dataset_dir() -> None:
     DATASET_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def ensure_raw_prompt_pool_dir() -> None:
+    ensure_dataset_dir()
+    RAW_PROMPT_POOL_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _build_raw_prompt_pool_filename() -> str:
+    today = datetime.now().date().isoformat()
+    base = f"raw_prompts_{today}.json"
+    ensure_raw_prompt_pool_dir()
+    if not (RAW_PROMPT_POOL_DIR / base).exists():
+        return base
+    seq = 2
+    while True:
+        name = f"raw_prompts_{today}_{seq}.json"
+        if not (RAW_PROMPT_POOL_DIR / name).exists():
+            return name
+        seq += 1
+
+
+def save_raw_prompt_pool_to_file(*, topic_seed: str, prompt_count: int) -> str:
+    ensure_raw_prompt_pool_dir()
+    filename = _build_raw_prompt_pool_filename()
+    path = RAW_PROMPT_POOL_DIR / filename
+    payload = {
+        "saved_at": datetime.now(timezone.utc).isoformat(),
+        "topic_seed": topic_seed,
+        "prompt_count": prompt_count,
+        "system_prompt": RAW_PROMPT_SYSTEM_PROMPT,
+        "summary": _pool_summary().model_dump(),
+        "items": [
+            {
+                "index": item["index"],
+                "prompt": item["prompt"],
+                "status": item.get("status", "pending"),
+            }
+            for item in RAW_PROMPT_POOL
+        ],
+    }
+    temp = path.with_suffix(".json.tmp")
+    temp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    temp.replace(path)
+    return str(path)
+
+
+def list_saved_raw_prompt_pools() -> List[Dict]:
+    ensure_raw_prompt_pool_dir()
+    files = sorted(
+        RAW_PROMPT_POOL_DIR.glob("raw_prompts_*.json"),
+        key=lambda item: item.stat().st_mtime,
+        reverse=True,
+    )
+    result: List[Dict] = []
+    for path in files:
+        saved_at: Optional[str] = None
+        topic_seed: Optional[str] = None
+        item_count = 0
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                saved_at = data.get("saved_at")
+                topic_seed = data.get("topic_seed")
+                items = data.get("items", [])
+                item_count = len(items) if isinstance(items, list) else 0
+        except (json.JSONDecodeError, OSError):
+            pass
+        result.append(
+            {
+                "filename": path.name,
+                "path": str(path),
+                "size_bytes": path.stat().st_size,
+                "saved_at": saved_at,
+                "prompt_count": item_count,
+                "topic_seed": topic_seed,
+            }
+        )
+    return result
+
+
+def load_raw_prompt_pool_from_file(filename: str) -> RawPromptPoolResponse:
+    safe_name = Path(filename).name
+    if safe_name != filename or not safe_name.startswith("raw_prompts_") or not safe_name.endswith(".json"):
+        raise ValueError("Invalid raw prompt pool filename")
+    path = RAW_PROMPT_POOL_DIR / safe_name
+    if not path.exists():
+        raise FileNotFoundError(f"Saved raw prompt pool not found: {safe_name}")
+
+    data = json.loads(path.read_text(encoding="utf-8"))
+    items = data.get("items", []) if isinstance(data, dict) else []
+    if not isinstance(items, list) or len(items) < 1:
+        raise ValueError("Saved raw prompt pool has no items")
+
+    restore_items: List[RawPromptPoolRestoreItem] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        prompt = str(item.get("prompt", "")).strip()
+        if not prompt:
+            continue
+        status = item.get("status", "pending")
+        if status not in {"pending", "processing", "done", "failed"}:
+            status = "pending"
+        restore_items.append(RawPromptPoolRestoreItem(prompt=prompt, status=status))
+
+    if not restore_items:
+        raise ValueError("Saved raw prompt pool has no valid prompts")
+
+    system_prompt = data.get("system_prompt") if isinstance(data, dict) else None
+    return restore_raw_prompt_pool(
+        RawPromptPoolRestoreRequest(
+            system_prompt=system_prompt.strip() if isinstance(system_prompt, str) and system_prompt.strip() else None,
+            items=restore_items,
+        )
+    )
 
 
 def parse_jsonl(path: Path) -> List[Dict]:
@@ -233,15 +364,7 @@ def parse_markdown_dataset(markdown: str, *, raw_prompt: Optional[str] = None) -
 
 
 def _assemble_dataset_markdown(fixed_user_prompt: str, fixed_thinking: str, assistant_python: str) -> str:
-    return (
-        "# User Prompt\n```text\n"
-        + fixed_user_prompt.strip()
-        + "\n```\n\n# Thinking\n```text\n"
-        + fixed_thinking.strip()
-        + "\n```\n\n# Assistant\n```python\n"
-        + assistant_python.strip()
-        + "\n```\n"
-    )
+    return assemble_dataset_markdown(fixed_user_prompt, fixed_thinking, assistant_python)
 
 
 def _parse_markdown_with_raw_prompt(
@@ -398,7 +521,9 @@ def generate_raw_prompt_pool(payload: RawPromptPoolGenerateRequest) -> RawPrompt
                 "thumbnail_urls": [],
             }
         )
-    return get_raw_prompt_pool()
+    saved_file = save_raw_prompt_pool_to_file(topic_seed=payload.topic_seed, prompt_count=total)
+    response = get_raw_prompt_pool()
+    return response.model_copy(update={"saved_file": saved_file})
 
 
 def _thumbnail_urls_for_run(run_id: str, pptx_path: Path) -> List[str]:
@@ -407,7 +532,7 @@ def _thumbnail_urls_for_run(run_id: str, pptx_path: Path) -> List[str]:
     return [f"/tools/dataset/previews/{run_id}/{path.name}" for path in thumbnails]
 
 
-def _generate_validate_save_for_prompt(
+def _run_dataset_generation_loop(
     *,
     raw_prompt: str,
     endpoint: str,
@@ -422,14 +547,39 @@ def _generate_validate_save_for_prompt(
     parsed_python_code = None
     frozen_user_prompt: Optional[str] = None
     frozen_thinking: Optional[str] = None
-    last_error_type = None
-    last_traceback = None
+    last_error_type: Optional[str] = None
+    last_traceback: Optional[str] = None
+    last_failure_kind: Optional[str] = None
+    last_repair_target: Optional[str] = None
+    prompt_key = build_key(raw_prompt)
+    repair_session = load_repair_session(prompt_key)
 
-    for attempt in range(1, max_retries + 2):
+    attempt = 0
+    while True:
+        attempt += 1
+        if max_retries > 0 and attempt > max_retries + 1:
+            break
+
         stage = "generate" if attempt == 1 else "repair"
-        error_memory_addon = format_error_memory_for_prompt()
+        error_memory_addon = merge_repair_memory_addons(
+            format_error_memory_for_prompt(),
+            format_session_memory_for_prompt(repair_session),
+        )
+        attempt_repair_target = None
+        attempt_failure_kind = None
+
         try:
             if stage == "generate":
+                publish_live_answer_event(
+                    {
+                        "type": "repair_plan",
+                        "stage": "generate_markdown_sample",
+                        "attempt": attempt,
+                        "repair_target": None,
+                        "locked_fields": [],
+                        "content": "1차 전체 생성 (User Prompt + Thinking + Assistant Python)",
+                    }
+                )
                 generated_markdown = generate_markdown_sample(
                     endpoint=endpoint,
                     model=model,
@@ -437,33 +587,52 @@ def _generate_validate_save_for_prompt(
                     system_prompt=system_prompt,
                     error_memory_addon=error_memory_addon or None,
                 )
-            elif (
-                frozen_user_prompt is not None
-                and frozen_thinking is not None
-                and (parsed_python_code or "").strip()
-            ):
-                new_python = repair_assistant_python_only(
-                    endpoint=endpoint,
-                    model=model,
-                    raw_prompt=raw_prompt,
-                    fixed_user_prompt=frozen_user_prompt,
-                    fixed_thinking=frozen_thinking,
-                    failed_python_code=parsed_python_code or "",
-                    traceback_text=last_traceback or "Unknown execution error",
-                    error_memory_addon=error_memory_addon or None,
-                )
-                generated_markdown = _assemble_dataset_markdown(
-                    frozen_user_prompt, frozen_thinking, new_python
-                )
             else:
-                generated_markdown = repair_markdown_sample(
+                attempt_failure_kind, attempt_repair_target = classify_dataset_failure(
+                    error_type=last_error_type,
+                    traceback=last_traceback,
+                    parsed={
+                        "thinking": parsed_thinking or "",
+                        "assistant_python": parsed_python_code or "",
+                    },
+                    frozen_thinking=frozen_thinking,
+                )
+                repair_ctx = build_repair_context(
+                    failure_kind=attempt_failure_kind,
+                    error_type=last_error_type or "UnknownError",
+                    traceback=last_traceback or "Unknown error",
+                    error_memory_addon=error_memory_addon,
+                    raw_prompt=raw_prompt,
+                    frozen_user_prompt=frozen_user_prompt or raw_prompt.strip(),
+                    frozen_thinking=frozen_thinking or "",
+                    failed_python_code=parsed_python_code or "",
+                    previous_markdown=generated_markdown,
+                    repair_target=attempt_repair_target,
+                )
+                locked_fields = ["user_prompt"]
+                if attempt_repair_target == "assistant_python" and (frozen_thinking or "").strip():
+                    locked_fields.append("thinking")
+                if attempt_repair_target == "thinking" and (parsed_python_code or "").strip():
+                    locked_fields.append("assistant_python")
+                publish_live_answer_event(
+                    {
+                        "type": "repair_plan",
+                        "stage": f"repair_{attempt_repair_target}_only",
+                        "attempt": attempt,
+                        "repair_target": attempt_repair_target,
+                        "failure_kind": attempt_failure_kind,
+                        "locked_fields": locked_fields,
+                        "content": (
+                            f"필드 단위 repair · attempt {attempt} · "
+                            f"재생성={attempt_repair_target} · "
+                            f"고정={', '.join(locked_fields)}"
+                        ),
+                    }
+                )
+                generated_markdown = execute_field_repair(
+                    repair_ctx,
                     endpoint=endpoint,
                     model=model,
-                    raw_prompt=raw_prompt,
-                    previous_markdown=generated_markdown,
-                    failed_python_code=parsed_python_code or "",
-                    traceback_text=last_traceback or "Unknown execution error",
-                    error_memory_addon=error_memory_addon or None,
                 )
 
             generated_markdown, parsed = _parse_markdown_with_raw_prompt(
@@ -476,12 +645,59 @@ def _generate_validate_save_for_prompt(
             parsed_user_prompt = parsed["user_prompt"]
             parsed_thinking = parsed["thinking"]
             parsed_python_code = parsed["assistant_python"]
+
             if frozen_user_prompt is None:
                 frozen_user_prompt = raw_prompt.strip()
+            if frozen_thinking is None and (parsed_thinking or "").strip():
                 frozen_thinking = parsed_thinking
 
+            parse_gap = missing_repair_target(parsed)
+            if parse_gap:
+                last_error_type = "ParseError"
+                last_traceback = f"Missing or empty section: {parse_gap}"
+                last_failure_kind, last_repair_target = classify_dataset_failure(
+                    error_type=last_error_type,
+                    traceback=last_traceback,
+                    parsed=parsed,
+                    frozen_thinking=frozen_thinking,
+                )
+                record_error(error_type=last_error_type, traceback_text=last_traceback)
+                record_repair_session_error(
+                    repair_session,
+                    raw_prompt=raw_prompt,
+                    attempt=attempt,
+                    error_type=last_error_type,
+                    traceback_text=last_traceback,
+                    repair_target=last_repair_target,
+                    failure_kind=last_failure_kind,
+                    failed_python_code=parsed_python_code or "",
+                )
+                attempts.append(
+                    DatasetAutoAttempt(
+                        attempt=attempt,
+                        stage=stage,
+                        status="error",
+                        error_type=last_error_type,
+                        traceback=last_traceback,
+                        repair_target=last_repair_target,
+                        failure_kind=last_failure_kind,
+                    )
+                )
+                continue
+
+            publish_live_answer_event(
+                {
+                    "type": "repair_plan",
+                    "stage": "python_validation",
+                    "attempt": attempt,
+                    "repair_target": None,
+                    "locked_fields": [],
+                    "content": f"attempt {attempt} · Python 실행 검증 중…",
+                }
+            )
             validation, run_id, pptx_path = _run_python_and_save_ppt(parsed_python_code)
             if validation.status == "ok":
+                clear_repair_session(prompt_key)
                 key = upsert_pair(
                     user_prompt=raw_prompt.strip(),
                     asset_code="",
@@ -489,7 +705,16 @@ def _generate_validate_save_for_prompt(
                     asset_system_prompt=ASSET_SYSTEM_PROMPT,
                     python_system_prompt=PYTHON_SYSTEM_PROMPT,
                 )
-                attempts.append(DatasetAutoAttempt(attempt=attempt, stage=stage, status="ok", logs=validation.logs))
+                attempts.append(
+                    DatasetAutoAttempt(
+                        attempt=attempt,
+                        stage=stage,
+                        status="ok",
+                        logs=validation.logs,
+                        repair_target=attempt_repair_target if stage == "repair" else None,
+                        failure_kind=attempt_failure_kind if stage == "repair" else None,
+                    )
+                )
                 return (
                     DatasetAutoGenerateResponse(
                         status="ok",
@@ -512,7 +737,23 @@ def _generate_validate_save_for_prompt(
 
             last_error_type = validation.error_type or "ExecutionError"
             last_traceback = validation.traceback or "Python execution failed"
+            last_failure_kind, last_repair_target = classify_dataset_failure(
+                error_type=last_error_type,
+                traceback=last_traceback,
+                parsed=parsed,
+                frozen_thinking=frozen_thinking,
+            )
             record_error(error_type=last_error_type, traceback_text=last_traceback)
+            record_repair_session_error(
+                repair_session,
+                raw_prompt=raw_prompt,
+                attempt=attempt,
+                error_type=last_error_type,
+                traceback_text=last_traceback,
+                repair_target=last_repair_target,
+                failure_kind=last_failure_kind,
+                failed_python_code=parsed_python_code or "",
+            )
             attempts.append(
                 DatasetAutoAttempt(
                     attempt=attempt,
@@ -521,12 +762,35 @@ def _generate_validate_save_for_prompt(
                     error_type=last_error_type,
                     traceback=last_traceback,
                     logs=validation.logs,
+                    repair_target=last_repair_target,
+                    failure_kind=last_failure_kind,
                 )
             )
         except (LMStudioError, ValueError) as exc:
             last_error_type = "GenerationError"
             last_traceback = str(exc)
+            last_failure_kind, last_repair_target = classify_dataset_failure(
+                error_type=last_error_type,
+                traceback=last_traceback,
+                parsed={
+                    "thinking": parsed_thinking or "",
+                    "assistant_python": parsed_python_code or "",
+                }
+                if parsed_thinking is not None or parsed_python_code
+                else None,
+                frozen_thinking=frozen_thinking,
+            )
             record_error(error_type=last_error_type, traceback_text=last_traceback)
+            record_repair_session_error(
+                repair_session,
+                raw_prompt=raw_prompt,
+                attempt=attempt,
+                error_type=last_error_type,
+                traceback_text=last_traceback,
+                repair_target=last_repair_target,
+                failure_kind=last_failure_kind,
+                failed_python_code=parsed_python_code or "",
+            )
             attempts.append(
                 DatasetAutoAttempt(
                     attempt=attempt,
@@ -534,7 +798,8 @@ def _generate_validate_save_for_prompt(
                     status="error",
                     error_type=last_error_type,
                     traceback=last_traceback,
-                    logs=[],
+                    repair_target=last_repair_target,
+                    failure_kind=last_failure_kind,
                 )
             )
 
@@ -551,6 +816,23 @@ def _generate_validate_save_for_prompt(
         ),
         None,
         None,
+    )
+
+
+def _generate_validate_save_for_prompt(
+    *,
+    raw_prompt: str,
+    endpoint: str,
+    model: str,
+    max_retries: int,
+    system_prompt: Optional[str],
+) -> Tuple[DatasetAutoGenerateResponse, Optional[str], Optional[Path]]:
+    return _run_dataset_generation_loop(
+        raw_prompt=raw_prompt,
+        endpoint=endpoint,
+        model=model,
+        max_retries=max_retries,
+        system_prompt=system_prompt,
     )
 
 
@@ -612,140 +894,11 @@ def consume_raw_prompt_pool(payload: RawPromptPoolConsumeRequest) -> RawPromptPo
 
 
 def auto_generate_dataset_entry(payload: DatasetAutoGenerateRequest) -> DatasetAutoGenerateResponse:
-    attempts: List[DatasetAutoAttempt] = []
-    generated_markdown = ""
-    parsed_user_prompt = None
-    parsed_thinking = None
-    parsed_python_code = None
-    frozen_user_prompt: Optional[str] = None
-    frozen_thinking: Optional[str] = None
-    last_error_type = None
-    last_traceback = None
-
-    for attempt in range(1, payload.max_retries + 2):
-        stage = "generate" if attempt == 1 else "repair"
-        error_memory_addon = format_error_memory_for_prompt()
-        try:
-            if stage == "generate":
-                generated_markdown = generate_markdown_sample(
-                    endpoint=payload.lmstudio_endpoint,
-                    model=payload.lmstudio_model,
-                    raw_prompt=payload.raw_prompt,
-                    system_prompt=payload.system_prompt,
-                    error_memory_addon=error_memory_addon or None,
-                )
-            elif (
-                frozen_user_prompt is not None
-                and frozen_thinking is not None
-                and (parsed_python_code or "").strip()
-            ):
-                new_python = repair_assistant_python_only(
-                    endpoint=payload.lmstudio_endpoint,
-                    model=payload.lmstudio_model,
-                    raw_prompt=payload.raw_prompt,
-                    fixed_user_prompt=frozen_user_prompt,
-                    fixed_thinking=frozen_thinking,
-                    failed_python_code=parsed_python_code or "",
-                    traceback_text=last_traceback or "Unknown execution error",
-                    error_memory_addon=error_memory_addon or None,
-                )
-                generated_markdown = _assemble_dataset_markdown(
-                    frozen_user_prompt, frozen_thinking, new_python
-                )
-            else:
-                generated_markdown = repair_markdown_sample(
-                    endpoint=payload.lmstudio_endpoint,
-                    model=payload.lmstudio_model,
-                    raw_prompt=payload.raw_prompt,
-                    previous_markdown=generated_markdown,
-                    failed_python_code=parsed_python_code or "",
-                    traceback_text=last_traceback or "Unknown execution error",
-                    error_memory_addon=error_memory_addon or None,
-                )
-
-            generated_markdown, parsed = _parse_markdown_with_raw_prompt(
-                markdown=generated_markdown,
-                raw_prompt=payload.raw_prompt,
-                endpoint=payload.lmstudio_endpoint,
-                model=payload.lmstudio_model,
-                error_memory_addon=error_memory_addon or None,
-            )
-            parsed_user_prompt = parsed["user_prompt"]
-            parsed_thinking = parsed["thinking"]
-            parsed_python_code = parsed["assistant_python"]
-            if frozen_user_prompt is None:
-                frozen_user_prompt = payload.raw_prompt.strip()
-                frozen_thinking = parsed_thinking
-
-            validation = validate_python_and_save_ppt(parsed_python_code)
-            if validation.status == "ok":
-                key = upsert_pair(
-                    user_prompt=payload.raw_prompt.strip(),
-                    asset_code="",
-                    python_code=generated_markdown,
-                    asset_system_prompt=ASSET_SYSTEM_PROMPT,
-                    python_system_prompt=PYTHON_SYSTEM_PROMPT,
-                )
-                dataset_row = build_data_messages_row(
-                    system_prompt=(payload.system_prompt or PYTHON_SYSTEM_PROMPT).strip(),
-                    user_prompt=payload.raw_prompt.strip(),
-                    assistant_markdown=generated_markdown,
-                )
-                attempts.append(
-                    DatasetAutoAttempt(
-                        attempt=attempt,
-                        stage=stage,
-                        status="ok",
-                        logs=validation.logs,
-                    )
-                )
-                return DatasetAutoGenerateResponse(
-                    status="ok",
-                    key=key,
-                    generated_markdown=generated_markdown,
-                    parsed_user_prompt=parsed_user_prompt,
-                    parsed_thinking=parsed_thinking,
-                    parsed_python_code=parsed_python_code,
-                    attempts=attempts,
-                    validation=validation,
-                    dataset_row=dataset_row,
-                )
-
-            last_error_type = validation.error_type or "ExecutionError"
-            last_traceback = validation.traceback or "Python execution failed"
-            record_error(error_type=last_error_type, traceback_text=last_traceback)
-            attempts.append(
-                DatasetAutoAttempt(
-                    attempt=attempt,
-                    stage=stage,
-                    status="error",
-                    error_type=last_error_type,
-                    traceback=last_traceback,
-                    logs=validation.logs,
-                )
-            )
-        except (LMStudioError, ValueError) as exc:
-            last_error_type = "GenerationError"
-            last_traceback = str(exc)
-            record_error(error_type=last_error_type, traceback_text=last_traceback)
-            attempts.append(
-                DatasetAutoAttempt(
-                    attempt=attempt,
-                    stage=stage,
-                    status="error",
-                    error_type=last_error_type,
-                    traceback=last_traceback,
-                    logs=[],
-                )
-            )
-
-    return DatasetAutoGenerateResponse(
-        status="error",
-        generated_markdown=generated_markdown or None,
-        parsed_user_prompt=parsed_user_prompt,
-        parsed_thinking=parsed_thinking,
-        parsed_python_code=parsed_python_code,
-        attempts=attempts,
-        error_type=last_error_type or "UnknownError",
-        traceback=last_traceback or "자동화 처리 실패",
+    response, _, _ = _run_dataset_generation_loop(
+        raw_prompt=payload.raw_prompt,
+        endpoint=payload.lmstudio_endpoint,
+        model=payload.lmstudio_model,
+        max_retries=payload.max_retries,
+        system_prompt=payload.system_prompt,
     )
+    return response

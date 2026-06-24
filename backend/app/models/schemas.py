@@ -127,7 +127,7 @@ class DatasetAutoGenerateRequest(BaseModel):
     raw_prompt: str = Field(min_length=1)
     lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
     lmstudio_model: str = Field(default="local-model", min_length=1)
-    max_retries: int = Field(default=2, ge=0, le=5)
+    max_retries: int = Field(default=0, ge=0, description="0 = unlimited retries until success")
     system_prompt: Optional[str] = None
 
 
@@ -147,6 +147,8 @@ class DatasetAutoAttempt(BaseModel):
     error_type: Optional[str] = None
     traceback: Optional[str] = None
     logs: List[str] = Field(default_factory=list)
+    repair_target: Optional[Literal["thinking", "assistant_python"]] = None
+    failure_kind: Optional[str] = None
 
 
 class DatasetAutoGenerateResponse(BaseModel):
@@ -174,7 +176,7 @@ class RawPromptPoolConsumeRequest(BaseModel):
     count: int = Field(default=1, ge=1, le=50)
     lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
     lmstudio_model: str = Field(default="local-model", min_length=1)
-    max_retries: int = Field(default=2, ge=0, le=5)
+    max_retries: int = Field(default=0, ge=0, description="0 = unlimited retries until success")
     system_prompt: Optional[str] = None
 
 
@@ -212,6 +214,20 @@ class RawPromptPoolResponse(BaseModel):
     system_prompt: Optional[str] = None
     summary: RawPromptPoolSummary
     items: List[RawPromptPoolItem] = Field(default_factory=list)
+    saved_file: Optional[str] = None
+
+
+class SavedRawPromptPoolInfo(BaseModel):
+    filename: str
+    path: str
+    size_bytes: int
+    saved_at: Optional[str] = None
+    prompt_count: int = 0
+    topic_seed: Optional[str] = None
+
+
+class SavedRawPromptPoolListResponse(BaseModel):
+    files: List[SavedRawPromptPoolInfo] = Field(default_factory=list)
 
 
 class RawPromptPoolConsumeItemResult(BaseModel):

@@ -131,6 +131,18 @@ export async function restoreRawPromptPool(payload) {
   );
 }
 
+export async function getSavedRawPromptPools() {
+  return requestJson("/tools/dataset/raw-prompts/saved", {}, "저장된 Raw Prompt 풀 목록 조회 실패");
+}
+
+export async function loadSavedRawPromptPool(filename) {
+  return requestJson(
+    `/tools/dataset/raw-prompts/load/${encodeURIComponent(filename)}`,
+    { method: "POST" },
+    "저장된 Raw Prompt 풀 불러오기 실패"
+  );
+}
+
 export async function streamLmStudioChat({ payload, onDelta, onError, signal }) {
   const res = await fetch(`${API_BASE}/tools/lm-studio/openai-chat-stream`, {
     method: "POST",

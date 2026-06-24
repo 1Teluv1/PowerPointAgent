@@ -1,0 +1,457 @@
+{
+  "version": 1,
+  "prompt_key": "9dfcc1096974d889",
+  "raw_prompt_excerpt": "Generate a Python script using python-pptx to create a 12-slide playful educational presentation for students on basic environmental science. The output file must be named \"environmental_science.pptx\" and all content should be in English...",
+  "turns": [
+    {
+      "attempt": 160,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:39+00:00"
+    },
+    {
+      "attempt": 161,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:41+00:00"
+    },
+    {
+      "attempt": 162,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:44+00:00"
+    },
+    {
+      "attempt": 163,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:46+00:00"
+    },
+    {
+      "attempt": 164,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:48+00:00"
+    },
+    {
+      "attempt": 165,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:50+00:00"
+    },
+    {
+      "attempt": 166,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:52+00:00"
+    },
+    {
+      "attempt": 167,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:54+00:00"
+    },
+    {
+      "attempt": 168,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:56+00:00"
+    },
+    {
+      "attempt": 169,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:44:58+00:00"
+    },
+    {
+      "attempt": 170,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:00+00:00"
+    },
+    {
+      "attempt": 171,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:02+00:00"
+    },
+    {
+      "attempt": 172,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:04+00:00"
+    },
+    {
+      "attempt": 173,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:06+00:00"
+    },
+    {
+      "attempt": 174,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:08+00:00"
+    },
+    {
+      "attempt": 175,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:10+00:00"
+    },
+    {
+      "attempt": 176,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:12+00:00"
+    },
+    {
+      "attempt": 177,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:14+00:00"
+    },
+    {
+      "attempt": 178,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:16+00:00"
+    },
+    {
+      "attempt": 179,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:19+00:00"
+    },
+    {
+      "attempt": 180,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:21+00:00"
+    },
+    {
+      "attempt": 181,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:23+00:00"
+    },
+    {
+      "attempt": 182,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:25+00:00"
+    },
+    {
+      "attempt": 183,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:27+00:00"
+    },
+    {
+      "attempt": 184,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:45:29+00:00"
+    },
+    {
+      "attempt": 185,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:48:41+00:00"
+    },
+    {
+      "attempt": 186,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:51:53+00:00"
+    },
+    {
+      "attempt": 187,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:55:03+00:00"
+    },
+    {
+      "attempt": 188,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T08:58:11+00:00"
+    },
+    {
+      "attempt": 189,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:01:25+00:00"
+    },
+    {
+      "attempt": 190,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:04:44+00:00"
+    },
+    {
+      "attempt": 191,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:08:13+00:00"
+    },
+    {
+      "attempt": 192,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:11:34+00:00"
+    },
+    {
+      "attempt": 193,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:14:56+00:00"
+    },
+    {
+      "attempt": 194,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:18:19+00:00"
+    },
+    {
+      "attempt": 195,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:21:50+00:00"
+    },
+    {
+      "attempt": 196,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:25:30+00:00"
+    },
+    {
+      "attempt": 197,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:29:02+00:00"
+    },
+    {
+      "attempt": 198,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:32:29+00:00"
+    },
+    {
+      "attempt": 199,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:36:03+00:00"
+    },
+    {
+      "attempt": 200,
+      "error_type": "GenerationError",
+      "traceback": "Model unloaded.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:32+00:00"
+    },
+    {
+      "attempt": 201,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:35+00:00"
+    },
+    {
+      "attempt": 202,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:37+00:00"
+    },
+    {
+      "attempt": 203,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:39+00:00"
+    },
+    {
+      "attempt": 204,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:41+00:00"
+    },
+    {
+      "attempt": 205,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:43+00:00"
+    },
+    {
+      "attempt": 206,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:45+00:00"
+    },
+    {
+      "attempt": 207,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:47+00:00"
+    },
+    {
+      "attempt": 208,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:49+00:00"
+    },
+    {
+      "attempt": 209,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T09:40:51+00:00"
+    }
+  ]
+}

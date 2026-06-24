@@ -1,0 +1,515 @@
+{
+  "saved_at": "2026-06-24T04:18:30.096570+00:00",
+  "topic_seed": "diverse business PowerPoint presentation requests",
+  "prompt_count": 100,
+  "system_prompt": "You are an expert dataset generator tasked with creating diverse, realistic raw user requests for a python-pptx automation tool. Your goal is to generate training data consisting of business PowerPoint presentation prompts that will be used to train and evaluate code-generation models.\n\nWhen generating each prompt, you must vary the following dimensions:\n- Industries (e.g., Finance, Healthcare, Tech, Marketing, Education)\n- Target Audiences (e.g., C-Suite executives, investors, internal teams, clients)\n- Slide Counts (ranging from 5 to 30 slides)\n- Styles and Themes (e.g., minimalist, corporate, creative, data-heavy)\n- Constraints and Asset Requirements (e.g., specific color palettes, logo placement, chart types, image placeholders, text formatting rules)\n\nEvery generated prompt must explicitly include the following deterministic requirements:\n- Output filename (e.g., \"output.pptx\")\n- Language of the presentation content (e.g., English, Spanish, French)\n- Slide size and orientation (e.g., 16:9 Widescreen, 4:3 Standard)\n- A strict constraint prohibiting the use of external APIs or web scraping.\n\nDo not generate any Python code in your output. You are only generating raw user prompts. Output raw user prompts only when explicitly asked to do so.\n\nThe generated raw prompts must be designed to elicit valid python-pptx code from downstream models. Therefore, you must embed specific technical constraints within the user requests that force correct library usage:\n- Explicitly instruct the downstream model to use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart.\n- Require defensive programming by explicitly stating that any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text.\n- Mandate the exact output format for the downstream model: responses must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+  "summary": {
+    "total": 100,
+    "pending": 100,
+    "processing": 0,
+    "done": 0,
+    "failed": 0
+  },
+  "items": [
+    {
+      "index": 1,
+      "prompt": "Create a Python script using python-pptx to generate a 15-slide minimalist corporate presentation for C-Suite executives in the Finance industry. The output file must be named \"finance_c_suite.pptx\" and all content should be in English. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 2,
+      "prompt": "Generate a Python script using python-pptx to create an 8-slide data-heavy presentation for internal healthcare teams analyzing quarterly patient metrics. The output file must be named \"healthcare_metrics.pptx\" and all content should be in Spanish. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 3,
+      "prompt": "Write a Python script using python-pptx to generate a 10-slide creative modern pitch deck for investors in the Tech industry. The output file must be named \"tech_investor_deck.pptx\" and all content should be in English. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 4,
+      "prompt": "Create a Python script using python-pptx to build a 20-slide vibrant marketing presentation for external clients showcasing new campaign strategies. The output file must be named \"marketing_campaign.pptx\" and all content should be in French. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 5,
+      "prompt": "Generate a Python script using python-pptx to create a 12-slide playful educational presentation for students on basic environmental science. The output file must be named \"environmental_science.pptx\" and all content should be in English. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 6,
+      "prompt": "Write a Python script using python-pptx to generate a 25-slide minimalist luxury presentation for C-Suite executives in the Retail industry reviewing annual sales. The output file must be named \"retail_annual_sales.pptx\" and all content should be in German. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 7,
+      "prompt": "Create a Python script using python-pptx to build an 8-slide data-heavy presentation for internal manufacturing teams analyzing production efficiency. The output file must be named \"manufacturing_efficiency.pptx\" and all content should be in Japanese. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 8,
+      "prompt": "Generate a Python script using python-pptx to create a 9-slide creative elegant presentation for real estate clients showcasing new property developments. The output file must be named \"real_estate_developments.pptx\" and all content should be in Italian. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 9,
+      "prompt": "Write a Python script using python-pptx to generate a 14-slide corporate standard presentation for logistics investors detailing supply chain optimization. The output file must be named \"logistics_supply_chain.pptx\" and all content should be in Portuguese. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 10,
+      "prompt": "Create a Python script using python-pptx to build a 7-slide emotional creative presentation for non-profit donors highlighting community impact. The output file must be named \"nonprofit_community.pptx\" and all content should be in English. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 11,
+      "prompt": "Generate a Python script using python-pptx to create a 30-slide data-heavy presentation for C-Suite executives in the Energy sector analyzing renewable investments. The output file must be named \"energy_renewable.pptx\" and all content should be in Mandarin Chinese. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 12,
+      "prompt": "Write a Python script using python-pptx to generate a 5-slide minimalist clean presentation for external consulting clients outlining strategic recommendations. The output file must be named \"consulting_strategy.pptx\" and all content should be in English. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 13,
+      "prompt": "Create a Python script using python-pptx to build an 18-slide vibrant modern presentation for internal e-commerce teams reviewing Q4 conversion metrics. The output file must be named \"ecommerce_q4.pptx\" and all content should be in Korean. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 14,
+      "prompt": "Generate a Python script using python-pptx to create a 22-slide corporate strict presentation for pharmaceutical regulators detailing clinical trial data. The output file must be named \"pharma_clinical.pptx\" and all content should be in English. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 15,
+      "prompt": "Write a Python script using python-pptx to generate an 11-slide creative dynamic presentation for media & entertainment partners showcasing upcoming content slate. The output file must be named \"media_content_slate.pptx\" and all content should be in Spanish. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 16,
+      "prompt": "Create a Python script using python-pptx to build an 8-slide data-heavy presentation for construction project managers analyzing safety compliance rates. The output file must be named \"construction_safety.pptx\" and all content should be in French. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 17,
+      "prompt": "Generate a Python script using python-pptx to create a 15-slide formal corporate presentation for the public detailing new government policy initiatives. The output file must be named \"government_policy.pptx\" and all content should be in English. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 18,
+      "prompt": "Write a Python script using python-pptx to generate an 8-slide rustic creative presentation for agriculture farmers showcasing sustainable farming techniques. The output file must be named \"agriculture_sustainable.pptx\" and all content should be in German. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 19,
+      "prompt": "Create a Python script using python-pptx to build an 20-slide futuristic tech presentation for C-Suite executives in the telecommunications industry analyzing network upgrades. The output file must be named \"telecom_network.pptx\" and all content should be in Japanese. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 20,
+      "prompt": "Generate a Python script using python-pptx to create a 4-slide minimalist formal presentation for internal legal teams reviewing compliance updates. The output file must be named \"legal_compliance.pptx\" and all content should be in English. Use the standard 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 21,
+      "prompt": "Create a PowerPoint presentation for our SaaS startup to present to potential investors. The deck should be saved as 'Q4_Investor_Deck.pptx', written in English, and use a 16:9 Widescreen slide size with an orientation of Landscape. The overall style must be minimalist dark mode with high-contrast white text and blue accents. You are strictly prohibited from using any external APIs or web scraping to fetch data; all content and chart data must be hardcoded directly in the script. When creating charts, you must use XL_CHART_TYPE from pptx.enum.chart instead of importing ChartType. Additionally, before setting the title on any slide, you must defensively check if slide.shapes.title is not None before accessing its .text property to avoid runtime errors.",
+      "status": "pending"
+    },
+    {
+      "index": 22,
+      "prompt": "Generate a PowerPoint presentation for our healthcare internal team regarding clinical trial updates. Save the file as 'Clinical_Trials_Update.pptx', write all content in English, and use a 16:9 Widescreen landscape orientation. The theme should be corporate blue and white with clean, professional typography. Do not make any external API calls or scrape the web for images or data; embed everything statically. You are required to use XL_CHART_TYPE instead of ChartType when generating charts. Furthermore, you must ensure defensive programming by checking that slide.shapes.title is not None prior to setting its .text attribute.",
+      "status": "pending"
+    },
+    {
+      "index": 23,
+      "prompt": "I need a corporate finance presentation targeting our C-Suite executives about the annual budget forecast. Name the output file 'Annual_Budget_Forecast.pptx', use Spanish for all text content, and set the slide size to 4:3 Standard in landscape mode. The visual style should be professional gold and black with elegant serif fonts. You are not allowed to fetch data or images via external APIs; rely solely on hardcoded values within your codebase. When adding charts, you must utilize XL_CHART_TYPE rather than importing ChartType. Also, always verify that slide.shapes.title is not None before attempting to assign text to it.",
+      "status": "pending"
+    },
+    {
+      "index": 24,
+      "prompt": "Create a digital marketing brand audit presentation for our clients. The file should be saved as 'Brand_Audit_2023.pptx', all content must be in French, and the slides should be 16:9 Widescreen landscape. Apply a vibrant creative style with gradient backgrounds and bold sans-serif fonts. You are strictly forbidden from using external APIs or web scraping; provide all mock data directly in your code. Ensure that any chart creation uses XL_CHART_TYPE instead of ChartType. It is also mandatory to check if slide.shapes.title is not None before accessing its .text property.",
+      "status": "pending"
+    },
+    {
+      "index": 25,
+      "prompt": "Develop a higher education orientation deck for prospective students. Save the presentation as 'University_Orientation.pptx', write everything in English, and use 16:9 Widescreen landscape slides. The design should be colorful and academic with primary colors and playful icons. Do not make any external API requests or scrape the web; hardcode all text and data values locally. You must use XL_CHART_TYPE when defining chart types. Additionally, always implement a null check for slide.shapes.title before assigning to its .text field.",
+      "status": "pending"
+    },
+    {
+      "index": 26,
+      "prompt": "Build a commercial real estate proposal presentation aimed at investors. Output the file as 'Metro_Tower_Proposal.pptx', use English language content, and configure the slides to 16:9 Widescreen landscape orientation. The aesthetic should be elegant minimalist with high contrast black and white themes. You are strictly prohibited from using external APIs or web scraping; embed all necessary data directly in your script. When generating charts, you must use XL_CHART_TYPE instead of ChartType. Furthermore, always verify that slide.shapes.title is not None before setting its .text value.",
+      "status": "pending"
+    },
+    {
+      "index": 27,
+      "prompt": "Create an automotive manufacturing supply chain optimization deck for internal teams. Save it as 'Supply_Chain_Optimization.pptx', write all content in German, and use 4:3 Standard landscape slide sizes. The style should be industrial grey and red with technical diagrams. Do not call any external APIs or scrape the web; hardcode all data points locally. You are required to use XL_CHART_TYPE rather than ChartType for chart generation. Also, ensure you check that slide.shapes.title is not None before attempting to update its .text property.",
+      "status": "pending"
+    },
+    {
+      "index": 28,
+      "prompt": "Design a strategy consulting market entry presentation targeting C-Suite executives. Name the file 'Market_Entry_Strategy.pptx', write in English, and set slides to 16:9 Widescreen landscape. The visual theme should be sleek corporate navy and silver with modern layout structures. You must not use external APIs or web scraping; rely exclusively on hardcoded mock data within your code. When creating charts, you are mandated to use XL_CHART_TYPE instead of ChartType. Additionally, always defensively check if slide.shapes.title is not None before accessing its .text attribute.",
+      "status": "pending"
+    },
+    {
+      "index": 29,
+      "prompt": "Generate an environmental non-profit presentation for public donors about ocean cleanup initiatives. Save as 'Ocean_Cleanup_Initiative.pptx', write in Portuguese, and use 16:9 Widescreen landscape orientation. The style should be eco-friendly green and earth tones with organic shapes. You are strictly forbidden from using external APIs or web scraping; embed all data directly in the script. Ensure you use XL_CHART_TYPE instead of ChartType when adding charts. It is also critical to check that slide.shapes.title is not None before setting its .text property.",
+      "status": "pending"
+    },
+    {
+      "index": 30,
+      "prompt": "Create an e-commerce retail holiday sales report for clients. Save the file as 'Holiday_Sales_Report.pptx', write content in English, and use 4:3 Standard landscape slides. The design should feature a modern pastel palette with soft rounded corners. Do not make any external API calls or scrape the web; hardcode all figures locally. You must utilize XL_CHART_TYPE rather than ChartType for chart types. Also, always verify that slide.shapes.title is not None before assigning text to it.",
+      "status": "pending"
+    },
+    {
+      "index": 31,
+      "prompt": "Develop a cybersecurity internal audit deck targeting internal teams. Output as 'Q3_Security_Audit.pptx', write in English, and configure 16:9 Widescreen landscape slides. The aesthetic should be dark mode matrix theme with monospaced fonts. You are not allowed to fetch data or images via external APIs; rely solely on hardcoded values within your codebase. When adding charts, you must utilize XL_CHART_TYPE instead of ChartType. It is also mandatory to check if slide.shapes.title is not None before assigning to its .text field.",
+      "status": "pending"
+    },
+    {
+      "index": 32,
+      "prompt": "Generate a biotech vaccine R&D pipeline presentation for investors. Save as 'Vaccine_R_D_Pipeline.pptx', write in French, and use 16:9 Widescreen landscape orientation. The style should be clean clinical white and teal with precise data visualizations. Do not call any external APIs or scrape the web; hardcode all data points locally. You are required to use XL_CHART_TYPE rather than ChartType for chart generation. Also, ensure you check that slide.shapes.title is not None before attempting to update its .text property.",
+      "status": "pending"
+    },
+    {
+      "index": 33,
+      "prompt": "Create a private wealth management portfolio performance deck for clients. Save it as 'Portfolio_Performance_2023.pptx', write all content in English, and use 4:3 Standard landscape slide sizes. The style should be luxurious dark blue and gold with elegant serif fonts. You must not use external APIs or web scraping; rely exclusively on hardcoded mock data within your code. When creating charts, you are mandated to use XL_CHART_TYPE instead of ChartType. Additionally, always defensively check if slide.shapes.title is not None before accessing its .text attribute.",
+      "status": "pending"
+    },
+    {
+      "index": 34,
+      "prompt": "Design a K-12 school district curriculum rollout presentation targeting internal teams (teachers and admins). Name the file 'New_Curriculum_Rollout.pptx', write in Spanish, and set slides to 16:9 Widescreen landscape. The visual theme should be friendly primary colors with playful icons and simple layouts. You are strictly prohibited from using external APIs or web scraping; embed all necessary data directly in your script. When generating charts, you must use XL_CHART_TYPE instead of ChartType. Furthermore, always verify that slide.shapes.title is not None before setting its .text value.",
+      "status": "pending"
+    },
+    {
+      "index": 35,
+      "prompt": "Build a social media agency Q4 marketing campaign deck for internal teams. Output the file as 'Q4_Marketing_Campaign.pptx', use English language content, and configure the slides to 16:9 Widescreen landscape orientation. The aesthetic should be bold typographic focus with high-contrast black and white themes. You are strictly forbidden from using external APIs or web scraping; embed all necessary data directly in your script. When generating charts, you must use XL_CHART_TYPE instead of ChartType. Furthermore, always verify that slide.shapes.title is not None before setting its .text value.",
+      "status": "pending"
+    },
+    {
+      "index": 36,
+      "prompt": "Create a cloud infrastructure migration roadmap presentation targeting C-Suite executives. Save the file as 'Cloud_Migration_Roadmap.pptx', write content in Japanese, and use 16:9 Widescreen landscape slides. The design should feature futuristic geometric blue and purple with modern layout structures. Do not make any external API calls or scrape the web; hardcode all figures locally. You must utilize XL_CHART_TYPE rather than ChartType for chart types. Also, always verify that slide.shapes.title is not None before assigning text to it.",
+      "status": "pending"
+    },
+    {
+      "index": 37,
+      "prompt": "Develop a residential real estate luxury listings deck for clients. Output as 'Luxury_Estate_Listings.pptx', write in English, and configure 4:3 Standard landscape slides. The aesthetic should be warm beige and wood tones with elegant serif fonts. You are not allowed to fetch data or images via external APIs; rely solely on hardcoded values within your codebase. When adding charts, you must utilize XL_CHART_TYPE instead of ChartType. It is also mandatory to check if slide.shapes.title is not None before assigning to its .text field.",
+      "status": "pending"
+    },
+    {
+      "index": 38,
+      "prompt": "Generate a renewable energy solar farm expansion presentation for investors. Save as 'Solar_Farm_Expansion.pptx', write in German, and use 16:9 Widescreen landscape orientation. The style should be vibrant green and yellow with organic shapes and data visualizations. Do not call any external APIs or scrape the web; hardcode all data points locally. You are required to use XL_CHART_TYPE rather than ChartType for chart generation. Also, ensure you check that slide.shapes.title is not None before attempting to update its .text property.",
+      "status": "pending"
+    },
+    {
+      "index": 39,
+      "prompt": "Create an HR consulting employee wellness plan deck targeting internal teams. Save it as 'Employee_Wellness_Plan.pptx', write all content in English, and use 4:3 Standard landscape slide sizes. The style should be soft pastel pink and lavender with playful icons. You must not use external APIs or web scraping; rely exclusively on hardcoded mock data within your code. When creating charts, you are mandated to use XL_CHART_TYPE instead of ChartType. Additionally, always defensively check if slide.shapes.title is not None before accessing its .text attribute.",
+      "status": "pending"
+    },
+    {
+      "index": 40,
+      "prompt": "Design a global health vaccination partnership presentation targeting C-Suite executives (corporate partners). Name the file 'Global_Vaccination_Partnership.pptx', write in French, and set slides to 16:9 Widescreen landscape. The visual theme should be professional corporate grey and orange accent with modern layout structures. You are strictly prohibited from using external APIs or web scraping; embed all necessary data directly in your script. When generating charts, you must use XL_CHART_TYPE instead of ChartType. Furthermore, always verify that slide.shapes.title is not None before setting its .text value.",
+      "status": "pending"
+    },
+    {
+      "index": 41,
+      "prompt": "Create a Python script using python-pptx to generate a 15-slide corporate presentation for C-Suite executives detailing Q4 Financial Results. The style must be strictly professional with a navy and white color palette, featuring pie charts for revenue breakdowns. Save the final file as \"Q4_Financials.pptx\". All presentation content must be written in English using a 16:9 Widescreen slide layout. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 42,
+      "prompt": "Generate a python-pptx script that builds an 8-slide data-heavy presentation for Internal Hospital Staff focused on Patient Flow Optimization. The theme should emphasize clean visualizations with bar charts and process flow diagrams. Output the file as \"Patient_Flow.pptx\". All text must be in English, formatted to fit a 4:3 Standard slide size orientation. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 43,
+      "prompt": "Write a python-pptx script to produce a 20-slide minimalist presentation for Venture Capitalists outlining our SaaS Product Roadmap. Use ample whitespace, large typography, and gradient overlays. Save as \"Product_Roadmap.pptx\". The language of the content must be English using a 16:9 Widescreen layout. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 44,
+      "prompt": "Create a python-pptx script generating a 12-slide creative presentation for Potential Clients about our upcoming Brand Awareness Campaign. Incorporate vibrant gradients and image placeholders throughout. Save the output as \"Brand_Campaign.pptx\". All content must be written in Spanish, utilizing a 16:9 Widescreen slide format. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 45,
+      "prompt": "Develop a python-pptx script for a 10-slide colorful educational presentation on Introduction to Data Science aimed at University Students. Include icons and engaging visual placeholders. Save as \"Data_Science_101.pptx\". The entire presentation must be in French using a 4:3 Standard orientation. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 46,
+      "prompt": "Write a python-pptx script creating a 25-slide corporate presentation for the Compliance Department detailing an Annual Risk Assessment. Use strict table layouts and line charts for risk trends. Save as \"Risk_Assessment.pptx\". All text must be in English, formatted to fit a 16:9 Widescreen slide size orientation. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 47,
+      "prompt": "Generate a python-pptx script that builds a 6-slide minimalist presentation for Angel Investors pitching our Biotech Startup. Implement a dark mode theme with light grey background and white text. Output the file as \"BioTech_Pitch.pptx\". All content must be written in English using a 16:9 Widescreen layout. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 48,
+      "prompt": "Create a python-pptx script generating a 14-slide creative presentation for Enterprise IT Directors on Cloud Migration Strategy. Use abstract geometric shapes and gradient overlays throughout. Save the output as \"Cloud_Migration.pptx\". The language of the content must be German using a 16:9 Widescreen slide format. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 49,
+      "prompt": "Develop a python-pptx script for an 8-slide data-heavy presentation on Social Media Analytics Q3 aimed at Marketing Management. Include dense visualizations, sparklines, and KPI cards. Save as \"Social_Analytics.pptx\". The entire presentation must be in English using a 4:3 Standard orientation. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 50,
+      "prompt": "Write a python-pptx script creating a 9-slide corporate presentation for School Board Superintendents proposing the District Budget. Use professional structured bullet points and financial tables. Save as \"District_Budget.pptx\". All text must be in English, formatted to fit a 16:9 Widescreen slide size orientation. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 51,
+      "prompt": "Generate a python-pptx script that builds an 18-slide creative presentation for High-Net-Worth Individuals about our Sustainable Investment Portfolio. Incorporate green earth tones and nature imagery placeholders. Output the file as \"Sustainable_Invest.pptx\". All content must be written in English using a 16:9 Widescreen layout. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 52,
+      "prompt": "Create a python-pptx script generating a 15-slide colorful educational presentation for Medical Students on Anatomy of the Human Heart. Include detailed anatomical diagrams placeholders throughout. Save the output as \"Heart_Anatomy.pptx\". The language of the content must be Spanish using a 4:3 Standard slide format. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 53,
+      "prompt": "Develop a python-pptx script for a 22-slide data-heavy presentation on Software Architecture Review aimed at Engineering Team Leads. Include technical flowcharts and performance metrics tables. Save as \"Arch_Review.pptx\". The entire presentation must be in English using a 16:9 Widescreen orientation. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 54,
+      "prompt": "Write a python-pptx script creating a 5-slide minimalist presentation for Executive Leadership on our Corporate Rebranding Overview. Use high-end large hero images and concise taglines. Save as \"Rebrand_Overview.pptx\". All text must be in French, formatted to fit a 16:9 Widescreen slide size orientation. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 55,
+      "prompt": "Generate a python-pptx script that builds a 12-slide corporate presentation for Private Equity Firms outlining our EdTech Scale-Up Plan. Use structured growth charts and market analysis tables. Output the file as \"EdTech_Scale.pptx\". All content must be written in English using a 4:3 Standard layout. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 56,
+      "prompt": "Create a python-pptx script generating an 8-slide creative presentation for Retail Investors on Crypto Asset Diversification. Use futuristic neon accents and dynamic visual placeholders throughout. Save the output as \"Crypto_Assets.pptx\". The language of the content must be English using a 16:9 Widescreen slide format. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 57,
+      "prompt": "Develop a python-pptx script for a 20-slide data-heavy presentation on Hospital Efficiency KPIs aimed at Chief Medical Officers. Include clinical heat maps and quarterly trend lines. Save as \"Hospital_KPIs.pptx\". The entire presentation must be in English using a 16:9 Widescreen orientation. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 58,
+      "prompt": "Write a python-pptx script creating a 10-slide colorful presentation for Computer Science Students on AI Ethics in Machine Learning. Use vibrant thought-provoking infographics throughout. Save as \"AI_Ethics.pptx\". All text must be in Spanish, formatted to fit a 4:3 Standard slide size orientation. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 59,
+      "prompt": "Generate a python-pptx script that builds a 6-slide minimalist presentation for Content Writers on Email Marketing Best Practices. Use clean layouts with generous padding and simple lists. Output the file as \"Email_Best_Practices.pptx\". All content must be written in English using a 16:9 Widescreen layout. You are strictly prohibited from using any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 60,
+      "prompt": "Create a python-pptx script generating a 14-slide creative presentation for HR Directors at Client Companies on Corporate Training Workshop Design. Use interactive puzzle-piece graphics and modular layout placeholders throughout. Save the output as \"Workshop_Design.pptx\". The language of the content must be French using a 16:9 Widescreen slide format. Do not use any external APIs, web scraping, or internet access to fetch data or assets; all content and logic must be generated purely within the script. When creating charts, you must strictly use XL_CHART_TYPE from the library; do not import or use ChartType from pptx.enum.chart. Before setting text on a title shape, always verify that slide.shapes.title is not None first to prevent errors. Your response must be structured with distinct # Thinking and # Assistant sections. All Python code must be enclosed in ```python fences, and all non-code text must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 61,
+      "prompt": "Create a professional PowerPoint presentation for C-Suite executives in the Finance industry detailing our Q4 financial performance, consisting of exactly 15 slides with a corporate theme using a blue and gray color palette. The output filename must be \"Q4_Financials.pptx\". Write all presentation content in English and use 16:9 Widescreen slide size. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard financial metrics. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.BAR_CLUSTERED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 62,
+      "prompt": "Design a minimalist PowerPoint presentation for internal healthcare teams to summarize clinical trial updates, containing exactly 8 slides with a white and teal color palette. Save the file as \"Clinical_Trial_Update.pptx\". All content should be written in French using 4:3 Standard slide dimensions. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.PIE`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 63,
+      "prompt": "Generate a data-heavy PowerPoint presentation for investors in the Tech/SaaS industry showcasing our company's growth trajectory over the past two years, spanning exactly 25 slides with a dark mode theme using black, purple, and neon green accents. The output filename must be \"SaaS_Growth_2024.pptx\". Write all presentation content in English and use 16:9 Widescreen orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard SaaS metrics like MRR and Churn Rate. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.LINE_MARKERS`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 64,
+      "prompt": "Create a creative PowerPoint presentation for external clients in the Marketing industry to pitch our upcoming brand campaign, consisting of exactly 12 slides with vibrant colors like orange, yellow, and cyan. Save the file as \"Brand_Campaign.pptx\". All content should be written in Spanish using 16:9 Widescreen slide size. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.COLUMN_CLUSTERED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 65,
+      "prompt": "Develop a playful PowerPoint presentation for students in the Education industry covering basic biology concepts, containing exactly 10 slides with a colorful theme using bright green, yellow, and blue palettes. The output filename must be \"Biology_Lesson.pptx\". Write all presentation content in English and use 4:3 Standard orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard biology facts. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.XY_SCATTER`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 66,
+      "prompt": "Design an elegant PowerPoint presentation for potential buyers in the Real Estate industry showcasing a luxury property portfolio, consisting of exactly 18 slides with a modern theme using gold, black, and dark gray accents. Save the file as \"Luxury_Property.pptx\". All content should be written in English using 16:9 Widescreen slide dimensions. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for property details. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.AREA_STACKED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 67,
+      "prompt": "Create a warm PowerPoint presentation for donors in the Nonprofit industry detailing our annual impact and fundraising goals, containing exactly 20 slides with a trustworthy theme using red, white, and light gray colors. The output filename must be \"Annual_Impact.pptx\". Write all presentation content in English and use 16:9 Widescreen orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard nonprofit impact metrics. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.DOUGHNUT`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 68,
+      "prompt": "Generate an industrial PowerPoint presentation for operations managers in the Logistics industry focusing on supply chain optimization strategies, spanning exactly 14 slides with a bold theme using orange, dark gray, and black accents. Save the file as \"Supply_Chain_Optimization.pptx\". All content should be written in German using 16:9 Widescreen slide size. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for logistics metrics. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.COLUMN_STACKED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 69,
+      "prompt": "Develop a friendly PowerPoint presentation for candidates in the HR/Recruitment industry highlighting our company culture and benefits, containing exactly 7 slides with a welcoming theme using purple, white, and soft pink palettes. The output filename must be \"Company_Culture.pptx\". Write all presentation content in English and use 4:3 Standard orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard HR benefits information. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.PIE`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 70,
+      "prompt": "Create a professional PowerPoint presentation for enterprise clients in the Consulting industry outlining our digital transformation framework, consisting of exactly 28 slides with a corporate theme using navy blue, gold, and light gray accents. Save the file as \"Digital_Transformation.pptx\". All content should be written in Japanese using 16:9 Widescreen slide dimensions. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for consulting deliverables. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.BAR_CLUSTERED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 71,
+      "prompt": "Design a bold PowerPoint presentation for store managers in the Retail industry forecasting holiday sales performance, containing exactly 15 slides with a festive theme using red, black, and gold colors. The output filename must be \"Holiday_Sales_Forecast.pptx\". Write all presentation content in English and use 16:9 Widescreen orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard retail forecasting models. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.LINE_MARKERS`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 72,
+      "prompt": "Generate a technical PowerPoint presentation for engineering teams in the Aerospace industry detailing the Project Titan status update, spanning exactly 22 slides with a futuristic theme using dark blue, white, and silver accents. Save the file as \"Project_Titan_Status.pptx\". All content should be written in English using 4:3 Standard slide size. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for aerospace project milestones. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.XY_SCATTER`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 73,
+      "prompt": "Create an appetizing PowerPoint presentation for franchise owners in the Food & Beverage industry showcasing our upcoming menu rollover strategy, containing exactly 10 slides with a vibrant theme using green, brown, and orange palettes. The output filename must be \"Menu_Rollover.pptx\". Write all presentation content in Spanish and use 16:9 Widescreen orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard F&B menu planning metrics. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.COLUMN_CLUSTERED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 74,
+      "prompt": "Design a formal PowerPoint presentation for the board of directors in the Legal/Compliance industry summarizing our GDPR compliance readiness, consisting of exactly 12 slides with a strict corporate theme using black, dark gray, and white accents. Save the file as \"GDPR_Compliance.pptx\". All content should be written in English using 16:9 Widescreen slide dimensions. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for compliance frameworks. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.AREA_STACKED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 75,
+      "prompt": "Develop a cinematic PowerPoint presentation for stakeholders in the Media/Entertainment industry pitching our new streaming platform launch, containing exactly 20 slides with a dark mode theme using purple, black, and neon blue colors. The output filename must be \"Streaming_Launch.pptx\". Write all presentation content in English and use 4:3 Standard orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard media industry projections. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.BAR_CLUSTERED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 76,
+      "prompt": "Create a sleek PowerPoint presentation for dealership managers in the Automotive industry detailing our electric vehicle transition roadmap, spanning exactly 15 slides with a modern theme using silver, red, and dark gray accents. Save the file as \"EV_Transition.pptx\". All content should be written in Chinese using 16:9 Widescreen slide size. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for automotive sales trends. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.PIE`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 77,
+      "prompt": "Generate an earthy PowerPoint presentation for farm cooperatives in the Agriculture industry reporting on this year's crop yield performance, containing exactly 8 slides with a natural theme using green, brown, and beige palettes. The output filename must be \"Crop_Yield_Report.pptx\". Write all presentation content in English and use 4:3 Standard orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard agricultural yield metrics. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.COLUMN_CLUSTERED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 78,
+      "prompt": "Design a reassuring PowerPoint presentation for policyholders in the Insurance industry explaining our new streamlined claims processing workflow, consisting of exactly 12 slides with a trustworthy theme using blue, white, and light gray accents. Save the file as \"Claims_Process.pptx\". All content should be written in French using 16:9 Widescreen slide dimensions. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for insurance processing steps. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.LINE_MARKERS`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 79,
+      "prompt": "Create a robust PowerPoint presentation for project stakeholders in the Construction industry updating them on our infrastructure development timeline, containing exactly 18 slides with an industrial theme using orange, dark gray, and concrete beige colors. The output filename must be \"Infrastructure_Development.pptx\". Write all presentation content in English and use 16:9 Widescreen orientation. You are strictly prohibited from using any external APIs or web scraping; generate all data locally based on standard construction project milestones. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.DOUGHNUT`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 80,
+      "prompt": "Generate a high-tech PowerPoint presentation for IT executives in the Cybersecurity industry analyzing the current threat landscape for 2024, spanning exactly 15 slides with a dark mode theme using neon green, black, and red accents. Save the file as \"Threat_Landscape_2024.pptx\". All content should be written in English using 16:9 Widescreen slide size. Do not use any external APIs or web scraping; rely solely on locally generated placeholder data for cybersecurity threat vectors. When creating charts, you must use `XL_CHART_TYPE` (e.g., `XL_CHART_TYPE.AREA_STACKED`) instead of importing or using `ChartType` from `pptx.enum.chart`. Before attempting to set the text of a slide's title shape, you must first verify that `slide.shapes.title is not None` and only then access `.text`. Your response must contain distinct # Thinking and # Assistant sections. Code blocks must be enclosed in ```python fences, and all non-code text explanations must be enclosed in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 81,
+      "prompt": "Create a PowerPoint presentation titled 'Q4 Financial Report' for our Board of Directors. The presentation needs 12 slides following a corporate blue theme with minimalist design elements. Use English for all content and set the slide size to 16:9 Widescreen orientation. Save the final file as q4_report.pptx. You are strictly prohibited from using external APIs or web scraping to fetch data. When creating charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 82,
+      "prompt": "Generate a PowerPoint presentation titled 'Patient Safety Initiative' for our internal healthcare staff. The deck should have 8 slides using a clean and sterile white and green theme. All content must be written in Spanish and the slide size should be set to 4:3 Standard orientation. Save the output file as safety_initiative.pptx. Do not use external APIs or web scraping for any data retrieval. You are required to use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart when adding charts. Additionally, you must check if slide.shapes.title is not None before accessing .text on the title shape. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 83,
+      "prompt": "Build a PowerPoint presentation titled 'Series B Pitch Deck' targeting potential investors for our tech startup. The presentation requires 15 slides utilizing a creative dark mode theme with neon accents. Use English for the content and configure the slide size to 16:9 Widescreen orientation. Save the final document as series_b_pitch.pptx. External APIs or web scraping are strictly forbidden. When adding charts, you must use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Also, ensure that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 84,
+      "prompt": "Develop a PowerPoint presentation titled 'Social Media Strategy' aimed at the CMO of our marketing department. The file should include 10 slides designed with a vibrant, colorful theme featuring bold typography. All content must be in French and the slide size needs to be 16:9 Widescreen orientation. Save it as sm_strategy.pptx. You are not allowed to use external APIs or web scraping. For any charts included, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 85,
+      "prompt": "Create a PowerPoint presentation titled 'Annual School Board Review' for local education administrators. The deck needs 20 slides following an academic theme with traditional serif fonts and muted colors. Write all content in English and set the slide size to 4:3 Standard orientation. Save the final file as school_review.pptx. Do not use external APIs or web scraping. You are required to use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, you must check if slide.shapes.title is not None before accessing .text on the title shape. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 86,
+      "prompt": "Generate a PowerPoint presentation titled 'Onboarding Program' for new hires joining our HR department. The presentation should consist of 18 slides using a friendly and modern theme with rounded corners and soft colors. Use German for all content and set the slide size to 16:9 Widescreen orientation. Save the output file as onboarding_prog.pptx. You are strictly prohibited from using external APIs or web scraping. When creating charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 87,
+      "prompt": "Build a PowerPoint presentation titled 'Holiday Sales Projection' for regional retail managers. The deck needs 14 slides utilizing a festive red and gold theme with seasonal imagery placeholders. All content must be written in English and the slide size should be set to 16:9 Widescreen orientation. Save the final document as holiday_sales.pptx. External APIs or web scraping are strictly forbidden. For any charts included, you must use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Also, ensure that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 88,
+      "prompt": "Develop a PowerPoint presentation titled 'New Development Proposal' for the city council regarding our real estate project. The file should include 25 slides designed with a professional theme using earth tones. Write all content in Portuguese and configure the slide size to 4:3 Standard orientation. Save it as development_proposal.pptx. You are not allowed to use external APIs or web scraping. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 89,
+      "prompt": "Create a PowerPoint presentation titled 'Supply Chain Optimization' for our logistics operations team. The deck needs 16 slides following an industrial theme with grey backgrounds and orange highlights. Use English for the content and set the slide size to 16:9 Widescreen orientation. Save the final file as supply_chain_opt.pptx. Do not use external APIs or web scraping. You are required to use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart when adding charts. Additionally, you must check if slide.shapes.title is not None before accessing .text on the title shape. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 90,
+      "prompt": "Generate a PowerPoint presentation titled 'Renewable Transition Plan' targeting C-suite executives in the energy sector. The presentation should consist of 22 slides utilizing a green and blue nature-inspired theme. All content must be written in Italian and the slide size needs to be 16:9 Widescreen orientation. Save the output file as renewable_plan.pptx. You are strictly prohibited from using external APIs or web scraping. For any charts included, you must use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Also, ensure that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 91,
+      "prompt": "Build a PowerPoint presentation titled 'Cybersecurity Awareness Training' for company employees across all departments. The deck needs 10 slides designed with a high-contrast dark and light theme to emphasize important warnings. Write all content in Japanese and configure the slide size to 4:3 Standard orientation. Save it as cyber_training.pptx. You are not allowed to use external APIs or web scraping. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 92,
+      "prompt": "Create a PowerPoint presentation titled 'Investment Portfolio Review' for our finance clients. The file should include 9 slides following an elegant black and gold theme with premium typography. Use English for the content and set the slide size to 16:9 Widescreen orientation. Save the final document as portfolio_review.pptx. External APIs or web scraping are strictly forbidden. You are required to use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart when adding charts. Additionally, you must check if slide.shapes.title is not None before accessing .text on the title shape. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 93,
+      "prompt": "Develop a PowerPoint presentation titled 'Brand Refresh Campaign' for our internal creative marketing team. The deck needs 12 slides utilizing an abstract artistic theme with fluid shapes and gradients. All content must be written in Spanish and the slide size should be set to 4:3 Standard orientation. Save it as brand_refresh.pptx. Do not use external APIs or web scraping. When creating charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 94,
+      "prompt": "Generate a PowerPoint presentation titled 'Clinical Trial Results' for medical researchers and healthcare professionals. The presentation requires 28 slides using a sterile scientific theme featuring grid lines and data tables. Write all content in English and configure the slide size to 16:9 Widescreen orientation. Save the final file as trial_results.pptx. You are strictly prohibited from using external APIs or web scraping. For any charts included, you must use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Also, ensure that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 95,
+      "prompt": "Build a PowerPoint presentation titled 'EdTech Product Demo' for school administrators and teachers. The deck needs 11 slides designed with a playful theme incorporating cartoonish elements and bright colors. Use French for all content and set the slide size to 4:3 Standard orientation. Save it as edtech_demo.pptx. You are not allowed to use external APIs or web scraping. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 96,
+      "prompt": "Create a PowerPoint presentation titled 'Inventory Management System' for warehouse staff at our retail company. The file should include 7 slides following a utilitarian theme with high visibility colors like blue and yellow. All content must be written in German and the slide size needs to be set to 16:9 Widescreen orientation. Save the output file as inventory_mgmt.pptx. External APIs or web scraping are strictly forbidden. You are required to use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart when adding charts. Additionally, you must check if slide.shapes.title is not None before accessing .text on the title shape. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 97,
+      "prompt": "Develop a PowerPoint presentation titled 'User Acquisition Metrics' for our tech startup C-suite executives. The deck needs 13 slides utilizing a sleek futuristic theme with dark backgrounds and glowing UI elements. Write all content in English and configure the slide size to 4:3 Standard orientation. Save it as user_metrics.pptx. Do not use external APIs or web scraping. When creating charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 98,
+      "prompt": "Generate a PowerPoint presentation titled 'Employee Engagement Survey Results' for our HR leadership team. The presentation should consist of 15 slides using a warm inviting theme featuring soft pastels and friendly iconography. Use Portuguese for the content and set the slide size to 16:9 Widescreen orientation. Save the final document as engagement_survey.pptx. You are strictly prohibited from using external APIs or web scraping. For any charts included, you must use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Also, ensure that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 99,
+      "prompt": "Build a PowerPoint presentation titled 'ESG Compliance Report' for government regulators overseeing our finance division. The deck needs 17 slides designed with a formal theme using dark green and grey tones to convey seriousness. All content must be written in English and the slide size should be set to 4:3 Standard orientation. Save it as esg_report.pptx. You are not allowed to use external APIs or web scraping. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Furthermore, any attempt to set text on a title shape must first check if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    },
+    {
+      "index": 100,
+      "prompt": "Create a PowerPoint presentation titled 'Fleet Maintenance Schedule' for logistics dispatchers at our transportation company. The file should include 8 slides following a functional theme with red and white color schemes reminiscent of emergency vehicles. Write all content in Italian and configure the slide size to 16:9 Widescreen orientation. Save the final file as fleet_maint.pptx. Do not use external APIs or web scraping. You are required to use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart when adding charts. Additionally, you must check if slide.shapes.title is not None before accessing .text on the title shape. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "status": "pending"
+    }
+  ]
+}

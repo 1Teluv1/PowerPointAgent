@@ -6,9 +6,9 @@
       "error_type": "GenerationError",
       "summary": "LM Studio 응답 content가 비어 있습니다.",
       "representative_excerpt": "LM Studio 응답 content가 비어 있습니다.",
-      "occurrence_count": 3,
+      "occurrence_count": 42,
       "first_seen_at": "2026-05-13T06:43:41+00:00",
-      "last_seen_at": "2026-05-13T07:46:31+00:00"
+      "last_seen_at": "2026-06-24T09:36:03+00:00"
     },
     {
       "fingerprint": "d2635100bd82adbf88419e49e00ae1b6ad72bfb0fec449ee4843d8bdff6de69f",
@@ -135,6 +135,87 @@
       "occurrence_count": 3,
       "first_seen_at": "2026-05-13T09:01:14+00:00",
       "last_seen_at": "2026-05-13T09:01:22+00:00"
+    },
+    {
+      "fingerprint": "857c50b7df8db496d7422391076594311a4bd4623d9b8bc2f061e4c9562b6459",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 14, in <module> ACCENT_BLUE = RGBColor(0x5B, 0x9BD5) ^^^^^^^^^^^^^^^^^^^^^^ TypeError: RGBColor.__new__() missing 1 required positional argument: 'b'",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\7bbd7e3c-05fc-4528-a021-54f0090ad282\\generate_ppt.py\", line 14, in <module>\n    ACCENT_BLUE = RGBColor(0x5B, 0x9BD5)\n                  ^^^^^^^^^^^^^^^^^^^^^^\nTypeError: RGBColor.__new__() missing 1 required positional argument: 'b'",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-06-24T05:22:01+00:00",
+      "last_seen_at": "2026-06-24T05:22:01+00:00"
+    },
+    {
+      "fingerprint": "39a888d4c12ba9eb2010403b901d34c1874ce1f8da54f520153747ecd2a23abe",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 469, in <module> create_healthcare_metrics_presentation() File \"<PATH>\", line 79, in create_healthcare_metrics_presentation chart_frame_2 = slide_2.shapes.add_chart(XL_CHART_TYPE.LINE_MARKERS, left, top, width, height, chart_data_2) ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ File \"<PATH>\", line 255, in add_chart rId = self.part.add_chart_part(chart_type, chart_data) ^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\925d1e12-ad52-45c8-a8c7-2eda47efbff0\\generate_ppt.py\", line 469, in <module>\n    create_healthcare_metrics_presentation()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\925d1e12-ad52-45c8-a8c7-2eda47efbff0\\generate_ppt.py\", line 79, in create_healthcare_metrics_presentation\n    chart_frame_2 = slide_2.shapes.add_chart(XL_CHART_TYPE.LINE_MARKERS, left, top, width, height, chart_data_2)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pptx\\shapes\\shapetree.py\", line 255, in add_chart\n    rId = self.part.add_chart_part(chart_type, chart_d...",
+      "occurrence_count": 2,
+      "first_seen_at": "2026-06-24T05:53:47+00:00",
+      "last_seen_at": "2026-06-24T05:59:53+00:00"
+    },
+    {
+      "fingerprint": "42e0461f68982fa8fb516e6fe32f140086b00d9b61e4a97074bd7fcb641c588d",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 543, in <module> main() File \"<PATH>\", line 527, in main slide_01_title(prs) File \"<PATH>\", line 226, in slide_01_title from pptx.enum.layout import BlankLayout ModuleNotFoundError: No module named 'pptx.enum.layout'",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\3e4bcd8c-5519-4947-89cc-685ca1f0770c\\generate_ppt.py\", line 543, in <module>\n    main()\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\3e4bcd8c-5519-4947-89cc-685ca1f0770c\\generate_ppt.py\", line 527, in main\n    slide_01_title(prs)\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\3e4bcd8c-5519-4947-89cc-685ca1f0770c\\generate_ppt.py\", line 226, in slide_01_title\n    from pptx.enum.layout import BlankLayout\nModuleNotFoundError: No module named 'pptx.enum.layout'",
+      "occurrence_count": 2,
+      "first_seen_at": "2026-06-24T06:21:22+00:00",
+      "last_seen_at": "2026-06-24T06:26:26+00:00"
+    },
+    {
+      "fingerprint": "14ebf79c22e34d2152dbaf17f70474c3d9927b265c011b09ef88b0f95a7ce9b2",
+      "error_type": "ParseError",
+      "summary": "Missing or empty section: assistant_python",
+      "representative_excerpt": "Missing or empty section: assistant_python",
+      "occurrence_count": 3,
+      "first_seen_at": "2026-06-24T06:38:54+00:00",
+      "last_seen_at": "2026-06-24T08:48:41+00:00"
+    },
+    {
+      "fingerprint": "afd6b6a8dee3ecc3192499087ae771913a6a16c2a8b58cb34decf66f2ce23b5e",
+      "error_type": "ExecutionError",
+      "summary": "Traceback (most recent call last): File \"<PATH>\", line 2, in <module> from pptx.util import Inches, Pt, RGBColor ImportError: cannot import name 'RGBColor' from 'pptx.util' (<PATH>",
+      "representative_excerpt": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\66e83baf-4c8a-478e-bb47-5715ccfbfcdb\\generate_ppt.py\", line 2, in <module>\n    from pptx.util import Inches, Pt, RGBColor\nImportError: cannot import name 'RGBColor' from 'pptx.util' (C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pptx\\util.py)",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-06-24T06:51:21+00:00",
+      "last_seen_at": "2026-06-24T06:51:21+00:00"
+    },
+    {
+      "fingerprint": "f98e41dfebd649a2a26912c4459ed4630f1bc5dbe9355ad53416405ed78578a2",
+      "error_type": "ExecutionError",
+      "summary": "File \"<PATH>\", line 1 ```python ^ SyntaxError: invalid syntax",
+      "representative_excerpt": "File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\c60e9fb1-0121-44e9-9394-a39068845879\\generate_ppt.py\", line 1\n    ```python\n    ^\nSyntaxError: invalid syntax",
+      "occurrence_count": 5,
+      "first_seen_at": "2026-06-24T06:54:15+00:00",
+      "last_seen_at": "2026-06-24T08:30:26+00:00"
+    },
+    {
+      "fingerprint": "6ad81816aaf7be67a50ec469763fb18065cf97c8b0d538e78f287b24f7ded384",
+      "error_type": "GenerationError",
+      "summary": "The model has crashed without additional information. (Exit code: 18446744072635812000)",
+      "representative_excerpt": "The model has crashed without additional information. (Exit code: 18446744072635812000)",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-06-24T08:39:12+00:00",
+      "last_seen_at": "2026-06-24T08:39:12+00:00"
+    },
+    {
+      "fingerprint": "d597309c4209c8ae8c321362c86354efdc544ab695f109d79ce6151cb617b5ca",
+      "error_type": "GenerationError",
+      "summary": "LM Studio HTTP 400: { \"error\": { \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\", \"type\": \"invalid_request_error\", \"param\": \"model\", \"code\": null } }",
+      "representative_excerpt": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
+      "occurrence_count": 192,
+      "first_seen_at": "2026-06-24T08:39:14+00:00",
+      "last_seen_at": "2026-06-24T09:40:51+00:00"
+    },
+    {
+      "fingerprint": "1f17cd576f457bb21136dcd8704a09ef48b5c1b375c4b0d2e1585ba8d936b5d1",
+      "error_type": "GenerationError",
+      "summary": "Model unloaded.",
+      "representative_excerpt": "Model unloaded.",
+      "occurrence_count": 1,
+      "first_seen_at": "2026-06-24T09:40:32+00:00",
+      "last_seen_at": "2026-06-24T09:40:32+00:00"
     }
   ]
 }

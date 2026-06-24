@@ -5,13 +5,49 @@ import {
   getDatasetPreview,
   getDatasetStats,
   getRawPromptPool,
+  getSavedRawPromptPools,
+  loadSavedRawPromptPool,
   restoreRawPromptPool,
   subscribeLmStudioLiveAnswer
 } from "../api/client";
 
 const DATASET_FORM_STORAGE_KEY = "ppt-agent:tools:dataset-form";
 const RAW_PROMPT_POOL_STORAGE_KEY = "ppt-agent:tools:raw-prompt-pool-snapshot";
+const RUN_HISTORY_STORAGE_KEY = "ppt-agent:tools:run-history";
 const API_BASE = "http://localhost:8080";
+const MAX_RUN_HISTORY = 30;
+
+function loadRunHistory() {
+  try {
+    const raw = localStorage.getItem(RUN_HISTORY_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistRunHistory(runs) {
+  try {
+    localStorage.setItem(RUN_HISTORY_STORAGE_KEY, JSON.stringify(runs.slice(0, MAX_RUN_HISTORY)));
+  } catch {
+    // ignore
+  }
+}
+
+function formatTime(ts) {
+  if (!ts) return "-";
+  try {
+    return new Date(ts).toLocaleTimeString();
+  } catch {
+    return "-";
+  }
+}
+
+function nextEventId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
 
 function loadRawPromptPoolSnapshot() {
   try {
@@ -44,7 +80,7 @@ const initialForm = {
   prompt_count: 100,
   topic_seed: "diverse business PowerPoint presentation requests",
   count: 1,
-  max_retries: 2,
+  max_retries: 0,
   dataset_system_prompt: ""
 };
 
@@ -82,12 +118,47 @@ export default function DatasetToolPanel() {
   const [consumeResult, setConsumeResult] = useState(null);
   const [generatingPool, setGeneratingPool] = useState(false);
   const [consuming, setConsuming] = useState(false);
+  const [savedPools, setSavedPools] = useState([]);
+  const [loadingSavedPool, setLoadingSavedPool] = useState("");
   const [streamOutput, setStreamOutput] = useState("");
   const [streamError, setStreamError] = useState("");
   const [streamStatus, setStreamStatus] = useState("연결 대기");
   const [streamStage, setStreamStage] = useState("-");
   const [streamEventCount, setStreamEventCount] = useState(0);
+  const [streamRepairTarget, setStreamRepairTarget] = useState("-");
+  const [streamAttempt, setStreamAttempt] = useState("-");
+  const [executionEvents, setExecutionEvents] = useState([]);
+  const [runHistory, setRunHistory] = useState(() => loadRunHistory());
+  const [selectedRunId, setSelectedRunId] = useState("current");
+  const [showRawStream, setShowRawStream] = useState(true);
   const streamAbortRef = useRef(null);
+  const streamOutputRef = useRef(null);
+  const streamMetaRef = useRef({ attempt: "-", repairTarget: "-", stage: "-" });
+  const executionEventsRef = useRef([]);
+
+  function appendExecutionEvent(event) {
+    setExecutionEvents((prev) => {
+      const next = [...prev, event];
+      executionEventsRef.current = next;
+      return next;
+    });
+  }
+
+  function clearExecutionEvents() {
+    executionEventsRef.current = [];
+    setExecutionEvents([]);
+    setStreamAttempt("-");
+    setStreamRepairTarget("-");
+  }
+
+  async function refreshSavedPools() {
+    try {
+      const res = await getSavedRawPromptPools();
+      setSavedPools(res.files ?? []);
+    } catch {
+      setSavedPools([]);
+    }
+  }
 
   async function refreshData(activeQuery = query) {
     setLoading(true);
@@ -120,6 +191,7 @@ export default function DatasetToolPanel() {
     } finally {
       setLoading(false);
     }
+    await refreshSavedPools();
   }
 
   useEffect(() => {
@@ -142,11 +214,49 @@ export default function DatasetToolPanel() {
         setStreamEventCount((prev) => prev + 1);
         if (event?.stage) {
           setStreamStage(event.stage);
+          streamMetaRef.current.stage = event.stage;
+        }
+        if (event?.type === "repair_plan") {
+          if (event.attempt) {
+            setStreamAttempt(String(event.attempt));
+            streamMetaRef.current.attempt = String(event.attempt);
+          }
+          const target = event.repair_target ? String(event.repair_target) : "full";
+          setStreamRepairTarget(target);
+          streamMetaRef.current.repairTarget = target;
+          appendExecutionEvent({
+            id: nextEventId(),
+            ts: Date.now(),
+            kind: event.stage === "python_validation" ? "validation" : "repair_plan",
+            attempt: event.attempt ?? null,
+            stage: event.stage ?? "-",
+            repairTarget: event.repair_target ?? null,
+            failureKind: event.failure_kind ?? null,
+            lockedFields: event.locked_fields ?? [],
+            status: event.stage === "python_validation" ? "running" : "planned",
+            detail: event.content || "repair plan"
+          });
+          setStreamOutput(
+            (prev) =>
+              `${prev}${prev ? "\n\n" : ""}>>> ${event.content || "repair plan"}\n`
+          );
+          return;
         }
 
         if (event?.type === "start") {
           setStreamStatus("생성 중");
           setStreamError("");
+          const meta = streamMetaRef.current;
+          appendExecutionEvent({
+            id: nextEventId(),
+            ts: Date.now(),
+            kind: "lm_start",
+            attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
+            stage: event.stage || "lm_studio",
+            repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
+            status: "running",
+            detail: `LM 호출 시작 · ${event.stage || "lm_studio"}`
+          });
           setStreamOutput((prev) => `${prev}${prev ? "\n\n" : ""}--- ${event.stage || "lm_studio"} ---\n`);
           return;
         }
@@ -156,11 +266,33 @@ export default function DatasetToolPanel() {
         }
         if (event?.type === "end") {
           setStreamStatus("완료");
+          const meta = streamMetaRef.current;
+          appendExecutionEvent({
+            id: nextEventId(),
+            ts: Date.now(),
+            kind: "lm_end",
+            attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
+            stage: meta.stage,
+            repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
+            status: "done",
+            detail: `LM 호출 완료 · ${meta.stage}`
+          });
           return;
         }
         if (event?.type === "error") {
           setStreamStatus("오류");
           setStreamError(event.content || "LM Studio Live Answer 오류");
+          const meta = streamMetaRef.current;
+          appendExecutionEvent({
+            id: nextEventId(),
+            ts: Date.now(),
+            kind: "error",
+            attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
+            stage: meta.stage,
+            repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
+            status: "error",
+            detail: event.content || "LM Studio 오류"
+          });
         }
       }
     }).catch((subscribeError) => {
@@ -177,6 +309,12 @@ export default function DatasetToolPanel() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (streamOutputRef.current) {
+      streamOutputRef.current.scrollTop = streamOutputRef.current.scrollHeight;
+    }
+  }, [streamOutput]);
 
   useEffect(() => {
     try {
@@ -202,7 +340,8 @@ export default function DatasetToolPanel() {
       setPool(result);
       persistRawPromptPoolSnapshot(result);
       setPoolCacheActive(false);
-      setMessage(`Raw Prompt 풀 생성 완료: ${result.summary?.total ?? 0}개`);
+      const savedPath = result.saved_file ? ` · 저장: ${result.saved_file}` : "";
+      setMessage(`Raw Prompt 풀 생성 완료: ${result.summary?.total ?? 0}개${savedPath}`);
       await refreshData(query);
     } catch (generateError) {
       setError(generateError instanceof Error ? generateError.message : "Raw Prompt 풀 생성 실패");
@@ -218,6 +357,20 @@ export default function DatasetToolPanel() {
     setMessage("");
     setError("");
     setConsumeResult(null);
+    clearExecutionEvents();
+    setSelectedRunId("current");
+    const runId = String(Date.now());
+    const runStartedAt = Date.now();
+    appendExecutionEvent({
+      id: nextEventId(),
+      ts: runStartedAt,
+      kind: "run_start",
+      attempt: null,
+      stage: "count_runner",
+      repairTarget: null,
+      status: "running",
+      detail: `Count Runner 시작 · count=${Math.max(1, Number(form.count) || 1)}`
+    });
     try {
       const serverPool = await getRawPromptPool();
       const emptySummary = { total: 0, pending: 0, processing: 0, done: 0, failed: 0 };
@@ -310,12 +463,59 @@ export default function DatasetToolPanel() {
       }
 
       setMessage(`Count 실행 완료: 성공 ${aggregate.success}개, 실패 ${aggregate.failed}개`);
+      const finalTimeline = [
+        ...executionEventsRef.current,
+        {
+          id: nextEventId(),
+          ts: Date.now(),
+          kind: "run_end",
+          attempt: null,
+          stage: "count_runner",
+          repairTarget: null,
+          status: aggregate.failed > 0 ? "error" : "done",
+          detail: `Count 완료 · 성공 ${aggregate.success} · 실패 ${aggregate.failed}`
+        }
+      ];
+      appendExecutionEvent(finalTimeline[finalTimeline.length - 1]);
+      const historyEntry = {
+        id: runId,
+        startedAt: runStartedAt,
+        endedAt: Date.now(),
+        success: aggregate.success,
+        failed: aggregate.failed,
+        results: aggregate.results,
+        timeline: finalTimeline,
+        message: `성공 ${aggregate.success} · 실패 ${aggregate.failed}`
+      };
+      setRunHistory((prev) => {
+        const next = [historyEntry, ...prev].slice(0, MAX_RUN_HISTORY);
+        persistRunHistory(next);
+        return next;
+      });
       await refreshData(query);
     } catch (consumeError) {
       setError(consumeError instanceof Error ? consumeError.message : "Count 실행 실패");
     } finally {
       setSaving(false);
       setConsuming(false);
+    }
+  }
+
+  async function handleLoadSavedPool(filename) {
+    setLoadingSavedPool(filename);
+    setMessage("");
+    setError("");
+    try {
+      const result = await loadSavedRawPromptPool(filename);
+      setPool(result);
+      persistRawPromptPoolSnapshot(result);
+      setPoolCacheActive(false);
+      setMessage(`저장된 풀 불러오기 완료: ${result.summary?.total ?? 0}개 (${filename})`);
+      await refreshData(query);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "저장된 Raw Prompt 풀 불러오기 실패");
+    } finally {
+      setLoadingSavedPool("");
     }
   }
 
@@ -331,14 +531,101 @@ export default function DatasetToolPanel() {
     return pretty ? JSON.stringify(record, null, 2) : JSON.stringify(record);
   }
 
+  function renderAttemptsTable(attempts) {
+    if (!Array.isArray(attempts) || attempts.length === 0) {
+      return <p className="hint">attempt 기록 없음</p>;
+    }
+    return (
+      <div className="execution-table-wrap">
+        <table className="execution-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stage</th>
+              <th>Status</th>
+              <th>Target</th>
+              <th>Failure</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {attempts.map((item) => (
+              <tr key={`${item.attempt}-${item.stage}-${item.status}`} className={`execution-row execution-row--${item.status}`}>
+                <td>{item.attempt}</td>
+                <td>{item.stage}</td>
+                <td><span className={`status-pill status-pill--${item.status}`}>{item.status}</span></td>
+                <td>{item.repair_target || "-"}</td>
+                <td>{item.failure_kind || "-"}</td>
+                <td className="execution-cell-truncate" title={item.traceback || item.error_type || ""}>
+                  {item.error_type || (item.status === "ok" ? "ok" : "-")}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  function renderExecutionTimeline(events) {
+    if (!Array.isArray(events) || events.length === 0) {
+      return <p className="hint">실행 이벤트 없음</p>;
+    }
+    return (
+      <div className="execution-table-wrap execution-timeline-wrap">
+        <table className="execution-table">
+          <thead>
+            <tr>
+              <th>시간</th>
+              <th>Attempt</th>
+              <th>종류</th>
+              <th>Stage</th>
+              <th>Target</th>
+              <th>상태</th>
+              <th>요약</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((item) => (
+              <tr key={item.id} className={`execution-row execution-row--${item.status || "planned"}`}>
+                <td>{formatTime(item.ts)}</td>
+                <td>{item.attempt ?? "-"}</td>
+                <td>{item.kind}</td>
+                <td>{item.stage || "-"}</td>
+                <td>{item.repairTarget || "-"}</td>
+                <td><span className={`status-pill status-pill--${item.status || "planned"}`}>{item.status || "-"}</span></td>
+                <td className="execution-cell-detail" title={item.detail}>{item.detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   function renderConsumeResultCard(result) {
     return (
-      <div className="card" key={result.prompt_id}>
-        <h3>{result.status === "ok" ? "완료" : "실패"} · {result.prompt.slice(0, 90)}</h3>
+      <div className="card consume-result-card" key={result.prompt_id}>
+        <div className="consume-result-head">
+          <h3>
+            <span className={`status-pill status-pill--${result.status === "ok" ? "ok" : "error"}`}>
+              {result.status === "ok" ? "성공" : "실패"}
+            </span>
+            {" "}
+            {result.prompt.slice(0, 120)}
+          </h3>
+          <p className="hint">prompt_id: {result.prompt_id}</p>
+        </div>
         {result.pptx_download_url && (
           <a className="download" href={`${API_BASE}${result.pptx_download_url}`}>
             PPT 다운로드
           </a>
+        )}
+        {Array.isArray(result.attempts) && result.attempts.length > 0 && (
+          <div className="attempt-review-block">
+            <h4>Attempt Review ({result.attempts.length})</h4>
+            {renderAttemptsTable(result.attempts)}
+          </div>
         )}
         {Array.isArray(result.thumbnail_urls) && result.thumbnail_urls.length > 0 && (
           <div className="thumbnail-grid">
@@ -347,18 +634,36 @@ export default function DatasetToolPanel() {
             ))}
           </div>
         )}
-        {result.traceback && <pre>{result.traceback}</pre>}
+        {result.traceback && (
+          <details className="traceback-details">
+            <summary>Traceback 보기</summary>
+            <pre>{result.traceback}</pre>
+          </details>
+        )}
       </div>
     );
   }
 
   const summary = pool?.summary ?? { total: 0, pending: 0, processing: 0, done: 0, failed: 0 };
-  const previewItems = Array.isArray(pool?.items) ? pool.items.slice(0, 12) : [];
+  const poolItems = Array.isArray(pool?.items) ? pool.items : [];
   const rawPoolSizeNumber = Number(form.prompt_count);
   const poolSizeLabel =
     Number.isFinite(rawPoolSizeNumber) && rawPoolSizeNumber >= 1
       ? Math.min(200, Math.floor(rawPoolSizeNumber))
       : 100;
+
+  const selectedRun = useMemo(() => {
+    if (selectedRunId === "current") return null;
+    return runHistory.find((run) => run.id === selectedRunId) ?? null;
+  }, [selectedRunId, runHistory]);
+
+  const timelineEvents =
+    selectedRunId === "current" ? executionEvents : selectedRun?.timeline ?? [];
+
+  const reviewResults =
+    selectedRunId === "current"
+      ? consumeResult?.results ?? []
+      : selectedRun?.results ?? [];
 
   return (
     <section className="tools-layout">
@@ -368,7 +673,8 @@ export default function DatasetToolPanel() {
             <h2>Raw Prompt Pool</h2>
             <p className="panel-note">
               LM Studio가 Raw Prompt 시스템 프롬프트와 {poolSizeLabel}개 프롬프트 풀을 생성합니다. (서버는 최대 20개씩
-              나누어 요청합니다.) 생성된 풀은 브라우저 로컬 스토리지에도 저장되어 새로고침 후에도 미리보기를 유지합니다.
+              나누어 요청합니다.) 생성된 풀은 브라우저 로컬 스토리지와 서버 JSON 파일(
+              <code>data/datasets/raw_prompt_pools/raw_prompts_YYYY-MM-DD.json</code>)에 저장됩니다.
             </p>
             {poolCacheActive && (
               <p className="hint">
@@ -428,51 +734,43 @@ export default function DatasetToolPanel() {
             {generatingPool ? "Raw Prompt 생성 중..." : `Raw Prompt ${poolSizeLabel}개 생성`}
           </button>
           <p className="hint">
-            생성 결과는 서버 메모리에 저장됩니다. 서버를 재시작하면 풀은 초기화됩니다.
+            생성 결과는 서버 메모리와 날짜 기준 JSON 파일에 저장됩니다. 서버를 재시작하면 메모리 풀은 초기화되지만, 아래
+            저장 목록에서 JSON 파일을 불러와 다시 사용할 수 있습니다.
           </p>
         </form>
+        {savedPools.length > 0 && (
+          <div className="card">
+            <h3>저장된 Raw Prompt 풀</h3>
+            <ul className="saved-pool-list">
+              {savedPools.map((file) => (
+                <li key={file.filename} className="saved-pool-item">
+                  <div>
+                    <strong>{file.filename}</strong>
+                    <p className="hint">
+                      {file.prompt_count}개
+                      {file.topic_seed ? ` · ${file.topic_seed.slice(0, 60)}` : ""}
+                      {file.saved_at ? ` · ${file.saved_at}` : ""}
+                    </p>
+                  </div>
+                  <button
+                    className="secondary"
+                    type="button"
+                    disabled={Boolean(loadingSavedPool)}
+                    onClick={() => handleLoadSavedPool(file.filename)}
+                  >
+                    {loadingSavedPool === file.filename ? "불러오는 중..." : "불러오기"}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {pool?.system_prompt && (
           <div className="card">
             <h3>Raw Prompt System Prompt</h3>
             <pre>{pool.system_prompt}</pre>
           </div>
         )}
-      </section>
-
-      <section className="panel" data-section="lmstudio-stream">
-        <div className="panel-head">
-          <div>
-            <h2>LM Studio Live Answer</h2>
-            <p className="panel-note">
-              Raw Prompt 생성, Count Runner, 재시도 등 모든 LM Studio 호출의 토큰 델타를 자동으로 표시합니다.
-            </p>
-          </div>
-          <span className="num">S</span>
-        </div>
-        <div className="stream-meta-grid">
-          <div className="card">
-            <h3>Status</h3>
-            <p className="hint">{streamStatus}</p>
-          </div>
-          <div className="card">
-            <h3>Stage</h3>
-            <p className="hint">{streamStage}</p>
-          </div>
-          <div className="card">
-            <h3>Events</h3>
-            <p className="hint">{streamEventCount}</p>
-          </div>
-        </div>
-        <div className="dataset-toolbar dataset-toolbar--actions">
-          <button className="secondary" type="button" onClick={() => setStreamOutput("")}>
-            Clear
-          </button>
-        </div>
-        {streamError && <div className="error">{streamError}</div>}
-        <div className="card stream-output-card">
-          <h3>Live Answer</h3>
-          <pre className="stream-output">{streamOutput || "LM Studio 호출이 시작되면 여기에 실시간 답변이 표시됩니다."}</pre>
-        </div>
       </section>
 
       <section className="panel" data-section="dataset-consume">
@@ -519,9 +817,10 @@ export default function DatasetToolPanel() {
                 id="dataset-max-retries"
                 value={String(form.max_retries)}
                 required
-                placeholder="0~5"
+                placeholder="0 = unlimited"
                 onChange={(event) => setForm((prev) => ({ ...prev, max_retries: event.target.value }))}
               />
+              <p className="hint">0이면 성공할 때까지 무제한 재시도합니다. 1 이상이면 해당 횟수만큼 repair를 시도합니다.</p>
             </div>
           </div>
           <div className="field">
@@ -541,15 +840,116 @@ export default function DatasetToolPanel() {
             {consuming ? "Count 실행 중..." : "Count 만큼 실행"}
           </button>
           <p className="hint">
-            각 항목은 LM Studio 생성, Python 실행 검증, 실패 재시도, JSONL 저장, PPT 썸네일 생성을 순차 수행합니다.
+            각 항목은 LM Studio 생성, Python 실행 검증, 실패 시 필드 단위 재시도(에러·세션 메모리 포함), JSONL 저장, PPT 썸네일 생성을 순차 수행합니다.
           </p>
         </form>
-        {message && <div className="success">{message}</div>}
+        {message && selectedRunId === "current" && <div className="success">{message}</div>}
         {error && <div className="error">{error}</div>}
-        {Array.isArray(consumeResult?.results) && consumeResult.results.length > 0 && (
-          <div className="dataset-live-results">
-            <h3>실시간 Count 결과</h3>
-            {consumeResult.results.map((result) => renderConsumeResultCard(result))}
+      </section>
+
+      <section className="panel panel--review" data-section="execution-review">
+        <div className="panel-head">
+          <div>
+            <h2>Execution & Review</h2>
+            <p className="panel-note">
+              현재 실행과 이전 실행의 타임라인·attempt·결과를 한곳에서 확인합니다. Count 실행 중에도 실시간으로
+              업데이트됩니다.
+            </p>
+          </div>
+          <span className="num">R</span>
+        </div>
+
+        <div className="review-toolbar">
+          <label htmlFor="run-history-select">실행 선택</label>
+          <select
+            id="run-history-select"
+            value={selectedRunId}
+            onChange={(event) => setSelectedRunId(event.target.value)}
+          >
+            <option value="current">현재 실행 {consuming ? "(진행 중)" : ""}</option>
+            {runHistory.map((run) => (
+              <option key={run.id} value={run.id}>
+                {formatTime(run.startedAt)} · {run.message || `성공 ${run.success}`}
+              </option>
+            ))}
+          </select>
+          <button className="secondary" type="button" onClick={() => { clearExecutionEvents(); setStreamOutput(""); }}>
+            현재 타임라인 초기화
+          </button>
+        </div>
+
+        <div className="run-status-banner">
+          <div>
+            <strong>Live</strong> · Status {streamStatus} · Stage {streamStage} · Attempt {streamAttempt} · Target{" "}
+            {streamRepairTarget}
+          </div>
+          {consuming && <span className="status-pill status-pill--running">Count 실행 중</span>}
+          {message && <p className="hint">{message}</p>}
+        </div>
+
+        <div className="review-grid">
+          <div className="card review-card">
+            <h3>실행 타임라인 ({timelineEvents.length})</h3>
+            {renderExecutionTimeline(timelineEvents)}
+          </div>
+          <div className="card review-card">
+            <h3>Count 결과 & Attempt Review</h3>
+            {reviewResults.length === 0 ? (
+              <p className="hint">아직 Count 결과가 없습니다. 실행이 끝나면 attempt 테이블이 표시됩니다.</p>
+            ) : (
+              reviewResults.map((result) => renderConsumeResultCard(result))
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="panel" data-section="lmstudio-stream">
+        <div className="panel-head">
+          <div>
+            <h2>LM Studio Live Answer</h2>
+            <p className="panel-note">
+              Raw Prompt 생성, Count Runner, 재시도 등 모든 LM Studio 호출의 토큰 델타를 자동으로 표시합니다.
+            </p>
+          </div>
+          <span className="num">S</span>
+        </div>
+        <div className="stream-meta-grid">
+          <div className="card">
+            <h3>Status</h3>
+            <p className="hint">{streamStatus}</p>
+          </div>
+          <div className="card">
+            <h3>Stage</h3>
+            <p className="hint">{streamStage}</p>
+          </div>
+          <div className="card">
+            <h3>Events</h3>
+            <p className="hint">{streamEventCount}</p>
+          </div>
+          <div className="card">
+            <h3>Attempt</h3>
+            <p className="hint">{streamAttempt}</p>
+          </div>
+          <div className="card">
+            <h3>Repair Target</h3>
+            <p className="hint">{streamRepairTarget}</p>
+          </div>
+        </div>
+        <div className="dataset-toolbar dataset-toolbar--actions">
+          <button className="secondary" type="button" onClick={() => setShowRawStream((prev) => !prev)}>
+            {showRawStream ? "Raw Stream 숨기기" : "Raw Stream 보기"}
+          </button>
+          <button className="secondary" type="button" onClick={() => setStreamOutput("")}>
+            Clear
+          </button>
+        </div>
+        {streamError && <div className="error">{streamError}</div>}
+        {showRawStream && (
+          <div className="card stream-output-card">
+            <h3>Live Answer (Raw LM Tokens)</h3>
+            <pre className="stream-output" ref={streamOutputRef}>
+              {streamOutput || "LM Studio 호출이 시작되면 여기에 실시간 답변이 표시됩니다."}
+            </pre>
           </div>
         )}
       </section>
@@ -568,16 +968,37 @@ export default function DatasetToolPanel() {
           </button>
         </div>
         <div className="dataset-preview-grid">
-          <div className="card">
-            <h3>Prompt Pool Preview</h3>
-            <pre>{previewItems.map((item) => `[${item.status}] ${item.index}. ${item.prompt}`).join("\n\n") || "데이터 없음"}</pre>
+          <div className="card pool-table-card">
+            <h3>Prompt Pool 전체 ({poolItems.length})</h3>
+            <div className="execution-table-wrap">
+              <table className="execution-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Status</th>
+                    <th>Prompt</th>
+                    <th>Error</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {poolItems.map((item) => (
+                    <tr key={item.id} className={`execution-row execution-row--${item.status}`}>
+                      <td>{item.index}</td>
+                      <td><span className={`status-pill status-pill--${item.status === "done" ? "ok" : item.status}`}>{item.status}</span></td>
+                      <td className="execution-cell-detail">{item.prompt}</td>
+                      <td className="execution-cell-truncate">{item.error_type || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {poolItems.length === 0 && <p className="hint">풀 데이터 없음</p>}
+            </div>
           </div>
           <div className="card">
-            <h3>Consume Result</h3>
+            <h3>Consume Aggregate</h3>
             <pre>{consumeResult ? JSON.stringify(consumeResult, null, 2) : "아직 실행 결과가 없습니다."}</pre>
           </div>
         </div>
-        {consumeResult?.results?.map((result) => renderConsumeResultCard(result))}
       </section>
 
       <section className="panel" data-section="dataset-status">

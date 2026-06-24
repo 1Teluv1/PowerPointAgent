@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "prompt_key": "b3ae9a3d33e174c6",
+  "raw_prompt_excerpt": "Create a Python script using python-pptx to build a 20-slide vibrant marketing presentation for external clients showcasing new campaign strategies. The output file must be named \"marketing_campaign.pptx\" and all content should be in Fre...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T06:38:54+00:00"
+    },
+    {
+      "attempt": 1,
+      "error_type": "ExecutionError",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\66e83baf-4c8a-478e-bb47-5715ccfbfcdb\\generate_ppt.py\", line 2, in <module>\n    from pptx.util import Inches, Pt, RGBColor\nImportError: cannot import name 'RGBColor' from 'pptx.util' (C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\pptx\\util.py)",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt, RGBColor\nfrom pptx.dml.color import RGBColor as DML_RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14,\n                        font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, top, w...",
+      "recorded_at": "2026-06-24T06:51:21+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "ExecutionError",
+      "traceback": "File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\4899d36c-20ad-4776-8407-b0f57534365f\\generate_ppt.py\", line 1\n    ```python\n    ^\nSyntaxError: invalid syntax",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14,\n                        font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, top, width, height)\n  ...",
+      "recorded_at": "2026-06-24T06:54:15+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14,\n                        font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, top, width, height)\n  ...",
+      "recorded_at": "2026-06-24T06:58:31+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "ExecutionError",
+      "traceback": "File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\c4476505-80de-45db-b40f-055097ceca1b\\generate_ppt.py\", line 1\n    ```python\n    ^\nSyntaxError: invalid syntax",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14,\n                        font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, top, width, height)\n  ...",
+      "recorded_at": "2026-06-24T07:01:37+00:00"
+    },
+    {
+      "attempt": 1,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T07:11:21+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T07:13:48+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T07:19:33+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T07:25:14+00:00"
+    },
+    {
+      "attempt": 5,
+      "error_type": "ExecutionError",
+      "traceback": "File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\ca5f2327-b081-439f-973e-44fdc182a6ff\\generate_ppt.py\", line 1\n    ```python\n    ^\nSyntaxError: invalid syntax",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T07:31:04+00:00"
+    },
+    {
+      "attempt": 6,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T07:35:11+00:00"
+    },
+    {
+      "attempt": 7,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T07:39:23+00:00"
+    },
+    {
+      "attempt": 8,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T07:43:40+00:00"
+    },
+    {
+      "attempt": 9,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T07:47:57+00:00"
+    },
+    {
+      "attempt": 10,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T07:52:14+00:00"
+    },
+    {
+      "attempt": 11,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T07:56:27+00:00"
+    },
+    {
+      "attempt": 12,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T08:00:45+00:00"
+    },
+    {
+      "attempt": 13,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_colored_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(...",
+      "recorded_at": "2026-06-24T08:05:01+00:00"
+    },
+    {
+      "attempt": 14,
+      "error_type": "ExecutionError",
+      "traceback": "File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\67735962-0be4-4d93-b97f-3a0116632e45\\generate_ppt.py\", line 1\n    ```python\n    ^\nSyntaxError: invalid syntax",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:09:14+00:00"
+    },
+    {
+      "attempt": 15,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:11:34+00:00"
+    },
+    {
+      "attempt": 16,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:13:49+00:00"
+    },
+    {
+      "attempt": 17,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:16:11+00:00"
+    },
+    {
+      "attempt": 18,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:18:25+00:00"
+    },
+    {
+      "attempt": 19,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:20:42+00:00"
+    },
+    {
+      "attempt": 20,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:23:07+00:00"
+    },
+    {
+      "attempt": 21,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:25:29+00:00"
+    },
+    {
+      "attempt": 22,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=14, font_color=None, bold=False, alignment=PP_ALIGN.LEFT):\n    \"\"\"Add a colored text box to the slide.\"\"\"\n    txBox = slide.shapes.add_textbox(left, to...",
+      "recorded_at": "2026-06-24T08:28:03+00:00"
+    },
+    {
+      "attempt": 23,
+      "error_type": "ExecutionError",
+      "traceback": "File \"D:\\AI\\Project\\PowerPointAgent\\backend\\artifacts\\tools\\c60e9fb1-0121-44e9-9394-a39068845879\\generate_ppt.py\", line 1\n    ```python\n    ^\nSyntaxError: invalid syntax",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=",
+      "recorded_at": "2026-06-24T08:30:26+00:00"
+    },
+    {
+      "attempt": 24,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=",
+      "recorded_at": "2026-06-24T08:35:53+00:00"
+    }
+  ]
+}

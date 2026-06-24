@@ -140,16 +140,17 @@ Python/PPT rules:
 LM_STUDIO_TIMEOUT_SECONDS = 600
 LIVE_ANSWER_QUEUE_SIZE = 1000
 
-DEFAULT_DATASET_RETRY_SYSTEM_PROMPT = """You are a python-pptx repair engineer for a locked training sample.
+DEFAULT_DATASET_RETRY_SYSTEM_PROMPT = """You are a python-pptx surgical repair engineer for a locked training sample.
 
-The User Prompt and Thinking sections are already finalized and FROZEN. You must not reinterpret the topic, slide count, layout plan, filenames, or constraints from them. Your only deliverable is a replacement for the Assistant Python block: one complete, runnable script that implements the frozen Thinking plan and satisfies the frozen User Prompt.
+The User Prompt and Thinking sections are FROZEN on the server and will NOT be regenerated. You repair ONLY the Assistant Python block.
 
 Output rules:
-* Return exactly one markdown fenced block: ```python ... ``` containing the full script (imports through if __name__ == "__main__": main()).
-* Fix the runtime error in the traceback without changing the deck intent.
+* Return exactly one ```python fenced block with the full runnable script (imports through if __name__ == "__main__": main()).
+* Apply a **minimal surgical fix** for the traceback: copy every unchanged line verbatim from Previous Assistant Python; change only what the error requires (e.g. chart_data type, None guards, enum names).
+* Do NOT rewrite slides, layout, or deck structure unless the traceback proves that code path is wrong.
 * Never import ChartType from pptx.enum.chart — use XL_CHART_TYPE for add_chart.
 * slide.shapes.title may be None; never assign .text without checking.
-* Chart series names must be strings where the API expects a string, not lists.
+* ChartData must be a proper CategoryChartData (or other ChartData subclass) instance — never pass a tuple to add_chart.
 * No TODO, no pseudo-code, no markdown fences inside the Python code.
 """
 
@@ -286,6 +287,10 @@ def _iter_openai_sse_data(endpoint: str, payload: dict) -> Iterator[str]:
         raise LMStudioError(f"LM Studio 연결 실패: {exc.reason}") from exc
     except Exception as exc:  # pragma: no cover - defensive
         raise LMStudioError(f"LM Studio 스트리밍 요청 실패: {exc}") from exc
+
+
+def publish_live_answer_event(event: Dict[str, Any]) -> None:
+    _broadcast_live_answer(event)
 
 
 def _post_chat_completion(endpoint: str, payload: dict, *, stage: str = "lm_studio") -> dict:
@@ -477,27 +482,57 @@ Requirements:
     return _extract_content(res)
 
 
+def _format_failure_classification(
+    *,
+    error_type: str,
+    failure_kind: str,
+    repair_target: str,
+    traceback_text: str,
+) -> str:
+    return (
+        f"--- Failure classification ---\n"
+        f"error_type: {error_type}\n"
+        f"failure_kind: {failure_kind}\n"
+        f"repair_target: {repair_target}\n\n"
+        f"--- Runtime traceback ---\n"
+        f"```text\n{traceback_text}\n```"
+    )
+
+
 def repair_thinking_only(
     *,
     endpoint: str,
     model: str,
     raw_prompt: str,
     fixed_user_prompt: str,
-    previous_markdown: str,
+    previous_thinking_excerpt: str,
+    error_type: str,
+    failure_kind: str,
+    repair_target: str,
+    traceback_text: str,
     error_memory_addon: Optional[str] = None,
 ) -> str:
+    failure_block = _format_failure_classification(
+        error_type=error_type,
+        failure_kind=failure_kind,
+        repair_target=repair_target,
+        traceback_text=traceback_text,
+    )
+    thinking_context = (previous_thinking_excerpt or "").strip() or "(empty or missing)"
     user_message = f"""Regenerate ONLY the missing or malformed Thinking section body.
 
 Original raw request:
 {raw_prompt}
 
---- LOCKED # User Prompt body or raw prompt fallback ---
+--- LOCKED # User Prompt (server will NOT regenerate this) ---
 {fixed_user_prompt}
 
---- Previous markdown output with malformed Thinking section ---
-{previous_markdown}
+{failure_block}
 
-Return only the Thinking text body."""
+--- Previous Thinking excerpt (replace ONLY this section) ---
+{thinking_context}
+
+Return only the Thinking text body. Do NOT output User Prompt, Assistant Python, markdown section headers, or JSON."""
     system = _merge_error_memory_into_system(
         DEFAULT_DATASET_THINKING_RETRY_SYSTEM_PROMPT.strip(),
         error_memory_addon,
@@ -529,30 +564,37 @@ def repair_assistant_python_only(
     fixed_thinking: str,
     failed_python_code: str,
     traceback_text: str,
+    error_type: str,
+    failure_kind: str,
+    repair_target: str,
     error_memory_addon: Optional[str] = None,
 ) -> str:
-    user_message = f"""Python execution failed. Regenerate ONLY the Assistant Python script.
+    failure_block = _format_failure_classification(
+        error_type=error_type,
+        failure_kind=failure_kind,
+        repair_target=repair_target,
+        traceback_text=traceback_text,
+    )
+    user_message = f"""Python execution failed. Surgically repair ONLY the Assistant Python script.
 
-Original raw request (context):
+Original raw request (context only — do not regenerate as markdown sections):
 {raw_prompt}
 
---- LOCKED # User Prompt body (verbatim; do not change meaning in code) ---
+--- LOCKED on server (do NOT output these sections) ---
+User Prompt:
 {fixed_user_prompt}
 
---- LOCKED # Thinking body (verbatim; code must follow this plan) ---
+Thinking:
 {fixed_thinking}
 
---- Previous Assistant Python (replace entirely) ---
+{failure_block}
+
+--- Previous Assistant Python (copy unchanged lines verbatim; minimal fix only) ---
 ```python
 {failed_python_code}
 ```
 
---- Runtime traceback ---
-```text
-{traceback_text}
-```
-
-Return one ```python fenced block with the full fixed script."""
+Return one ```python fenced block with the complete runnable script. Change only lines required by the traceback."""
     system = _merge_error_memory_into_system(
         DEFAULT_DATASET_RETRY_SYSTEM_PROMPT.strip(),
         error_memory_addon,
