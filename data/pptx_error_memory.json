@@ -204,9 +204,9 @@
       "error_type": "GenerationError",
       "summary": "LM Studio HTTP 400: { \"error\": { \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\", \"type\": \"invalid_request_error\", \"param\": \"model\", \"code\": null } }",
       "representative_excerpt": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
-      "occurrence_count": 192,
+      "occurrence_count": 196,
       "first_seen_at": "2026-06-24T08:39:14+00:00",
-      "last_seen_at": "2026-06-24T09:40:51+00:00"
+      "last_seen_at": "2026-06-24T09:40:59+00:00"
     },
     {
       "fingerprint": "1f17cd576f457bb21136dcd8704a09ef48b5c1b375c4b0d2e1585ba8d936b5d1",
