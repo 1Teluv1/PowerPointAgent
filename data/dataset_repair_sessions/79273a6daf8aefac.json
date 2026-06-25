@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "prompt_key": "79273a6daf8aefac",
+  "raw_prompt_excerpt": "Create a Python script using python-pptx to generate a 15-slide minimalist corporate presentation for C-Suite executives in the Finance industry. The output file must be named \"finance_c_suite.pptx\" and all content should be in English. ...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:44:14+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "GenerationError",
+      "traceback": "부분 패치 1의 기존 코드 구간을 찾지 못했습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:45:57+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "부분 패치 1의 기존 코드 구간을 찾지 못했습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:47:19+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "재시도 응답에 비어 있지 않은 replacements 배열이 필요합니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:47:33+00:00"
+    },
+    {
+      "attempt": 5,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:49:41+00:00"
+    }
+  ]
+}

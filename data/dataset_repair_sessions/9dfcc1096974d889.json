@@ -4,42 +4,6 @@
   "raw_prompt_excerpt": "Generate a Python script using python-pptx to create a 12-slide playful educational presentation for students on basic environmental science. The output file must be named \"environmental_science.pptx\" and all content should be in English...",
   "turns": [
     {
-      "attempt": 164,
-      "error_type": "GenerationError",
-      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
-      "repair_target": "thinking",
-      "failure_kind": "generation",
-      "failed_python_excerpt": "",
-      "recorded_at": "2026-06-24T08:44:48+00:00"
-    },
-    {
-      "attempt": 165,
-      "error_type": "GenerationError",
-      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
-      "repair_target": "thinking",
-      "failure_kind": "generation",
-      "failed_python_excerpt": "",
-      "recorded_at": "2026-06-24T08:44:50+00:00"
-    },
-    {
-      "attempt": 166,
-      "error_type": "GenerationError",
-      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
-      "repair_target": "thinking",
-      "failure_kind": "generation",
-      "failed_python_excerpt": "",
-      "recorded_at": "2026-06-24T08:44:52+00:00"
-    },
-    {
-      "attempt": 167,
-      "error_type": "GenerationError",
-      "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
-      "repair_target": "thinking",
-      "failure_kind": "generation",
-      "failed_python_excerpt": "",
-      "recorded_at": "2026-06-24T08:44:54+00:00"
-    },
-    {
       "attempt": 168,
       "error_type": "GenerationError",
       "traceback": "LM Studio HTTP 400: {\n    \"error\": {\n        \"message\": \"No models loaded. Please load a model in the developer page or use the 'lms load' command.\",\n        \"type\": \"invalid_request_error\",\n        \"param\": \"model\",\n        \"code\": null\n    }\n}",
@@ -452,6 +416,42 @@
       "failure_kind": "parse_assistant",
       "failed_python_excerpt": "",
       "recorded_at": "2026-06-24T09:40:59+00:00"
+    },
+    {
+      "attempt": 1,
+      "error_type": "MissingOutput",
+      "traceback": "output.pptx not found (no .pptx file generated in working directory)",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "import random\nfrom datetime import datetime\n\ndef generate_prompts():\n    prompts = []\n\n    # Prompt 1 — Environmental Science (playful educational)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create a 12-slide playful educational presentation for students on basic environmental science. The output file must be named 'environmental_science.pptx' and all content should be in English. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.\"\n    )\n\n    # Prompt 2 — Finance (minimalist corporate)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create an 8-slide minimalist corporate prese...",
+      "recorded_at": "2026-06-24T14:03:32+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "import random\nfrom datetime import datetime\n\ndef generate_prompts():\n    prompts = []\n\n    # Prompt 1 — Environmental Science (playful educational)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create a 12-slide playful educational presentation for students on basic environmental science. The output file must be named 'environmental_science.pptx' and all content should be in English. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.\"\n    )\n\n    # Prompt 2 — Finance (minimalist corporate)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create an 8-slide minimalist corporate prese...",
+      "recorded_at": "2026-06-24T14:05:46+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "import random\nfrom datetime import datetime\n\ndef generate_prompts():\n    prompts = []\n\n    # Prompt 1 — Environmental Science (playful educational)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create a 12-slide playful educational presentation for students on basic environmental science. The output file must be named 'environmental_science.pptx' and all content should be in English. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.\"\n    )\n\n    # Prompt 2 — Finance (minimalist corporate)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create an 8-slide minimalist corporate prese...",
+      "recorded_at": "2026-06-24T14:08:03+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "replacements[1]에 Markdown 코드 fence가 포함되어 있습니다. old_code와 new_code에는 Python 코드 조각만 넣어야 합니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "import random\nfrom datetime import datetime\n\ndef generate_prompts():\n    prompts = []\n\n    # Prompt 1 — Environmental Science (playful educational)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create a 12-slide playful educational presentation for students on basic environmental science. The output file must be named 'environmental_science.pptx' and all content should be in English. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.\"\n    )\n\n    # Prompt 2 — Finance (minimalist corporate)\n    prompts.append(\n        \"Generate a Python script using python-pptx to create an 8-slide minimalist corporate prese...",
+      "recorded_at": "2026-06-24T14:09:21+00:00"
     }
   ]
 }

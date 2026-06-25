@@ -111,6 +111,29 @@ class DatasetPreviewResponse(BaseModel):
     records: List[Dict[str, Any]]
 
 
+class PythonDatasetEntrySummary(BaseModel):
+    filename: str
+    valid: bool
+    errors: List[str] = Field(default_factory=list)
+    size_bytes: int
+    updated_at: str
+    user_prompt: str = ""
+
+
+class PythonDatasetEntryListResponse(BaseModel):
+    entries: List[PythonDatasetEntrySummary] = Field(default_factory=list)
+
+
+class PythonDatasetEntryDetailResponse(BaseModel):
+    filename: str
+    valid: bool
+    errors: List[str] = Field(default_factory=list)
+    size_bytes: int
+    updated_at: str
+    row: Dict[str, Any] = Field(default_factory=dict)
+    raw: str
+
+
 class PythonValidationRequest(BaseModel):
     python_code: str = Field(min_length=1)
 
@@ -127,7 +150,7 @@ class DatasetAutoGenerateRequest(BaseModel):
     raw_prompt: str = Field(min_length=1)
     lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
     lmstudio_model: str = Field(default="local-model", min_length=1)
-    max_retries: int = Field(default=0, ge=0, description="0 = unlimited retries until success")
+    max_retries: int = Field(default=3, ge=0, le=10, description="Maximum repair attempts after initial generation")
     system_prompt: Optional[str] = None
 
 
@@ -176,7 +199,7 @@ class RawPromptPoolConsumeRequest(BaseModel):
     count: int = Field(default=1, ge=1, le=50)
     lmstudio_endpoint: str = Field(default="http://localhost:1234/v1/chat/completions", min_length=1)
     lmstudio_model: str = Field(default="local-model", min_length=1)
-    max_retries: int = Field(default=0, ge=0, description="0 = unlimited retries until success")
+    max_retries: int = Field(default=3, ge=0, le=10, description="Maximum repair attempts after initial generation")
     system_prompt: Optional[str] = None
 
 

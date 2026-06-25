@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "prompt_key": "a6da1e5ed5c6e96d",
+  "raw_prompt_excerpt": "Write a Python script using python-pptx to generate a 25-slide minimalist luxury presentation for C-Suite executives in the Retail industry reviewing annual sales. The output file must be named \"retail_annual_sales.pptx\" and all content ...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "ExecutionError",
+      "traceback": "File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\a30acb82-0c5c-4283-8473-3e58db89372b\\generate_ppt.py\"\u001b[0m, line \u001b[35m1\u001b[0m\n    Write \u001b[1;31ma\u001b[0m Python script using python-pptx to generate a 15-slide creative-themed presentation for university faculty members reviewing quarterly enrollment statistics across departments. The output file must be named \"enrollment_review.pptx\" and all content should be in French. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.\n          \u001b[1;31m^\u001b[0m\n\u001b[1;35mSyntaxError\u001b[0m: \u001b[35minvalid syntax\u001b[0m",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "Write a Python script using python-pptx to generate a 15-slide creative-themed presentation for university faculty members reviewing quarterly enrollment statistics across departments. The output file must be named \"enrollment_review.pptx\" and all content should be in French. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "recorded_at": "2026-06-24T14:09:37+00:00"
+    },
+    {
+      "attempt": 1,
+      "error_type": "ExecutionError",
+      "traceback": "File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\146959d3-6501-468b-9534-dbdf181e6931\\generate_ppt.py\"\u001b[0m, line \u001b[35m1\u001b[0m\n    Write \u001b[1;31ma\u001b[0m Python script using python-pptx to generate an 18-slide corporate presentation for pharmaceutical company board members reviewing Q3 clinical trial progress across three therapeutic areas. The output file must be named \"clinical_trial_q3.pptx\" and all content should be in Japanese. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.\n          \u001b[1;31m^\u001b[0m\n\u001b[1;35mSyntaxError\u001b[0m: \u001b[35minvalid syntax\u001b[0m",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "Write a Python script using python-pptx to generate an 18-slide corporate presentation for pharmaceutical company board members reviewing Q3 clinical trial progress across three therapeutic areas. The output file must be named \"clinical_trial_q3.pptx\" and all content should be in Japanese. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "recorded_at": "2026-06-24T14:45:27+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "Write a Python script using python-pptx to generate an 18-slide corporate presentation for pharmaceutical company board members reviewing Q3 clinical trial progress across three therapeutic areas. The output file must be named \"clinical_trial_q3.pptx\" and all content should be in Japanese. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "recorded_at": "2026-06-24T14:47:41+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "재시도 응답의 부분 패치 JSON 형식이 올바르지 않습니다: Expecting ',' delimiter: line 1 column 5306 (char 5305)",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "Write a Python script using python-pptx to generate an 18-slide corporate presentation for pharmaceutical company board members reviewing Q3 clinical trial progress across three therapeutic areas. The output file must be named \"clinical_trial_q3.pptx\" and all content should be in Japanese. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "recorded_at": "2026-06-24T14:49:57+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "Write a Python script using python-pptx to generate an 18-slide corporate presentation for pharmaceutical company board members reviewing Q3 clinical trial progress across three therapeutic areas. The output file must be named \"clinical_trial_q3.pptx\" and all content should be in Japanese. Use the standard 4:3 Standard slide size. You are strictly prohibited from using any external APIs or web scraping to fetch data; use hardcoded sample data only. When adding charts, you must explicitly use XL_CHART_TYPE instead of importing or using ChartType from pptx.enum.chart. Additionally, implement defensive programming by ensuring that any attempt to set text on a title shape first checks if slide.shapes.title is not None before accessing .text. Your response must contain distinct # Thinking and # Assistant sections, with code enclosed in ```python fences and non-code text in ```text fences.",
+      "recorded_at": "2026-06-24T14:52:21+00:00"
+    }
+  ]
+}

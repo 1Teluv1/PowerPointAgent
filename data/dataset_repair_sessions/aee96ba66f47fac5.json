@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "prompt_key": "aee96ba66f47fac5",
+  "raw_prompt_excerpt": "Create a professional PowerPoint presentation for enterprise clients in the Consulting industry outlining our digital transformation framework, consisting of exactly 28 slides with a corporate theme using navy blue, gold, and light gray ...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다. finish_reason=length, reasoning_chars=126335. 모델이 reasoning만 출력했거나 출력 토큰 한도에 도달했는지 확인하세요.",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T20:12:35+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T20:12:54+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다. finish_reason=length, reasoning_chars=33029. 모델이 reasoning만 출력했거나 출력 토큰 한도에 도달했는지 확인하세요.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T20:15:04+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다. finish_reason=length, reasoning_chars=34419. 모델이 reasoning만 출력했거나 출력 토큰 한도에 도달했는지 확인하세요.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T20:17:16+00:00"
+    }
+  ]
+}

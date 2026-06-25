@@ -67,6 +67,25 @@ export async function getDatasetPreview(datasetType, options = {}) {
   return requestJson(path, {}, "데이터셋 미리보기 조회 실패");
 }
 
+export async function getPythonDatasetEntries(query = "") {
+  const params = new URLSearchParams();
+  if (query) params.set("query", query);
+  const queryString = params.toString();
+  return requestJson(
+    `/tools/dataset/python-entries${queryString ? `?${queryString}` : ""}`,
+    {},
+    "개별 Python 데이터셋 목록 조회 실패"
+  );
+}
+
+export async function getPythonDatasetEntry(filename) {
+  return requestJson(
+    `/tools/dataset/python-entries/${encodeURIComponent(filename)}`,
+    {},
+    "개별 Python 데이터셋 조회 실패"
+  );
+}
+
 export async function validatePythonCode(payload) {
   return requestJson(
     "/tools/dataset/python/validate",
@@ -133,6 +152,14 @@ export async function restoreRawPromptPool(payload) {
 
 export async function getSavedRawPromptPools() {
   return requestJson("/tools/dataset/raw-prompts/saved", {}, "저장된 Raw Prompt 풀 목록 조회 실패");
+}
+
+export async function getSavedRawPromptPoolRaw(filename) {
+  return requestJson(
+    `/tools/dataset/raw-prompts/saved/${encodeURIComponent(filename)}/raw`,
+    {},
+    "저장된 Raw Prompt 풀 내용 조회 실패"
+  );
 }
 
 export async function loadSavedRawPromptPool(filename) {
@@ -213,7 +240,7 @@ export async function streamLmStudioChat({ payload, onDelta, onError, signal }) 
   }
 }
 
-export async function subscribeLmStudioLiveAnswer({ onEvent, signal }) {
+export async function subscribeLmStudioLiveAnswer({ onEvent, signal, onDisconnect }) {
   const res = await fetch(`${API_BASE}/tools/lm-studio/live-answer/events`, { signal });
   if (!res.ok) {
     throw new Error("LM Studio Live Answer 구독 실패");
@@ -242,20 +269,62 @@ export async function subscribeLmStudioLiveAnswer({ onEvent, signal }) {
     }
   }
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
 
-    const blocks = buffer.split(/\r?\n\r?\n/);
-    buffer = blocks.pop() ?? "";
-    for (const block of blocks) {
-      handleEventBlock(block);
+      const blocks = buffer.split(/\r?\n\r?\n/);
+      buffer = blocks.pop() ?? "";
+      for (const block of blocks) {
+        handleEventBlock(block);
+      }
     }
-  }
 
-  buffer += decoder.decode();
-  if (buffer.trim()) {
-    handleEventBlock(buffer);
+    buffer += decoder.decode();
+    if (buffer.trim()) {
+      handleEventBlock(buffer);
+    }
+  } finally {
+    onDisconnect?.();
   }
+}
+const SSE_RECONNECT_BASE_MS = 2000;
+const SSE_RECONNECT_MAX_MS = 15000;
+
+export function subscribeLmStudioLiveAnswerWithReconnect({
+  onEvent,
+  signal,
+  onStatusChange
+}) {
+  let stopped = false;
+  let reconnectAttempt = 0;
+
+  (async () => {
+    while (!stopped && !signal?.aborted) {
+      try {
+        onStatusChange?.(reconnectAttempt === 0 ? "connecting" : "reconnecting");
+        await subscribeLmStudioLiveAnswer({ onEvent, signal });
+        if (stopped || signal?.aborted) break;
+        reconnectAttempt += 1;
+        onStatusChange?.("disconnected");
+      } catch (error) {
+        if (stopped || signal?.aborted) break;
+        reconnectAttempt += 1;
+        onStatusChange?.("error", error);
+      }
+
+      if (stopped || signal?.aborted) break;
+      const delay = Math.min(SSE_RECONNECT_BASE_MS * reconnectAttempt, SSE_RECONNECT_MAX_MS);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+    if (!stopped) {
+      onStatusChange?.("stopped");
+    }
+  })();
+
+  return () => {
+    stopped = true;
+  };
 }

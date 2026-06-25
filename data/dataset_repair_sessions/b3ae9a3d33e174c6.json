@@ -263,6 +263,51 @@
       "failure_kind": "parse_assistant",
       "failed_python_excerpt": "```python\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN, MSO_ANCHOR\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData, PieChartData\n\n# ── Color Palette (Vibrant Marketing) ────────────────────────────────\nCOLOR_PRIMARY   = RGBColor(230, 57, 70)    # Vibrant coral/red\nCOLOR_SECONDARY = RGBColor(33, 158, 188)   # Bright teal/blue\nCOLOR_ACCENT    = RGBColor(244, 162, 97)   # Warm orange\nCOLOR_DARK      = RGBColor(43, 45, 66)     # Dark navy\nCOLOR_LIGHT     = RGBColor(237, 242, 244)  # Light gray\nCOLOR_WHITE     = RGBColor(255, 255, 255)\n\nprs_width = Inches(13.33)\nprs_height = Inches(7.5)\n\n# ── Helper Functions ────────────────────────────────────────────────\n\ndef set_slide_background(slide, color):\n    \"\"\"Set slide background to a solid fill color.\"\"\"\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = color\n\ndef add_textbox(slide, left, top, width, height, text, font_size=",
       "recorded_at": "2026-06-24T08:35:53+00:00"
+    },
+    {
+      "attempt": 1,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:31:38+00:00"
+    },
+    {
+      "attempt": 1,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:56:15+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T13:58:28+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T14:00:43+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T14:02:57+00:00"
     }
   ]
 }

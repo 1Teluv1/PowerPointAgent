@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import uuid
-from pathlib import Path
 
+from app.core.paths import ARTIFACT_ROOT
 from app.models.schemas import JobCreateRequest, JobState, JobStatus
 from app.services.contract_service import validate_pipeline_contract
 from app.services.lora2_service import generate_visual_assets
@@ -11,7 +11,6 @@ from app.services.planner_service import build_planning_spec
 from app.services.runner_service import run_ppt_code
 
 MAX_RETRY = 3
-ARTIFACT_ROOT = Path(__file__).resolve().parents[2] / "artifacts"
 
 
 def run_serial_pipeline(request: JobCreateRequest) -> JobState:

@@ -4,12 +4,21 @@ import {
   generateRawPromptPool,
   getDatasetPreview,
   getDatasetStats,
+  getPythonDatasetEntries,
+  getPythonDatasetEntry,
   getRawPromptPool,
   getSavedRawPromptPools,
+  getSavedRawPromptPoolRaw,
   loadSavedRawPromptPool,
   restoreRawPromptPool,
-  subscribeLmStudioLiveAnswer
+  subscribeLmStudioLiveAnswerWithReconnect
 } from "../api/client";
+import ConsumeResultCard from "./ConsumeResultCard";
+import DatasetLiveLogModal from "./DatasetLiveLogModal";
+import SavedPoolContentModal from "./SavedPoolContentModal";
+import ExecutionTimelineTable from "./ExecutionTimelineTable";
+import PythonDatasetEntryReview from "./PythonDatasetEntryReview";
+import { appendTokenStream, formatTaggedLogLine } from "../utils/datasetLogFormat";
 
 const DATASET_FORM_STORAGE_KEY = "ppt-agent:tools:dataset-form";
 const RAW_PROMPT_POOL_STORAGE_KEY = "ppt-agent:tools:raw-prompt-pool-snapshot";
@@ -80,7 +89,8 @@ const initialForm = {
   prompt_count: 100,
   topic_seed: "diverse business PowerPoint presentation requests",
   count: 1,
-  max_retries: 0,
+  max_retries: 3,
+  retry_semantics_version: 2,
   dataset_system_prompt: ""
 };
 
@@ -96,9 +106,15 @@ export default function DatasetToolPanel() {
       const raw = localStorage.getItem(DATASET_FORM_STORAGE_KEY);
       if (!raw) return initialForm;
       const parsed = JSON.parse(raw);
+      const savedMaxRetries = Number(parsed.max_retries);
+      const usesBoundedRetrySemantics = parsed.retry_semantics_version === 2;
       return {
         ...initialForm,
-        ...parsed
+        ...parsed,
+        max_retries: usesBoundedRetrySemantics && Number.isFinite(savedMaxRetries) && savedMaxRetries >= 0
+          ? Math.min(savedMaxRetries, 10)
+          : initialForm.max_retries,
+        retry_semantics_version: 2
       };
     } catch {
       return initialForm;
@@ -109,6 +125,9 @@ export default function DatasetToolPanel() {
   const [stats, setStats] = useState([]);
   const [assetPreview, setAssetPreview] = useState([]);
   const [pythonPreview, setPythonPreview] = useState([]);
+  const [pythonEntries, setPythonEntries] = useState([]);
+  const [selectedPythonEntry, setSelectedPythonEntry] = useState(null);
+  const [loadingPythonEntry, setLoadingPythonEntry] = useState(false);
   const [query, setQuery] = useState("");
   const [pretty, setPretty] = useState(true);
   const [message, setMessage] = useState("");
@@ -131,10 +150,22 @@ export default function DatasetToolPanel() {
   const [runHistory, setRunHistory] = useState(() => loadRunHistory());
   const [selectedRunId, setSelectedRunId] = useState("current");
   const [showRawStream, setShowRawStream] = useState(true);
+  const [logModalOpen, setLogModalOpen] = useState(false);
+  const [logModalDismissed, setLogModalDismissed] = useState(false);
+  const [logModalTab, setLogModalTab] = useState("logs");
+  const [taggedLogLines, setTaggedLogLines] = useState([]);
+  const [tokenStream, setTokenStream] = useState("");
+  const [showReasoning, setShowReasoning] = useState(true);
+  const [savedPoolPreview, setSavedPoolPreview] = useState({ open: false, filename: "", content: "" });
   const streamAbortRef = useRef(null);
   const streamOutputRef = useRef(null);
   const streamMetaRef = useRef({ attempt: "-", repairTarget: "-", stage: "-" });
   const executionEventsRef = useRef([]);
+  const showReasoningRef = useRef(showReasoning);
+
+  useEffect(() => {
+    showReasoningRef.current = showReasoning;
+  }, [showReasoning]);
 
   function appendExecutionEvent(event) {
     setExecutionEvents((prev) => {
@@ -149,6 +180,143 @@ export default function DatasetToolPanel() {
     setExecutionEvents([]);
     setStreamAttempt("-");
     setStreamRepairTarget("-");
+  }
+
+  function clearLiveLogs() {
+    setTaggedLogLines([]);
+    setTokenStream("");
+    setStreamOutput("");
+    setStreamEventCount(0);
+    setStreamError("");
+    setStreamStatus("연결 대기");
+    setStreamStage("-");
+    clearExecutionEvents();
+  }
+
+  function openLiveLogModal(tab = "logs") {
+    setLogModalDismissed(false);
+    setLogModalOpen(true);
+    setLogModalTab(tab);
+  }
+
+  function handleLiveLogModalClose(dismissed) {
+    setLogModalOpen(false);
+    if (dismissed) {
+      setLogModalDismissed(true);
+    }
+  }
+
+  function appendTaggedLogFromEvent(event) {
+    const line = formatTaggedLogLine(event);
+    if (!line) return;
+    setTaggedLogLines((prev) => [...prev, line]);
+  }
+
+  function handleLiveAnswerEvent(event) {
+    if (event?.type === "ready") {
+      setStreamStatus("연결됨");
+      setStreamStage("live_answer");
+      return;
+    }
+
+    if (event?.type === "heartbeat") {
+      return;
+    }
+
+    setStreamEventCount((prev) => prev + 1);
+    if (event?.stage) {
+      setStreamStage(event.stage);
+      streamMetaRef.current.stage = event.stage;
+    }
+    if (event?.type === "repair_plan") {
+      if (event.attempt) {
+        setStreamAttempt(String(event.attempt));
+        streamMetaRef.current.attempt = String(event.attempt);
+      }
+      const target = event.repair_target ? String(event.repair_target) : "full";
+      setStreamRepairTarget(target);
+      streamMetaRef.current.repairTarget = target;
+      appendExecutionEvent({
+        id: nextEventId(),
+        ts: Date.now(),
+        kind: event.stage === "python_validation" ? "validation" : "repair_plan",
+        attempt: event.attempt ?? null,
+        stage: event.stage ?? "-",
+        repairTarget: event.repair_target ?? null,
+        failureKind: event.failure_kind ?? null,
+        lockedFields: event.locked_fields ?? [],
+        status: event.stage === "python_validation" ? "running" : "planned",
+        detail: event.content || "repair plan"
+      });
+      appendTaggedLogFromEvent(event);
+      setStreamOutput(
+        (prev) =>
+          `${prev}${prev ? "\n\n" : ""}>>> ${event.content || "repair plan"}\n`
+      );
+      return;
+    }
+
+    if (event?.type === "log") {
+      appendTaggedLogFromEvent(event);
+      return;
+    }
+
+    if (event?.type === "start") {
+      setStreamStatus("생성 중");
+      setStreamError("");
+      const meta = streamMetaRef.current;
+      appendExecutionEvent({
+        id: nextEventId(),
+        ts: Date.now(),
+        kind: "lm_start",
+        attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
+        stage: event.stage || "lm_studio",
+        repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
+        status: "running",
+        detail: `LM 호출 시작 · ${event.stage || "lm_studio"}`
+      });
+      appendTaggedLogFromEvent(event);
+      setTokenStream((prev) => appendTokenStream(prev, event, { showReasoning: showReasoningRef.current }));
+      setStreamOutput((prev) => `${prev}${prev ? "\n\n" : ""}--- ${event.stage || "lm_studio"} ---\n`);
+      return;
+    }
+    if (event?.type === "delta") {
+      setTokenStream((prev) => appendTokenStream(prev, event, { showReasoning: showReasoningRef.current }));
+      setStreamOutput((prev) => prev + (event.content || ""));
+      return;
+    }
+    if (event?.type === "end") {
+      setStreamStatus("완료");
+      const meta = streamMetaRef.current;
+      appendExecutionEvent({
+        id: nextEventId(),
+        ts: Date.now(),
+        kind: "lm_end",
+        attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
+        stage: meta.stage,
+        repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
+        status: "done",
+        detail: `LM 호출 완료 · ${meta.stage}`
+      });
+      appendTaggedLogFromEvent(event);
+      return;
+    }
+    if (event?.type === "error") {
+      setStreamStatus("오류");
+      setStreamError(event.content || "LM Studio Live Answer 오류");
+      const meta = streamMetaRef.current;
+      appendExecutionEvent({
+        id: nextEventId(),
+        ts: Date.now(),
+        kind: "error",
+        attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
+        stage: meta.stage,
+        repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
+        status: "error",
+        detail: event.content || "LM Studio 오류"
+      });
+      appendTaggedLogFromEvent(event);
+    }
   }
 
   async function refreshSavedPools() {
@@ -167,10 +335,12 @@ export default function DatasetToolPanel() {
       const statsRes = await getDatasetStats();
       const assetRes = await getDatasetPreview("asset", { limit: 10, query: activeQuery.trim() });
       const pythonRes = await getDatasetPreview("python", { limit: 10, query: activeQuery.trim() });
+      const pythonEntriesRes = await getPythonDatasetEntries(activeQuery.trim());
       const poolRes = await getRawPromptPool();
       setStats(statsRes.files ?? []);
       setAssetPreview(assetRes.records ?? []);
       setPythonPreview(pythonRes.records ?? []);
+      setPythonEntries(pythonEntriesRes.entries ?? []);
       const serverTotal = poolRes?.summary?.total ?? 0;
       if (serverTotal > 0) {
         setPool(poolRes);
@@ -194,6 +364,19 @@ export default function DatasetToolPanel() {
     await refreshSavedPools();
   }
 
+  async function handleSelectPythonEntry(filename) {
+    setLoadingPythonEntry(true);
+    setError("");
+    try {
+      const detail = await getPythonDatasetEntry(filename);
+      setSelectedPythonEntry(detail);
+    } catch (entryError) {
+      setError(entryError instanceof Error ? entryError.message : "개별 Python 데이터셋 조회 실패");
+    } finally {
+      setLoadingPythonEntry(false);
+    }
+  }
+
   useEffect(() => {
     refreshData("");
   }, []);
@@ -202,113 +385,41 @@ export default function DatasetToolPanel() {
     const controller = new AbortController();
     streamAbortRef.current = controller;
 
-    subscribeLmStudioLiveAnswer({
+    const stopReconnect = subscribeLmStudioLiveAnswerWithReconnect({
       signal: controller.signal,
-      onEvent: (event) => {
-        if (event?.type === "ready") {
-          setStreamStatus("연결됨");
-          setStreamStage("live_answer");
-          return;
-        }
-
-        setStreamEventCount((prev) => prev + 1);
-        if (event?.stage) {
-          setStreamStage(event.stage);
-          streamMetaRef.current.stage = event.stage;
-        }
-        if (event?.type === "repair_plan") {
-          if (event.attempt) {
-            setStreamAttempt(String(event.attempt));
-            streamMetaRef.current.attempt = String(event.attempt);
-          }
-          const target = event.repair_target ? String(event.repair_target) : "full";
-          setStreamRepairTarget(target);
-          streamMetaRef.current.repairTarget = target;
-          appendExecutionEvent({
-            id: nextEventId(),
-            ts: Date.now(),
-            kind: event.stage === "python_validation" ? "validation" : "repair_plan",
-            attempt: event.attempt ?? null,
-            stage: event.stage ?? "-",
-            repairTarget: event.repair_target ?? null,
-            failureKind: event.failure_kind ?? null,
-            lockedFields: event.locked_fields ?? [],
-            status: event.stage === "python_validation" ? "running" : "planned",
-            detail: event.content || "repair plan"
-          });
-          setStreamOutput(
-            (prev) =>
-              `${prev}${prev ? "\n\n" : ""}>>> ${event.content || "repair plan"}\n`
-          );
-          return;
-        }
-
-        if (event?.type === "start") {
-          setStreamStatus("생성 중");
+      onEvent: handleLiveAnswerEvent,
+      onStatusChange: (status, error) => {
+        if (status === "connecting") {
+          setStreamStatus("연결 중");
           setStreamError("");
-          const meta = streamMetaRef.current;
-          appendExecutionEvent({
-            id: nextEventId(),
-            ts: Date.now(),
-            kind: "lm_start",
-            attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
-            stage: event.stage || "lm_studio",
-            repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
-            status: "running",
-            detail: `LM 호출 시작 · ${event.stage || "lm_studio"}`
-          });
-          setStreamOutput((prev) => `${prev}${prev ? "\n\n" : ""}--- ${event.stage || "lm_studio"} ---\n`);
-          return;
+        } else if (status === "reconnecting") {
+          setStreamStatus("재연결 중");
+        } else if (status === "disconnected") {
+          setStreamStatus("연결 끊김 · 재연결 대기");
+        } else if (status === "error") {
+          const message =
+            error instanceof Error ? error.message : "백엔드 서버 연결에 실패했습니다.";
+          setStreamStatus("연결 실패 · 재시도 중");
+          setStreamError(message);
         }
-        if (event?.type === "delta") {
-          setStreamOutput((prev) => prev + (event.content || ""));
-          return;
-        }
-        if (event?.type === "end") {
-          setStreamStatus("완료");
-          const meta = streamMetaRef.current;
-          appendExecutionEvent({
-            id: nextEventId(),
-            ts: Date.now(),
-            kind: "lm_end",
-            attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
-            stage: meta.stage,
-            repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
-            status: "done",
-            detail: `LM 호출 완료 · ${meta.stage}`
-          });
-          return;
-        }
-        if (event?.type === "error") {
-          setStreamStatus("오류");
-          setStreamError(event.content || "LM Studio Live Answer 오류");
-          const meta = streamMetaRef.current;
-          appendExecutionEvent({
-            id: nextEventId(),
-            ts: Date.now(),
-            kind: "error",
-            attempt: meta.attempt !== "-" ? Number(meta.attempt) : null,
-            stage: meta.stage,
-            repairTarget: meta.repairTarget !== "-" ? meta.repairTarget : null,
-            status: "error",
-            detail: event.content || "LM Studio 오류"
-          });
-        }
-      }
-    }).catch((subscribeError) => {
-      if (subscribeError?.name !== "AbortError") {
-        setStreamStatus("구독 실패");
-        setStreamError(subscribeError instanceof Error ? subscribeError.message : "Live Answer 구독 실패");
       }
     });
 
     return () => {
       controller.abort();
+      stopReconnect?.();
       if (streamAbortRef.current === controller) {
         streamAbortRef.current = null;
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!generatingPool && !consuming) return;
+    if (!logModalDismissed) {
+      setLogModalOpen(true);
+    }
+  }, [generatingPool, consuming, logModalDismissed]);
 
   useEffect(() => {
     if (streamOutputRef.current) {
@@ -330,6 +441,9 @@ export default function DatasetToolPanel() {
     setMessage("");
     setError("");
     setConsumeResult(null);
+    clearLiveLogs();
+    setLogModalDismissed(false);
+    openLiveLogModal("logs");
     try {
       const result = await generateRawPromptPool({
         lmstudio_endpoint: form.lmstudio_endpoint.trim(),
@@ -357,7 +471,9 @@ export default function DatasetToolPanel() {
     setMessage("");
     setError("");
     setConsumeResult(null);
-    clearExecutionEvents();
+    clearLiveLogs();
+    setLogModalDismissed(false);
+    openLiveLogModal("timeline");
     setSelectedRunId("current");
     const runId = String(Date.now());
     const runStartedAt = Date.now();
@@ -506,10 +622,18 @@ export default function DatasetToolPanel() {
     setMessage("");
     setError("");
     try {
-      const result = await loadSavedRawPromptPool(filename);
+      const [rawContent, result] = await Promise.all([
+        getSavedRawPromptPoolRaw(filename),
+        loadSavedRawPromptPool(filename)
+      ]);
       setPool(result);
       persistRawPromptPoolSnapshot(result);
       setPoolCacheActive(false);
+      setSavedPoolPreview({
+        open: true,
+        filename,
+        content: JSON.stringify(rawContent, null, 2)
+      });
       setMessage(`저장된 풀 불러오기 완료: ${result.summary?.total ?? 0}개 (${filename})`);
       await refreshData(query);
     } catch (loadError) {
@@ -529,119 +653,6 @@ export default function DatasetToolPanel() {
 
   function renderRecordLine(record) {
     return pretty ? JSON.stringify(record, null, 2) : JSON.stringify(record);
-  }
-
-  function renderAttemptsTable(attempts) {
-    if (!Array.isArray(attempts) || attempts.length === 0) {
-      return <p className="hint">attempt 기록 없음</p>;
-    }
-    return (
-      <div className="execution-table-wrap">
-        <table className="execution-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Stage</th>
-              <th>Status</th>
-              <th>Target</th>
-              <th>Failure</th>
-              <th>Error</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attempts.map((item) => (
-              <tr key={`${item.attempt}-${item.stage}-${item.status}`} className={`execution-row execution-row--${item.status}`}>
-                <td>{item.attempt}</td>
-                <td>{item.stage}</td>
-                <td><span className={`status-pill status-pill--${item.status}`}>{item.status}</span></td>
-                <td>{item.repair_target || "-"}</td>
-                <td>{item.failure_kind || "-"}</td>
-                <td className="execution-cell-truncate" title={item.traceback || item.error_type || ""}>
-                  {item.error_type || (item.status === "ok" ? "ok" : "-")}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function renderExecutionTimeline(events) {
-    if (!Array.isArray(events) || events.length === 0) {
-      return <p className="hint">실행 이벤트 없음</p>;
-    }
-    return (
-      <div className="execution-table-wrap execution-timeline-wrap">
-        <table className="execution-table">
-          <thead>
-            <tr>
-              <th>시간</th>
-              <th>Attempt</th>
-              <th>종류</th>
-              <th>Stage</th>
-              <th>Target</th>
-              <th>상태</th>
-              <th>요약</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((item) => (
-              <tr key={item.id} className={`execution-row execution-row--${item.status || "planned"}`}>
-                <td>{formatTime(item.ts)}</td>
-                <td>{item.attempt ?? "-"}</td>
-                <td>{item.kind}</td>
-                <td>{item.stage || "-"}</td>
-                <td>{item.repairTarget || "-"}</td>
-                <td><span className={`status-pill status-pill--${item.status || "planned"}`}>{item.status || "-"}</span></td>
-                <td className="execution-cell-detail" title={item.detail}>{item.detail}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  function renderConsumeResultCard(result) {
-    return (
-      <div className="card consume-result-card" key={result.prompt_id}>
-        <div className="consume-result-head">
-          <h3>
-            <span className={`status-pill status-pill--${result.status === "ok" ? "ok" : "error"}`}>
-              {result.status === "ok" ? "성공" : "실패"}
-            </span>
-            {" "}
-            {result.prompt.slice(0, 120)}
-          </h3>
-          <p className="hint">prompt_id: {result.prompt_id}</p>
-        </div>
-        {result.pptx_download_url && (
-          <a className="download" href={`${API_BASE}${result.pptx_download_url}`}>
-            PPT 다운로드
-          </a>
-        )}
-        {Array.isArray(result.attempts) && result.attempts.length > 0 && (
-          <div className="attempt-review-block">
-            <h4>Attempt Review ({result.attempts.length})</h4>
-            {renderAttemptsTable(result.attempts)}
-          </div>
-        )}
-        {Array.isArray(result.thumbnail_urls) && result.thumbnail_urls.length > 0 && (
-          <div className="thumbnail-grid">
-            {result.thumbnail_urls.map((url) => (
-              <img key={url} src={`${API_BASE}${url}`} alt="PPT slide preview" />
-            ))}
-          </div>
-        )}
-        {result.traceback && (
-          <details className="traceback-details">
-            <summary>Traceback 보기</summary>
-            <pre>{result.traceback}</pre>
-          </details>
-        )}
-      </div>
-    );
   }
 
   const summary = pool?.summary ?? { total: 0, pending: 0, processing: 0, done: 0, failed: 0 };
@@ -817,10 +828,12 @@ export default function DatasetToolPanel() {
                 id="dataset-max-retries"
                 value={String(form.max_retries)}
                 required
-                placeholder="0 = unlimited"
+                min="0"
+                max="10"
+                placeholder="기본값 3"
                 onChange={(event) => setForm((prev) => ({ ...prev, max_retries: event.target.value }))}
               />
-              <p className="hint">0이면 성공할 때까지 무제한 재시도합니다. 1 이상이면 해당 횟수만큼 repair를 시도합니다.</p>
+              <p className="hint">최초 생성 이후 repair 횟수입니다. 0은 재시도 없음, 최대 10회, 기본값은 3회입니다.</p>
             </div>
           </div>
           <div className="field">
@@ -828,7 +841,7 @@ export default function DatasetToolPanel() {
             <textarea
               id="dataset-consume-system-prompt"
               rows={6}
-              placeholder="비워 두면 서버 기본(Raw Prompt 풀 생성 시 사용된 시스템 프롬프트와 동일 계열)이 적용됩니다. LM Studio markdown 생성에 사용됩니다."
+              placeholder="비워 두면 서버의 데이터셋 생성 전용 기본 프롬프트가 적용됩니다. Raw Prompt 생성 프롬프트는 재사용되지 않습니다."
               value={form.dataset_system_prompt ?? ""}
               onChange={(event) => setForm((prev) => ({ ...prev, dataset_system_prompt: event.target.value }))}
             />
@@ -873,8 +886,17 @@ export default function DatasetToolPanel() {
               </option>
             ))}
           </select>
-          <button className="secondary" type="button" onClick={() => { clearExecutionEvents(); setStreamOutput(""); }}>
+          <button className="secondary" type="button" onClick={clearLiveLogs}>
             현재 타임라인 초기화
+          </button>
+          <button className="secondary" type="button" onClick={() => openLiveLogModal("timeline")}>
+            타임라인 팝업
+          </button>
+          <button className="secondary" type="button" onClick={() => openLiveLogModal("review")}>
+            결과 팝업
+          </button>
+          <button className="secondary" type="button" onClick={() => openLiveLogModal("logs")}>
+            Live Log 팝업
           </button>
         </div>
 
@@ -889,15 +911,27 @@ export default function DatasetToolPanel() {
 
         <div className="review-grid">
           <div className="card review-card">
-            <h3>실행 타임라인 ({timelineEvents.length})</h3>
-            {renderExecutionTimeline(timelineEvents)}
+            <div className="review-card-head">
+              <h3>실행 타임라인 ({timelineEvents.length})</h3>
+              <button className="secondary" type="button" onClick={() => openLiveLogModal("timeline")}>
+                팝업에서 보기
+              </button>
+            </div>
+            <ExecutionTimelineTable events={timelineEvents} formatTime={formatTime} />
           </div>
           <div className="card review-card">
-            <h3>Count 결과 & Attempt Review</h3>
+            <div className="review-card-head">
+              <h3>Count 결과 & Attempt Review ({reviewResults.length})</h3>
+              <button className="secondary" type="button" onClick={() => openLiveLogModal("review")}>
+                팝업에서 보기
+              </button>
+            </div>
             {reviewResults.length === 0 ? (
               <p className="hint">아직 Count 결과가 없습니다. 실행이 끝나면 attempt 테이블이 표시됩니다.</p>
             ) : (
-              reviewResults.map((result) => renderConsumeResultCard(result))
+              reviewResults.map((result) => (
+                <ConsumeResultCard key={result.prompt_id} result={result} apiBase={API_BASE} />
+              ))
             )}
           </div>
         </div>
@@ -936,10 +970,13 @@ export default function DatasetToolPanel() {
           </div>
         </div>
         <div className="dataset-toolbar dataset-toolbar--actions">
+          <button className="secondary" type="button" onClick={() => openLiveLogModal("logs")}>
+            팝업에서 보기
+          </button>
           <button className="secondary" type="button" onClick={() => setShowRawStream((prev) => !prev)}>
             {showRawStream ? "Raw Stream 숨기기" : "Raw Stream 보기"}
           </button>
-          <button className="secondary" type="button" onClick={() => setStreamOutput("")}>
+          <button className="secondary" type="button" onClick={clearLiveLogs}>
             Clear
           </button>
         </div>
@@ -948,11 +985,41 @@ export default function DatasetToolPanel() {
           <div className="card stream-output-card">
             <h3>Live Answer (Raw LM Tokens)</h3>
             <pre className="stream-output" ref={streamOutputRef}>
-              {streamOutput || "LM Studio 호출이 시작되면 여기에 실시간 답변이 표시됩니다."}
+              {tokenStream || streamOutput || "LM Studio 호출이 시작되면 여기에 실시간 답변이 표시됩니다."}
             </pre>
           </div>
         )}
       </section>
+
+      <SavedPoolContentModal
+        open={savedPoolPreview.open}
+        filename={savedPoolPreview.filename}
+        content={savedPoolPreview.content}
+        onClose={() => setSavedPoolPreview({ open: false, filename: "", content: "" })}
+      />
+
+      <DatasetLiveLogModal
+        open={logModalOpen}
+        onClose={handleLiveLogModalClose}
+        onReopen={() => openLiveLogModal(logModalTab)}
+        isActive={generatingPool || consuming}
+        activeTab={logModalTab}
+        onTabChange={setLogModalTab}
+        taggedLogLines={taggedLogLines}
+        tokenStream={tokenStream}
+        timelineEvents={timelineEvents}
+        reviewResults={reviewResults}
+        apiBase={API_BASE}
+        formatTime={formatTime}
+        showReasoning={showReasoning}
+        onToggleReasoning={(event) => setShowReasoning(event.target.checked)}
+        streamStatus={streamStatus}
+        streamStage={streamStage}
+        streamAttempt={streamAttempt}
+        streamRepairTarget={streamRepairTarget}
+        streamEventCount={streamEventCount}
+        onClear={clearLiveLogs}
+      />
 
       <section className="panel" data-section="dataset-results">
         <div className="panel-head">
@@ -1047,6 +1114,14 @@ export default function DatasetToolPanel() {
           </div>
         </div>
       </section>
+
+      <PythonDatasetEntryReview
+        entries={pythonEntries}
+        detail={selectedPythonEntry}
+        loading={loadingPythonEntry || loading}
+        onSelect={handleSelectPythonEntry}
+        onRefresh={() => refreshData(query)}
+      />
     </section>
   );
 }

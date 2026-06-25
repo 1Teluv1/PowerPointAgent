@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "prompt_key": "a02c54b3a0371bac",
+  "raw_prompt_excerpt": "Create a creative PowerPoint presentation for external clients in the Marketing industry to pitch our upcoming brand campaign, consisting of exactly 12 slides with vibrant colors like orange, yellow, and cyan. Save the file as \"Brand_Cam...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다. finish_reason=length, reasoning_chars=110860. 모델이 reasoning만 출력했거나 출력 토큰 한도에 도달했는지 확인하세요.",
+      "repair_target": "thinking",
+      "failure_kind": "generation",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T19:32:43+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "ParseError",
+      "traceback": "Missing or empty section: assistant_python",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T19:32:59+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "replacements[1].old_code가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T19:34:39+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "replacements[1].old_code가 비어 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "",
+      "recorded_at": "2026-06-24T19:36:15+00:00"
+    }
+  ]
+}

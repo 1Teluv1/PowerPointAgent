@@ -21,6 +21,8 @@ from app.models.schemas import (
     LMStudioChatStreamRequest,
     PythonValidationRequest,
     PythonValidationResponse,
+    PythonDatasetEntryDetailResponse,
+    PythonDatasetEntryListResponse,
     RawPromptPoolConsumeRequest,
     RawPromptPoolConsumeResponse,
     RawPromptPoolGenerateRequest,
@@ -37,7 +39,10 @@ from app.services.dataset_service import (
     get_raw_prompt_pool,
     get_stats,
     list_saved_raw_prompt_pools,
+    list_python_entries,
     load_raw_prompt_pool_from_file,
+    read_saved_raw_prompt_pool_raw,
+    read_python_entry,
     restore_raw_prompt_pool,
     upsert_pair,
     validate_python_and_save_ppt,
@@ -162,6 +167,21 @@ def dataset_preview(dataset_type: str, limit: int = 20, query: str = "") -> Data
     return DatasetPreviewResponse(file=file_name, records=records)
 
 
+@router.get("/tools/dataset/python-entries", response_model=PythonDatasetEntryListResponse)
+def python_dataset_entries(query: str = "") -> PythonDatasetEntryListResponse:
+    return PythonDatasetEntryListResponse(entries=list_python_entries(query))
+
+
+@router.get("/tools/dataset/python-entries/{filename}", response_model=PythonDatasetEntryDetailResponse)
+def python_dataset_entry(filename: str) -> PythonDatasetEntryDetailResponse:
+    try:
+        return PythonDatasetEntryDetailResponse(**read_python_entry(filename))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
 @router.post("/tools/dataset/python/validate", response_model=PythonValidationResponse)
 def validate_python(payload: PythonValidationRequest) -> PythonValidationResponse:
     return validate_python_and_save_ppt(payload.python_code)
@@ -206,6 +226,16 @@ def restore_raw_prompts(payload: RawPromptPoolRestoreRequest) -> RawPromptPoolRe
 @router.get("/tools/dataset/raw-prompts/saved", response_model=SavedRawPromptPoolListResponse)
 def list_saved_raw_prompts() -> SavedRawPromptPoolListResponse:
     return SavedRawPromptPoolListResponse(files=list_saved_raw_prompt_pools())
+
+
+@router.get("/tools/dataset/raw-prompts/saved/{filename}/raw")
+def get_saved_raw_prompt_file_raw(filename: str) -> dict:
+    try:
+        return read_saved_raw_prompt_pool_raw(filename)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.post("/tools/dataset/raw-prompts/load/{filename}", response_model=RawPromptPoolResponse)

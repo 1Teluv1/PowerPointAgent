@@ -145,13 +145,19 @@ DEFAULT_DATASET_RETRY_SYSTEM_PROMPT = """You are a python-pptx surgical repair e
 The User Prompt and Thinking sections are FROZEN on the server and will NOT be regenerated. You repair ONLY the Assistant Python block.
 
 Output rules:
-* Return exactly one ```python fenced block with the full runnable script (imports through if __name__ == "__main__": main()).
-* Apply a **minimal surgical fix** for the traceback: copy every unchanged line verbatim from Previous Assistant Python; change only what the error requires (e.g. chart_data type, None guards, enum names).
+* Return valid JSON only, with no markdown fences or commentary.
+* Use exactly this shape: {"replacements":[{"old_code":"exact existing code","new_code":"replacement code"}]}.
+* Return only the smallest exact code fragments required to fix the traceback. Never return the full script.
+* Every old_code value must be copied verbatim from Previous Assistant Python and must identify exactly one location.
+* Preserve indentation and newlines in both old_code and new_code using valid JSON escaping.
+* Do not include ``` fences in old_code or new_code.
+* Do not place the complete script, imports-through-main output, or large unchanged regions in new_code.
+* If the failure details report a rejected patch, correct that exact formatting or matching problem in the next response.
 * Do NOT rewrite slides, layout, or deck structure unless the traceback proves that code path is wrong.
 * Never import ChartType from pptx.enum.chart — use XL_CHART_TYPE for add_chart.
 * slide.shapes.title may be None; never assign .text without checking.
 * ChartData must be a proper CategoryChartData (or other ChartData subclass) instance — never pass a tuple to add_chart.
-* No TODO, no pseudo-code, no markdown fences inside the Python code.
+* No TODO, no pseudo-code, and no unchanged-code placeholders.
 """
 
 DEFAULT_DATASET_THINKING_RETRY_SYSTEM_PROMPT = """You are a dataset repair engineer for a python-pptx training sample.
@@ -193,6 +199,44 @@ def _extract_thinking_text(content: str) -> str:
     if fence_match:
         return fence_match.group(1).strip()
     return re.sub(r"^\#\s*Thinking\s*", "", text, flags=re.IGNORECASE).strip()
+
+
+def _extract_code_replacements(content: str) -> list[dict[str, str]]:
+    text = (content or "").strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text, count=1, flags=re.IGNORECASE)
+        text = re.sub(r"\s*```$", "", text, count=1)
+
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise LMStudioError(f"재시도 응답의 부분 패치 JSON 형식이 올바르지 않습니다: {exc}") from exc
+
+    replacements = payload.get("replacements") if isinstance(payload, dict) else None
+    if not isinstance(replacements, list) or not replacements:
+        raise LMStudioError("재시도 응답에 비어 있지 않은 replacements 배열이 필요합니다.")
+
+    normalized: list[dict[str, str]] = []
+    if len(replacements) > 8:
+        raise LMStudioError("한 번의 재시도에는 replacements를 최대 8개까지만 사용할 수 있습니다.")
+    for index, item in enumerate(replacements, start=1):
+        if not isinstance(item, dict):
+            raise LMStudioError(f"replacements[{index}]는 JSON 객체여야 합니다.")
+        old_code = item.get("old_code")
+        new_code = item.get("new_code")
+        if not isinstance(old_code, str) or not old_code:
+            raise LMStudioError(f"replacements[{index}].old_code가 비어 있습니다.")
+        if not isinstance(new_code, str):
+            raise LMStudioError(f"replacements[{index}].new_code는 문자열이어야 합니다.")
+        if "```" in old_code or "```" in new_code:
+            raise LMStudioError(
+                f"replacements[{index}]에 Markdown 코드 fence가 포함되어 있습니다. "
+                "old_code와 new_code에는 Python 코드 조각만 넣어야 합니다."
+            )
+        if old_code == new_code:
+            raise LMStudioError(f"replacements[{index}]에 실제 코드 변경이 없습니다.")
+        normalized.append({"old_code": old_code, "new_code": new_code})
+    return normalized
 
 
 def _dataset_system_content(system_prompt: Optional[str]) -> str:
@@ -293,6 +337,34 @@ def publish_live_answer_event(event: Dict[str, Any]) -> None:
     _broadcast_live_answer(event)
 
 
+LOG_MESSAGE_MAX_LEN = 4096
+
+
+def publish_dataset_log(
+    tag: str,
+    message: str,
+    *,
+    level: str = "info",
+    stage: Optional[str] = None,
+    attempt: Optional[int] = None,
+    **extra: Any,
+) -> None:
+    """Broadcast a structured tagged log line for dataset UI."""
+    truncated = message if len(message) <= LOG_MESSAGE_MAX_LEN else message[:LOG_MESSAGE_MAX_LEN] + "…"
+    payload: Dict[str, Any] = {
+        "type": "log",
+        "level": level,
+        "tag": tag,
+        "message": truncated,
+    }
+    if stage is not None:
+        payload["stage"] = stage
+    if attempt is not None:
+        payload["attempt"] = attempt
+    payload.update(extra)
+    _broadcast_live_answer(payload)
+
+
 def _post_chat_completion(endpoint: str, payload: dict, *, stage: str = "lm_studio") -> dict:
     _broadcast_live_answer(
         {
@@ -303,6 +375,7 @@ def _post_chat_completion(endpoint: str, payload: dict, *, stage: str = "lm_stud
         }
     )
     content_parts = []
+    reasoning_chars = 0
     last_payload: Dict[str, Any] = {}
     try:
         for data in _iter_openai_sse_data(endpoint, payload):
@@ -319,13 +392,25 @@ def _post_chat_completion(endpoint: str, payload: dict, *, stage: str = "lm_stud
 
             last_payload = parsed
             delta = ((parsed.get("choices") or [{}])[0].get("delta") or {})
-            # reasoning_content is intentionally excluded from final assistant output.
+            reasoning_chunk = delta.get("reasoning_content") or ""
+            if reasoning_chunk:
+                reasoning_chars += len(reasoning_chunk)
+                _broadcast_live_answer(
+                    {
+                        "type": "delta",
+                        "channel": "reasoning",
+                        "stage": stage,
+                        "model": payload.get("model"),
+                        "content": reasoning_chunk,
+                    }
+                )
             chunk = delta.get("content") or ""
             if chunk:
                 content_parts.append(chunk)
                 _broadcast_live_answer(
                     {
                         "type": "delta",
+                        "channel": "content",
                         "stage": stage,
                         "model": payload.get("model"),
                         "content": chunk,
@@ -343,12 +428,20 @@ def _post_chat_completion(endpoint: str, payload: dict, *, stage: str = "lm_stud
         raise
 
     content = "".join(content_parts)
+    if not content.strip():
+        finish_reason = ((last_payload.get("choices") or [{}])[0]).get("finish_reason") or "unknown"
+        raise LMStudioError(
+            "LM Studio 응답 content가 비어 있습니다. "
+            f"finish_reason={finish_reason}, reasoning_chars={reasoning_chars}. "
+            "모델이 reasoning만 출력했거나 출력 토큰 한도에 도달했는지 확인하세요."
+        )
     _broadcast_live_answer(
         {
             "type": "end",
             "stage": stage,
             "model": payload.get("model"),
             "content": "",
+            "token_count": len(content),
         }
     )
     return {
@@ -404,7 +497,7 @@ def generate_markdown_sample(
         "model": model,
         "temperature": 0.1,
         "repeat_penalty": 1.1,
-        "max_tokens": 12000,
+        "max_tokens": 24000,
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": raw_prompt},
@@ -568,14 +661,14 @@ def repair_assistant_python_only(
     failure_kind: str,
     repair_target: str,
     error_memory_addon: Optional[str] = None,
-) -> str:
+) -> list[dict[str, str]]:
     failure_block = _format_failure_classification(
         error_type=error_type,
         failure_kind=failure_kind,
         repair_target=repair_target,
         traceback_text=traceback_text,
     )
-    user_message = f"""Python execution failed. Surgically repair ONLY the Assistant Python script.
+    user_message = f"""Python execution failed. Produce a minimal partial patch for ONLY the Assistant Python script.
 
 Original raw request (context only — do not regenerate as markdown sections):
 {raw_prompt}
@@ -589,12 +682,12 @@ Thinking:
 
 {failure_block}
 
---- Previous Assistant Python (copy unchanged lines verbatim; minimal fix only) ---
+--- Previous Assistant Python (use this as context; copy only exact changed fragments into old_code) ---
 ```python
 {failed_python_code}
 ```
 
-Return one ```python fenced block with the complete runnable script. Change only lines required by the traceback."""
+Return JSON only. Do not return Markdown fences or the complete script. Each old_code must be copied verbatim and match exactly one location in the script. If the failure details describe a rejected previous patch, fix that validation problem first."""
     system = _merge_error_memory_into_system(
         DEFAULT_DATASET_RETRY_SYSTEM_PROMPT.strip(),
         error_memory_addon,
@@ -603,7 +696,7 @@ Return one ```python fenced block with the complete runnable script. Change only
         "model": model,
         "temperature": 0.05,
         "repeat_penalty": 1.1,
-        "max_tokens": 12000,
+        "max_tokens": 6000,
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user_message},
@@ -611,10 +704,7 @@ Return one ```python fenced block with the complete runnable script. Change only
     }
     res = _post_chat_completion(endpoint, payload, stage="repair_assistant_python_only")
     raw = _extract_content(res)
-    extracted = _extract_assistant_python_fence(raw)
-    if not extracted.strip():
-        raise LMStudioError("재시도 응답에서 Python 코드 블록을 찾지 못했습니다.")
-    return extracted
+    return _extract_code_replacements(raw)
 
 
 def repair_markdown_sample(

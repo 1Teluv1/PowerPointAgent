@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "prompt_key": "5e40a3241f5a31d3",
+  "raw_prompt_excerpt": "Develop a friendly PowerPoint presentation for candidates in the HR/Recruitment industry highlighting our company culture and benefits, containing exactly 7 slides with a welcoming theme using purple, white, and soft pink palettes. The o...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "ExecutionError",
+      "traceback": "Traceback (most recent call last):\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\e45d78ed-503f-49ff-9d51-595ffef0a7d6\\generate_ppt.py\"\u001b[0m, line \u001b[35m432\u001b[0m, in \u001b[35m<module>\u001b[0m\n    \u001b[31mmain\u001b[0m\u001b[1;31m()\u001b[0m\n    \u001b[31m~~~~\u001b[0m\u001b[1;31m^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\e45d78ed-503f-49ff-9d51-595ffef0a7d6\\generate_ppt.py\"\u001b[0m, line \u001b[35m418\u001b[0m, in \u001b[35mmain\u001b[0m\n    \u001b[31mbuild_slide_1_title\u001b[0m\u001b[1;31m(prs)\u001b[0m\n    \u001b[31m~~~~~~~~~~~~~~~~~~~\u001b[0m\u001b[1;31m^^^^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\e45d78ed-503f-49ff-9d51-595ffef0a7d6\\generate_ppt.py\"\u001b[0m, line \u001b[35m158\u001b[0m, in \u001b[35mbuild_slide_1_title\u001b[0m\n    \u001b[31madd_footer\u001b[0m\u001b[1;31m(slide)\u001b[0m\n    \u001b[31m~~~~~~~~~~\u001b[0m\u001b[1;31m^^^^^^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\e45d78ed-503f-49ff-9d51-595ffef0a7d6\\generate_ppt.py\"\u001b[0m, line \u001b[35m106\u001b[0m, in \u001b[35madd_footer\u001b[0m\n    txBox = \u001b[1;31mslide.shapes.add_text_box\u001b[0m(Inches(0.5), Inches(7.1), Inches(9), Inches(0.3))\n            \u001b[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[1;35mAttributeError\u001b[0m: \u001b[35m'SlideShapes' object has no attribute 'add_text_box'. Did you mean: 'add_textbox'...",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nimport os\n\n\n# ── Deck Constants ──────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(10)\nSLIDE_HEIGHT = Inches(7.5)\n\nPURPLE_PRIMARY = RGBColor(0x6B, 0x2D, 0x8B)\nPURPLE_DARK = RGBColor(0x4A, 0x1C, 0x6E)\nSOFT_PINK = RGBColor(0xF4, 0xC2, 0xE2)\nLAVENDER = RGBColor(0xE8, 0xD5, 0xF5)\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nLIGHT_GRAY = RGBColor(0xF9, 0xF6, 0xFB)\nDARK_TEXT = RGBColor(0x33, 0x33, 0x33)\nMEDIUM_TEXT = RGBColor(0x5A, 0x5A, 0x5A)\n\nFONT_TITLE = \"Aptos\"\nFONT_BODY = \"Calibri\"\nFONT_FALLBACK = \"Arial\"\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.5)\n\n\n# ── Helpers ─────────────────────────────────────────────────────\n\ndef hex_to_rgb(hex_color):\n    h = hex_color.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\ndef set_slide_background(slide, color_hex=\"#FFFFFF\"):\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = hex_to_rgb(c...",
+      "recorded_at": "2026-06-24T19:59:03+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "GenerationError",
+      "traceback": "한 번의 재시도에는 replacements를 최대 8개까지만 사용할 수 있습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nimport os\n\n\n# ── Deck Constants ──────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(10)\nSLIDE_HEIGHT = Inches(7.5)\n\nPURPLE_PRIMARY = RGBColor(0x6B, 0x2D, 0x8B)\nPURPLE_DARK = RGBColor(0x4A, 0x1C, 0x6E)\nSOFT_PINK = RGBColor(0xF4, 0xC2, 0xE2)\nLAVENDER = RGBColor(0xE8, 0xD5, 0xF5)\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nLIGHT_GRAY = RGBColor(0xF9, 0xF6, 0xFB)\nDARK_TEXT = RGBColor(0x33, 0x33, 0x33)\nMEDIUM_TEXT = RGBColor(0x5A, 0x5A, 0x5A)\n\nFONT_TITLE = \"Aptos\"\nFONT_BODY = \"Calibri\"\nFONT_FALLBACK = \"Arial\"\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.5)\n\n\n# ── Helpers ─────────────────────────────────────────────────────\n\ndef hex_to_rgb(hex_color):\n    h = hex_color.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\ndef set_slide_background(slide, color_hex=\"#FFFFFF\"):\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = hex_to_rgb(c...",
+      "recorded_at": "2026-06-24T19:59:56+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "재시도 응답에 비어 있지 않은 replacements 배열이 필요합니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nimport os\n\n\n# ── Deck Constants ──────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(10)\nSLIDE_HEIGHT = Inches(7.5)\n\nPURPLE_PRIMARY = RGBColor(0x6B, 0x2D, 0x8B)\nPURPLE_DARK = RGBColor(0x4A, 0x1C, 0x6E)\nSOFT_PINK = RGBColor(0xF4, 0xC2, 0xE2)\nLAVENDER = RGBColor(0xE8, 0xD5, 0xF5)\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nLIGHT_GRAY = RGBColor(0xF9, 0xF6, 0xFB)\nDARK_TEXT = RGBColor(0x33, 0x33, 0x33)\nMEDIUM_TEXT = RGBColor(0x5A, 0x5A, 0x5A)\n\nFONT_TITLE = \"Aptos\"\nFONT_BODY = \"Calibri\"\nFONT_FALLBACK = \"Arial\"\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.5)\n\n\n# ── Helpers ─────────────────────────────────────────────────────\n\ndef hex_to_rgb(hex_color):\n    h = hex_color.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\ndef set_slide_background(slide, color_hex=\"#FFFFFF\"):\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = hex_to_rgb(c...",
+      "recorded_at": "2026-06-24T20:00:21+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "LM Studio 응답 content가 비어 있습니다. finish_reason=length, reasoning_chars=31992. 모델이 reasoning만 출력했거나 출력 토큰 한도에 도달했는지 확인하세요.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nimport os\n\n\n# ── Deck Constants ──────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(10)\nSLIDE_HEIGHT = Inches(7.5)\n\nPURPLE_PRIMARY = RGBColor(0x6B, 0x2D, 0x8B)\nPURPLE_DARK = RGBColor(0x4A, 0x1C, 0x6E)\nSOFT_PINK = RGBColor(0xF4, 0xC2, 0xE2)\nLAVENDER = RGBColor(0xE8, 0xD5, 0xF5)\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nLIGHT_GRAY = RGBColor(0xF9, 0xF6, 0xFB)\nDARK_TEXT = RGBColor(0x33, 0x33, 0x33)\nMEDIUM_TEXT = RGBColor(0x5A, 0x5A, 0x5A)\n\nFONT_TITLE = \"Aptos\"\nFONT_BODY = \"Calibri\"\nFONT_FALLBACK = \"Arial\"\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.5)\n\n\n# ── Helpers ─────────────────────────────────────────────────────\n\ndef hex_to_rgb(hex_color):\n    h = hex_color.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\ndef set_slide_background(slide, color_hex=\"#FFFFFF\"):\n    bg = slide.background\n    fill = bg.fill\n    fill.solid()\n    fill.fore_color.rgb = hex_to_rgb(c...",
+      "recorded_at": "2026-06-24T20:02:54+00:00"
+    }
+  ]
+}

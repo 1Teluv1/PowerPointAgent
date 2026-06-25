@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "prompt_key": "a9ece83a121ee529",
+  "raw_prompt_excerpt": "Generate a data-heavy PowerPoint presentation for investors in the Tech/SaaS industry showcasing our company's growth trajectory over the past two years, spanning exactly 25 slides with a dark mode theme using black, purple, and neon gre...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "ExecutionError",
+      "traceback": "Traceback (most recent call last):\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\26ad2d13-dfaa-480e-b45e-8169ea844179\\generate_ppt.py\"\u001b[0m, line \u001b[35m777\u001b[0m, in \u001b[35m<module>\u001b[0m\n    \u001b[31mmain\u001b[0m\u001b[1;31m()\u001b[0m\n    \u001b[31m~~~~\u001b[0m\u001b[1;31m^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\26ad2d13-dfaa-480e-b45e-8169ea844179\\generate_ppt.py\"\u001b[0m, line \u001b[35m771\u001b[0m, in \u001b[35mmain\u001b[0m\n    \u001b[31mbuilder\u001b[0m\u001b[1;31m(prs)\u001b[0m\n    \u001b[31m~~~~~~~\u001b[0m\u001b[1;31m^^^^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\26ad2d13-dfaa-480e-b45e-8169ea844179\\generate_ppt.py\"\u001b[0m, line \u001b[35m283\u001b[0m, in \u001b[35mslide_07_mrr_growth\u001b[0m\n    \u001b[1;31mpoint.marker.fill\u001b[0m.solid()\n    \u001b[1;31m^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[1;35mAttributeError\u001b[0m: \u001b[35m'Marker' object has no attribute 'fill'\u001b[0m",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData\nimport os\n\n# ── Slide dimensions (16:9 widescreen) ───────────────────────────────\nSLIDE_WIDTH = Inches(13.33)\nSLIDE_HEIGHT = Inches(7.5)\n\n# ── Dark-mode palette ────────────────────────────────────────────────\nBLACK_BG = \"#0A0A0F\"\nDARK_CARD = \"#141420\"\nPURPLE_DARK = \"#7B2D8E\"\nPURPLE_LIGHT = \"#9B59B6\"\nNEON_GREEN = \"#39FF14\"\nWHITE = \"#FFFFFF\"\nGRAY_TEXT = \"#A0A0B0\"\nLIGHT_GRAY = \"#C8C8D8\"\n\n# ── Fonts ────────────────────────────────────────────────────────────\nFONT_PRIMARY = \"Calibri\"\nFONT_SECONDARY = \"Arial\"\n\n# ── Margins & spacing ────────────────────────────────────────────────\nMARGIN_LEFT = Inches(0.6)\nMARGIN_RIGHT = Inches(0.6)\nCONTENT_WIDTH = SLIDE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT\nSECTION_LABEL_TOP = Inches(0.35)\nFOOTER_BOTTOM = Inches(0.25)\n\n\ndef hex_to_rgb(hex_str: str) -> RGBColor:\n    h = hex_str.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\n# ── Helpers ────────────────────...",
+      "recorded_at": "2026-06-24T19:21:13+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "GenerationError",
+      "traceback": "부분 패치 2의 기존 코드 구간을 찾지 못했습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData\nimport os\n\n# ── Slide dimensions (16:9 widescreen) ───────────────────────────────\nSLIDE_WIDTH = Inches(13.33)\nSLIDE_HEIGHT = Inches(7.5)\n\n# ── Dark-mode palette ────────────────────────────────────────────────\nBLACK_BG = \"#0A0A0F\"\nDARK_CARD = \"#141420\"\nPURPLE_DARK = \"#7B2D8E\"\nPURPLE_LIGHT = \"#9B59B6\"\nNEON_GREEN = \"#39FF14\"\nWHITE = \"#FFFFFF\"\nGRAY_TEXT = \"#A0A0B0\"\nLIGHT_GRAY = \"#C8C8D8\"\n\n# ── Fonts ────────────────────────────────────────────────────────────\nFONT_PRIMARY = \"Calibri\"\nFONT_SECONDARY = \"Arial\"\n\n# ── Margins & spacing ────────────────────────────────────────────────\nMARGIN_LEFT = Inches(0.6)\nMARGIN_RIGHT = Inches(0.6)\nCONTENT_WIDTH = SLIDE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT\nSECTION_LABEL_TOP = Inches(0.35)\nFOOTER_BOTTOM = Inches(0.25)\n\n\ndef hex_to_rgb(hex_str: str) -> RGBColor:\n    h = hex_str.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\n# ── Helpers ────────────────────...",
+      "recorded_at": "2026-06-24T19:21:46+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "ExecutionError",
+      "traceback": "Traceback (most recent call last):\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\1ae8edba-d868-4a71-bec5-48b25c411730\\generate_ppt.py\"\u001b[0m, line \u001b[35m777\u001b[0m, in \u001b[35m<module>\u001b[0m\n    \u001b[31mmain\u001b[0m\u001b[1;31m()\u001b[0m\n    \u001b[31m~~~~\u001b[0m\u001b[1;31m^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\1ae8edba-d868-4a71-bec5-48b25c411730\\generate_ppt.py\"\u001b[0m, line \u001b[35m771\u001b[0m, in \u001b[35mmain\u001b[0m\n    \u001b[31mbuilder\u001b[0m\u001b[1;31m(prs)\u001b[0m\n    \u001b[31m~~~~~~~\u001b[0m\u001b[1;31m^^^^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\1ae8edba-d868-4a71-bec5-48b25c411730\\generate_ppt.py\"\u001b[0m, line \u001b[35m340\u001b[0m, in \u001b[35mslide_09_customer_acquisition\u001b[0m\n    \u001b[1;31mpoint.marker.fill\u001b[0m.solid()\n    \u001b[1;31m^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[1;35mAttributeError\u001b[0m: \u001b[35m'Marker' object has no attribute 'fill'\u001b[0m",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData\nimport os\n\n# ── Slide dimensions (16:9 widescreen) ───────────────────────────────\nSLIDE_WIDTH = Inches(13.33)\nSLIDE_HEIGHT = Inches(7.5)\n\n# ── Dark-mode palette ────────────────────────────────────────────────\nBLACK_BG = \"#0A0A0F\"\nDARK_CARD = \"#141420\"\nPURPLE_DARK = \"#7B2D8E\"\nPURPLE_LIGHT = \"#9B59B6\"\nNEON_GREEN = \"#39FF14\"\nWHITE = \"#FFFFFF\"\nGRAY_TEXT = \"#A0A0B0\"\nLIGHT_GRAY = \"#C8C8D8\"\n\n# ── Fonts ────────────────────────────────────────────────────────────\nFONT_PRIMARY = \"Calibri\"\nFONT_SECONDARY = \"Arial\"\n\n# ── Margins & spacing ────────────────────────────────────────────────\nMARGIN_LEFT = Inches(0.6)\nMARGIN_RIGHT = Inches(0.6)\nCONTENT_WIDTH = SLIDE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT\nSECTION_LABEL_TOP = Inches(0.35)\nFOOTER_BOTTOM = Inches(0.25)\n\n\ndef hex_to_rgb(hex_str: str) -> RGBColor:\n    h = hex_str.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\n# ── Helpers ────────────────────...",
+      "recorded_at": "2026-06-24T19:22:28+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "GenerationError",
+      "traceback": "부분 패치 1의 기존 코드 구간이 2곳에 있어 안전하게 적용할 수 없습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "from pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\nfrom pptx.chart.data import CategoryChartData\nimport os\n\n# ── Slide dimensions (16:9 widescreen) ───────────────────────────────\nSLIDE_WIDTH = Inches(13.33)\nSLIDE_HEIGHT = Inches(7.5)\n\n# ── Dark-mode palette ────────────────────────────────────────────────\nBLACK_BG = \"#0A0A0F\"\nDARK_CARD = \"#141420\"\nPURPLE_DARK = \"#7B2D8E\"\nPURPLE_LIGHT = \"#9B59B6\"\nNEON_GREEN = \"#39FF14\"\nWHITE = \"#FFFFFF\"\nGRAY_TEXT = \"#A0A0B0\"\nLIGHT_GRAY = \"#C8C8D8\"\n\n# ── Fonts ────────────────────────────────────────────────────────────\nFONT_PRIMARY = \"Calibri\"\nFONT_SECONDARY = \"Arial\"\n\n# ── Margins & spacing ────────────────────────────────────────────────\nMARGIN_LEFT = Inches(0.6)\nMARGIN_RIGHT = Inches(0.6)\nCONTENT_WIDTH = SLIDE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT\nSECTION_LABEL_TOP = Inches(0.35)\nFOOTER_BOTTOM = Inches(0.25)\n\n\ndef hex_to_rgb(hex_str: str) -> RGBColor:\n    h = hex_str.lstrip(\"#\")\n    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))\n\n\n# ── Helpers ────────────────────...",
+      "recorded_at": "2026-06-24T19:22:54+00:00"
+    }
+  ]
+}

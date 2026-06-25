@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 import re
@@ -43,6 +44,7 @@ from app.services.lm_studio_service import (
     generate_markdown_sample,
     generate_raw_prompt_list,
     generate_raw_prompt_system_prompt,
+    publish_dataset_log,
     publish_live_answer_event,
 )
 from app.services.ppt_preview_service import export_pptx_thumbnails
@@ -53,12 +55,13 @@ DATASET_DIR = Path("data/datasets")
 RAW_PROMPT_POOL_DIR = DATASET_DIR / "raw_prompt_pools"
 ASSET_DATASET_FILE = DATASET_DIR / "asset_lora.jsonl"
 PYTHON_DATASET_FILE = DATASET_DIR / "python_lora.jsonl"
-TOOL_ARTIFACT_ROOT = Path(__file__).resolve().parents[2] / "artifacts" / "tools"
+PYTHON_ENTRY_DIR = DATASET_DIR / "python_entries"
+from app.core.paths import TOOL_ARTIFACT_ROOT
 ASSET_SYSTEM_PROMPT = "You generate only valid SVG code."
 PYTHON_SYSTEM_PROMPT = (
     "You generate only valid python-pptx code. "
     "Use XL_CHART_TYPE (not ChartType) for charts; guard slide.shapes.title for None; "
-    "use exact # User Prompt / # Thinking / # Assistant sections with ```text and ```python fences."
+    "return only complete runnable Python code without Markdown fences or section headings."
 )
 RAW_PROMPT_POOL: List[Dict] = []
 
@@ -71,6 +74,17 @@ def normalize_prompt(prompt: str) -> str:
     return " ".join(prompt.strip().split())
 
 
+def resolve_dataset_system_prompt(custom_system_prompt: Optional[str]) -> Optional[str]:
+    """Return only an explicit dataset-generation override.
+
+    The raw-prompt-pool system prompt instructs the model to create more user
+    requests and must never be reused for Python dataset sample generation.
+    None lets generate_markdown_sample select its dataset-specific default.
+    """
+    custom = (custom_system_prompt or "").strip()
+    return custom or None
+
+
 def build_key(user_prompt: str) -> str:
     normalized = normalize_prompt(user_prompt)
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:16]
@@ -78,6 +92,11 @@ def build_key(user_prompt: str) -> str:
 
 def ensure_dataset_dir() -> None:
     DATASET_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def ensure_python_entry_dir() -> None:
+    ensure_dataset_dir()
+    PYTHON_ENTRY_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def ensure_raw_prompt_pool_dir() -> None:
@@ -158,10 +177,26 @@ def list_saved_raw_prompt_pools() -> List[Dict]:
     return result
 
 
-def load_raw_prompt_pool_from_file(filename: str) -> RawPromptPoolResponse:
+def _safe_raw_prompt_pool_filename(filename: str) -> str:
     safe_name = Path(filename).name
     if safe_name != filename or not safe_name.startswith("raw_prompts_") or not safe_name.endswith(".json"):
         raise ValueError("Invalid raw prompt pool filename")
+    return safe_name
+
+
+def read_saved_raw_prompt_pool_raw(filename: str) -> Dict:
+    safe_name = _safe_raw_prompt_pool_filename(filename)
+    path = RAW_PROMPT_POOL_DIR / safe_name
+    if not path.exists():
+        raise FileNotFoundError(f"Saved raw prompt pool not found: {safe_name}")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("Saved raw prompt pool JSON 형식이 올바르지 않습니다.")
+    return data
+
+
+def load_raw_prompt_pool_from_file(filename: str) -> RawPromptPoolResponse:
+    safe_name = _safe_raw_prompt_pool_filename(filename)
     path = RAW_PROMPT_POOL_DIR / safe_name
     if not path.exists():
         raise FileNotFoundError(f"Saved raw prompt pool not found: {safe_name}")
@@ -242,6 +277,122 @@ def build_messages_row(user_prompt: str, answer_code: str, system_prompt: str) -
     }
 
 
+def _python_entry_path(key: str) -> Path:
+    return PYTHON_ENTRY_DIR / f"{key}.jsonl"
+
+
+def write_python_entry(key: str, row: Dict) -> Path:
+    ensure_python_entry_dir()
+    path = _python_entry_path(key)
+    temp = path.with_suffix(".jsonl.tmp")
+    temp.write_text(json.dumps(row, ensure_ascii=False) + "\n", encoding="utf-8")
+    temp.replace(path)
+    return path
+
+
+def validate_python_entry_row(row: object) -> Tuple[bool, List[str]]:
+    errors: List[str] = []
+    if not isinstance(row, dict):
+        return False, ["최상위 JSON 값은 객체여야 합니다."]
+
+    messages = row.get("messages")
+    if not isinstance(messages, list):
+        return False, ["messages 배열이 필요합니다."]
+    expected_roles = ["system", "user", "assistant"]
+    roles = [item.get("role") if isinstance(item, dict) else None for item in messages]
+    if roles != expected_roles:
+        errors.append(f"messages role 순서는 {expected_roles}여야 합니다.")
+
+    contents: Dict[str, str] = {}
+    for role in expected_roles:
+        matching = [item for item in messages if isinstance(item, dict) and item.get("role") == role]
+        if len(matching) != 1:
+            errors.append(f"{role} 메시지는 정확히 1개여야 합니다.")
+            continue
+        content = matching[0].get("content")
+        if not isinstance(content, str) or not content.strip():
+            errors.append(f"{role} content가 비어 있습니다.")
+            continue
+        contents[role] = content
+
+    assistant = contents.get("assistant", "")
+    if assistant:
+        if "```" in assistant or re.search(r"(?m)^#\s+(?:User Prompt|Thinking|Assistant)\s*$", assistant):
+            errors.append("assistant content에 Markdown fence 또는 데이터셋 섹션 제목이 포함되어 있습니다.")
+        try:
+            ast.parse(assistant)
+        except SyntaxError as exc:
+            location = f"line {exc.lineno}" if exc.lineno else "unknown line"
+            errors.append(f"Python 문법 오류: {location}: {exc.msg}")
+        if "pptx" not in assistant:
+            errors.append("assistant content에서 python-pptx 사용을 확인할 수 없습니다.")
+        user = contents.get("user", "").strip()
+        if user and user in assistant:
+            errors.append("assistant content에 user prompt가 그대로 중복되어 있습니다.")
+    return not errors, errors
+
+
+def read_python_entry(filename: str) -> Dict:
+    if Path(filename).name != filename or not filename.endswith(".jsonl"):
+        raise ValueError("올바르지 않은 개별 데이터셋 파일명입니다.")
+    path = PYTHON_ENTRY_DIR / filename
+    if not path.exists():
+        raise FileNotFoundError(f"개별 데이터셋 파일을 찾을 수 없습니다: {filename}")
+
+    raw = path.read_text(encoding="utf-8")
+    lines = [line for line in raw.splitlines() if line.strip()]
+    errors: List[str] = []
+    row: object = {}
+    if len(lines) != 1:
+        errors.append(f"JSONL 파일에는 정확히 1개 레코드가 필요합니다. actual={len(lines)}")
+    if lines:
+        try:
+            row = json.loads(lines[0])
+        except json.JSONDecodeError as exc:
+            errors.append(f"JSON 파싱 오류: line {exc.lineno}, column {exc.colno}: {exc.msg}")
+    valid_row, row_errors = validate_python_entry_row(row)
+    errors.extend(row_errors)
+    return {
+        "filename": filename,
+        "valid": len(errors) == 0 and valid_row,
+        "errors": errors,
+        "size_bytes": path.stat().st_size,
+        "updated_at": datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).isoformat(),
+        "row": row if isinstance(row, dict) else {},
+        "raw": raw,
+    }
+
+
+def list_python_entries(query: str = "") -> List[Dict]:
+    ensure_python_entry_dir()
+    needle = normalize_prompt(query).lower()
+    entries: List[Dict] = []
+    for path in sorted(PYTHON_ENTRY_DIR.glob("*.jsonl"), key=lambda item: item.stat().st_mtime, reverse=True):
+        detail = read_python_entry(path.name)
+        messages = detail["row"].get("messages", []) if isinstance(detail["row"], dict) else []
+        user_prompt = next(
+            (
+                str(item.get("content", ""))
+                for item in messages
+                if isinstance(item, dict) and item.get("role") == "user"
+            ),
+            "",
+        )
+        if needle and needle not in normalize_prompt(user_prompt).lower() and needle not in path.name.lower():
+            continue
+        entries.append(
+            {
+                "filename": detail["filename"],
+                "valid": detail["valid"],
+                "errors": detail["errors"],
+                "size_bytes": detail["size_bytes"],
+                "updated_at": detail["updated_at"],
+                "user_prompt": user_prompt,
+            }
+        )
+    return entries
+
+
 def upsert_record(path: Path, user_prompt: str, answer_code: str, system_prompt: str) -> bool:
     records = parse_jsonl(path)
     target_prompt = normalize_prompt(user_prompt)
@@ -272,7 +423,9 @@ def upsert_pair(
     ensure_dataset_dir()
     key = build_key(user_prompt)
     upsert_record(ASSET_DATASET_FILE, user_prompt, asset_code, asset_system_prompt)
+    python_row = build_messages_row(user_prompt, python_code, python_system_prompt)
     upsert_record(PYTHON_DATASET_FILE, user_prompt, python_code, python_system_prompt)
+    write_python_entry(key, python_row)
     return key
 
 
@@ -385,13 +538,13 @@ def _parse_markdown_with_raw_prompt(
     return normalized_markdown, parse_markdown_dataset(normalized_markdown, raw_prompt=raw_prompt)
 
 
-def build_data_messages_row(system_prompt: str, user_prompt: str, assistant_markdown: str) -> Dict:
+def build_data_messages_row(system_prompt: str, user_prompt: str, assistant_code: str) -> Dict:
     return {
         "data": {
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
-                {"role": "assistant", "content": assistant_markdown},
+                {"role": "assistant", "content": assistant_code},
             ]
         }
     }
@@ -434,6 +587,52 @@ def get_raw_prompt_pool() -> RawPromptPoolResponse:
     )
 
 
+def _publish_validation_logs(validation: PythonValidationResponse, *, attempt: int) -> None:
+    publish_dataset_log(
+        "VALIDATION.START",
+        f"attempt {attempt} · Python subprocess 실행",
+        stage="python_validation",
+        attempt=attempt,
+    )
+    for log_line in validation.logs or []:
+        text = str(log_line).strip()
+        if not text:
+            continue
+        tag = "VALIDATION.STDERR" if "error" in text.lower() or "traceback" in text.lower() else "VALIDATION.STDOUT"
+        publish_dataset_log(tag, text, stage="python_validation", attempt=attempt)
+    if validation.status == "ok":
+        publish_dataset_log(
+            "VALIDATION.OK",
+            "output.pptx 생성 성공",
+            stage="python_validation",
+            attempt=attempt,
+            level="info",
+        )
+    else:
+        publish_dataset_log(
+            "VALIDATION.FAIL",
+            validation.error_type or "ExecutionError",
+            stage="python_validation",
+            attempt=attempt,
+            level="error",
+        )
+
+
+def _publish_repair_plan_log(event: Dict) -> None:
+    publish_live_answer_event(event)
+    stage = event.get("stage") or "repair"
+    attempt = event.get("attempt")
+    content = event.get("content") or "repair plan"
+    publish_dataset_log(
+        "REPAIR.PLAN",
+        content,
+        stage=stage,
+        attempt=attempt if isinstance(attempt, int) else None,
+        repair_target=event.get("repair_target"),
+        failure_kind=event.get("failure_kind"),
+    )
+
+
 def restore_raw_prompt_pool(payload: RawPromptPoolRestoreRequest) -> RawPromptPoolResponse:
     global RAW_PROMPT_SYSTEM_PROMPT
 
@@ -456,6 +655,11 @@ def restore_raw_prompt_pool(payload: RawPromptPoolRestoreRequest) -> RawPromptPo
     if payload.system_prompt and payload.system_prompt.strip():
         RAW_PROMPT_SYSTEM_PROMPT = payload.system_prompt.strip()
 
+    publish_dataset_log(
+        "RUN.RESTORE",
+        f"로컬 풀 복원 완료 · items={len(restored_items)}",
+        stage="count_runner",
+    )
     return get_raw_prompt_pool()
 
 
@@ -487,16 +691,44 @@ def generate_raw_prompt_pool(payload: RawPromptPoolGenerateRequest) -> RawPrompt
     global RAW_PROMPT_SYSTEM_PROMPT
 
     total = payload.prompt_count
+    chunk_total = (total + RAW_PROMPT_LIST_CHUNK_SIZE - 1) // RAW_PROMPT_LIST_CHUNK_SIZE
+    publish_dataset_log(
+        "POOL.START",
+        f"Raw Prompt 풀 생성 시작 · total={total} · chunks={chunk_total}",
+        stage="raw_prompt_pool",
+        topic_seed=payload.topic_seed,
+    )
+    publish_dataset_log(
+        "POOL.SYSTEM_PROMPT",
+        "시스템 프롬프트 생성 중…",
+        stage="generate_raw_prompt_system_prompt",
+    )
     RAW_PROMPT_SYSTEM_PROMPT = generate_raw_prompt_system_prompt(
         endpoint=payload.lmstudio_endpoint,
         model=payload.lmstudio_model,
         topic_seed=payload.topic_seed,
     )
+    publish_dataset_log(
+        "POOL.SYSTEM_PROMPT",
+        f"시스템 프롬프트 생성 완료 · chars={len(RAW_PROMPT_SYSTEM_PROMPT)}",
+        stage="generate_raw_prompt_system_prompt",
+    )
 
     prompts: List[str] = []
     remaining = total
+    chunk_index = 0
     while remaining > 0:
+        chunk_index += 1
         chunk = min(RAW_PROMPT_LIST_CHUNK_SIZE, remaining)
+        stage_name = f"generate_raw_prompt_list:{chunk}"
+        publish_dataset_log(
+            "POOL.CHUNK",
+            f"chunk={chunk_index}/{chunk_total} · count={chunk} · stage={stage_name}",
+            stage=stage_name,
+            chunk_index=chunk_index,
+            chunk_total=chunk_total,
+            chunk_size=chunk,
+        )
         raw_list = generate_raw_prompt_list(
             endpoint=payload.lmstudio_endpoint,
             model=payload.lmstudio_model,
@@ -505,6 +737,12 @@ def generate_raw_prompt_pool(payload: RawPromptPoolGenerateRequest) -> RawPrompt
             topic_seed=payload.topic_seed,
         )
         batch = _parse_raw_prompt_list(raw_list, chunk)
+        publish_dataset_log(
+            "POOL.PARSE",
+            f"chunk={chunk_index}/{chunk_total} · parsed={len(batch)} prompts",
+            stage=stage_name,
+            chunk_index=chunk_index,
+        )
         prompts.extend(batch)
         remaining -= chunk
 
@@ -521,7 +759,18 @@ def generate_raw_prompt_pool(payload: RawPromptPoolGenerateRequest) -> RawPrompt
                 "thumbnail_urls": [],
             }
         )
+    publish_dataset_log(
+        "POOL.SAVE",
+        f"JSON 파일 저장 중… · prompts={len(prompts)}",
+        stage="raw_prompt_pool",
+    )
     saved_file = save_raw_prompt_pool_to_file(topic_seed=payload.topic_seed, prompt_count=total)
+    publish_dataset_log(
+        "POOL.DONE",
+        f"풀 생성 완료 · total={len(prompts)} · saved={saved_file}",
+        stage="raw_prompt_pool",
+        saved_file=saved_file,
+    )
     response = get_raw_prompt_pool()
     return response.model_copy(update={"saved_file": saved_file})
 
@@ -557,7 +806,7 @@ def _run_dataset_generation_loop(
     attempt = 0
     while True:
         attempt += 1
-        if max_retries > 0 and attempt > max_retries + 1:
+        if attempt > max_retries + 1:
             break
 
         stage = "generate" if attempt == 1 else "repair"
@@ -570,7 +819,7 @@ def _run_dataset_generation_loop(
 
         try:
             if stage == "generate":
-                publish_live_answer_event(
+                _publish_repair_plan_log(
                     {
                         "type": "repair_plan",
                         "stage": "generate_markdown_sample",
@@ -614,7 +863,7 @@ def _run_dataset_generation_loop(
                     locked_fields.append("thinking")
                 if attempt_repair_target == "thinking" and (parsed_python_code or "").strip():
                     locked_fields.append("assistant_python")
-                publish_live_answer_event(
+                _publish_repair_plan_log(
                     {
                         "type": "repair_plan",
                         "stage": f"repair_{attempt_repair_target}_only",
@@ -685,7 +934,7 @@ def _run_dataset_generation_loop(
                 )
                 continue
 
-            publish_live_answer_event(
+            _publish_repair_plan_log(
                 {
                     "type": "repair_plan",
                     "stage": "python_validation",
@@ -696,14 +945,21 @@ def _run_dataset_generation_loop(
                 }
             )
             validation, run_id, pptx_path = _run_python_and_save_ppt(parsed_python_code)
+            _publish_validation_logs(validation, attempt=attempt)
             if validation.status == "ok":
                 clear_repair_session(prompt_key)
                 key = upsert_pair(
                     user_prompt=raw_prompt.strip(),
                     asset_code="",
-                    python_code=generated_markdown,
+                    python_code=parsed_python_code,
                     asset_system_prompt=ASSET_SYSTEM_PROMPT,
                     python_system_prompt=PYTHON_SYSTEM_PROMPT,
+                )
+                publish_dataset_log(
+                    "DATASET.SAVED",
+                    f"JSONL 저장 완료 · key={key}",
+                    stage="dataset_upsert",
+                    attempt=attempt,
                 )
                 attempts.append(
                     DatasetAutoAttempt(
@@ -728,7 +984,7 @@ def _run_dataset_generation_loop(
                         dataset_row=build_data_messages_row(
                             system_prompt=(system_prompt or PYTHON_SYSTEM_PROMPT).strip(),
                             user_prompt=raw_prompt.strip(),
-                            assistant_markdown=generated_markdown,
+                            assistant_code=parsed_python_code,
                         ),
                     ),
                     run_id,
@@ -841,10 +1097,25 @@ def consume_raw_prompt_pool(payload: RawPromptPoolConsumeRequest) -> RawPromptPo
     selected = pending_items[: payload.count]
     results: List[RawPromptPoolConsumeItemResult] = []
 
-    for item in selected:
+    publish_dataset_log(
+        "RUN.START",
+        f"Count Runner 시작 · count={payload.count} · selected={len(selected)}",
+        stage="count_runner",
+        max_retries=payload.max_retries,
+    )
+
+    for item_index, item in enumerate(selected, start=1):
         item["status"] = "processing"
-        custom_sp = (payload.system_prompt or "").strip()
-        system_for_run = custom_sp if custom_sp else RAW_PROMPT_SYSTEM_PROMPT
+        prompt_preview = str(item["prompt"])[:80]
+        publish_dataset_log(
+            "RUN.ITEM",
+            f"item={item_index}/{len(selected)} · prompt_id={item['id']} · {prompt_preview}…",
+            stage="count_runner",
+            item_index=item_index,
+            item_total=len(selected),
+            prompt_id=str(item["id"]),
+        )
+        system_for_run = resolve_dataset_system_prompt(payload.system_prompt)
         response, run_id, pptx_path = _generate_validate_save_for_prompt(
             raw_prompt=str(item["prompt"]),
             endpoint=payload.lmstudio_endpoint,
@@ -881,9 +1152,24 @@ def consume_raw_prompt_pool(payload: RawPromptPoolConsumeRequest) -> RawPromptPo
                 traceback=response.traceback or item.get("preview_error"),
             )
         )
+        publish_dataset_log(
+            "RUN.ITEM",
+            f"item={item_index}/{len(selected)} 완료 · status={response.status}",
+            stage="count_runner",
+            item_index=item_index,
+            status=response.status,
+            level="info" if response.status == "ok" else "error",
+        )
 
     success = sum(1 for item in results if item.status == "ok")
     failed = sum(1 for item in results if item.status == "error")
+    publish_dataset_log(
+        "RUN.DONE",
+        f"Count Runner 완료 · processed={len(results)} · success={success} · failed={failed}",
+        stage="count_runner",
+        success=success,
+        failed=failed,
+    )
     return RawPromptPoolConsumeResponse(
         processed=len(results),
         success=success,

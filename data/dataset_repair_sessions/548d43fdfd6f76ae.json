@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "prompt_key": "548d43fdfd6f76ae",
+  "raw_prompt_excerpt": "Create a python-pptx script generating a 15-slide colorful educational presentation for Medical Students on Anatomy of the Human Heart. Include detailed anatomical diagrams placeholders throughout. Save the output as \"Heart_Anatomy.pptx\"...",
+  "turns": [
+    {
+      "attempt": 1,
+      "error_type": "ExecutionError",
+      "traceback": "File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\6fa1bc83-aaf3-411c-be82-f198a9607e52\\generate_ppt.py\"\u001b[0m, line \u001b[35m403\u001b[0m\n    \u001b[1;31m\\u2022\u001b[0m Comunicaci\\xf3n interauricular (CIA)\\n\"\n    \u001b[1;31m^\u001b[0m\n\u001b[1;35mSyntaxError\u001b[0m: \u001b[35minvalid character '\\u2022' (U+2022)\u001b[0m",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "import os\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt, Emu\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\n\n\n# ── Deck Constants ────────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(8)\nSLIDE_HEIGHT = Inches(6)\nOUTPUT_FILE = \"Heart_Anatomy.pptx\"\n\nPRIMARY_COLOR = RGBColor(0x1B, 0x3A, 0x5C)   # Navy blue\nACCENT_RED = RGBColor(0xE7, 0x4C, 0x3C)       # Red accent\nSECONDARY_BLUE = RGBColor(0x29, 0x80, 0xB9)   # Medium blue\nLIGHT_GRAY = RGBColor(0xEC, 0xF0, 0xF1)       # Light background\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nDARK_TEXT = RGBColor(0x2C, 0x3E, 0x50)        # Dark body text\nCARD_BG = RGBColor(0xF8, 0xF9, 0xFA)          # Card background\n\nFONT_HEADING = \"Arial\"\nFONT_BODY = \"Calibri\"\nTITLE_SIZE = Pt(28)\nSUBTITLE_SIZE = Pt(16)\nBODY_SIZE = Pt(14)\nSMALL_SIZE = Pt(12)\nLARGE_TITLE_SIZE = Pt(36)\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.4)\nCARD_WIDTH = Inches(2.8)\nCARD_HEIGHT = Inches(1.6)\nCARD_GAP = Inches(0.3)\n\n\n# ── Color Helper ─────────────────────────────────────────────────...",
+      "recorded_at": "2026-06-24T18:15:43+00:00"
+    },
+    {
+      "attempt": 2,
+      "error_type": "GenerationError",
+      "traceback": "부분 패치 적용 후 Python 문법 오류가 발생했습니다: line 414: invalid character '•' (U+2022)",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "import os\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt, Emu\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\n\n\n# ── Deck Constants ────────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(8)\nSLIDE_HEIGHT = Inches(6)\nOUTPUT_FILE = \"Heart_Anatomy.pptx\"\n\nPRIMARY_COLOR = RGBColor(0x1B, 0x3A, 0x5C)   # Navy blue\nACCENT_RED = RGBColor(0xE7, 0x4C, 0x3C)       # Red accent\nSECONDARY_BLUE = RGBColor(0x29, 0x80, 0xB9)   # Medium blue\nLIGHT_GRAY = RGBColor(0xEC, 0xF0, 0xF1)       # Light background\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nDARK_TEXT = RGBColor(0x2C, 0x3E, 0x50)        # Dark body text\nCARD_BG = RGBColor(0xF8, 0xF9, 0xFA)          # Card background\n\nFONT_HEADING = \"Arial\"\nFONT_BODY = \"Calibri\"\nTITLE_SIZE = Pt(28)\nSUBTITLE_SIZE = Pt(16)\nBODY_SIZE = Pt(14)\nSMALL_SIZE = Pt(12)\nLARGE_TITLE_SIZE = Pt(36)\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.4)\nCARD_WIDTH = Inches(2.8)\nCARD_HEIGHT = Inches(1.6)\nCARD_GAP = Inches(0.3)\n\n\n# ── Color Helper ─────────────────────────────────────────────────...",
+      "recorded_at": "2026-06-24T18:16:05+00:00"
+    },
+    {
+      "attempt": 3,
+      "error_type": "GenerationError",
+      "traceback": "부분 패치 1의 기존 코드 구간을 찾지 못했습니다.",
+      "repair_target": "assistant_python",
+      "failure_kind": "parse_assistant",
+      "failed_python_excerpt": "import os\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt, Emu\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\n\n\n# ── Deck Constants ────────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(8)\nSLIDE_HEIGHT = Inches(6)\nOUTPUT_FILE = \"Heart_Anatomy.pptx\"\n\nPRIMARY_COLOR = RGBColor(0x1B, 0x3A, 0x5C)   # Navy blue\nACCENT_RED = RGBColor(0xE7, 0x4C, 0x3C)       # Red accent\nSECONDARY_BLUE = RGBColor(0x29, 0x80, 0xB9)   # Medium blue\nLIGHT_GRAY = RGBColor(0xEC, 0xF0, 0xF1)       # Light background\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nDARK_TEXT = RGBColor(0x2C, 0x3E, 0x50)        # Dark body text\nCARD_BG = RGBColor(0xF8, 0xF9, 0xFA)          # Card background\n\nFONT_HEADING = \"Arial\"\nFONT_BODY = \"Calibri\"\nTITLE_SIZE = Pt(28)\nSUBTITLE_SIZE = Pt(16)\nBODY_SIZE = Pt(14)\nSMALL_SIZE = Pt(12)\nLARGE_TITLE_SIZE = Pt(36)\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.4)\nCARD_WIDTH = Inches(2.8)\nCARD_HEIGHT = Inches(1.6)\nCARD_GAP = Inches(0.3)\n\n\n# ── Color Helper ─────────────────────────────────────────────────...",
+      "recorded_at": "2026-06-24T18:16:33+00:00"
+    },
+    {
+      "attempt": 4,
+      "error_type": "ExecutionError",
+      "traceback": "Traceback (most recent call last):\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\7c50b122-0047-418a-99e4-8ed56a2035df\\generate_ppt.py\"\u001b[0m, line \u001b[35m595\u001b[0m, in \u001b[35m<module>\u001b[0m\n    \u001b[31mmain\u001b[0m\u001b[1;31m()\u001b[0m\n    \u001b[31m~~~~\u001b[0m\u001b[1;31m^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\7c50b122-0047-418a-99e4-8ed56a2035df\\generate_ppt.py\"\u001b[0m, line \u001b[35m588\u001b[0m, in \u001b[35mmain\u001b[0m\n    \u001b[31mslide_14_summary\u001b[0m\u001b[1;31m(prs)\u001b[0m\n    \u001b[31m~~~~~~~~~~~~~~~~\u001b[0m\u001b[1;31m^^^^^\u001b[0m\n  File \u001b[35m\"D:\\Github\\Project\\PowerPointAgent\\artifacts\\tools\\7c50b122-0047-418a-99e4-8ed56a2035df\\generate_ppt.py\"\u001b[0m, line \u001b[35m535\u001b[0m, in \u001b[35mslide_14_summary\u001b[0m\n    check = slide.shapes.add_shape(\u001b[1;31mMSO_SHAPE.CHECK_MARK_BUTTON\u001b[0m, Inches(0.6), y_pos, Inches(0.3), Inches(0.3))\n                                   \u001b[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[1;35mAttributeError\u001b[0m: \u001b[35mtype object 'MSO_AUTO_SHAPE_TYPE' has no attribute 'CHECK_MARK_BUTTON'\u001b[0m",
+      "repair_target": "assistant_python",
+      "failure_kind": "execution",
+      "failed_python_excerpt": "import os\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt, Emu\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.text import PP_ALIGN\nfrom pptx.enum.shapes import MSO_SHAPE\nfrom pptx.enum.chart import XL_CHART_TYPE\n\n\n# ── Deck Constants ────────────────────────────────────────────────\n\nSLIDE_WIDTH = Inches(8)\nSLIDE_HEIGHT = Inches(6)\nOUTPUT_FILE = \"Heart_Anatomy.pptx\"\n\nPRIMARY_COLOR = RGBColor(0x1B, 0x3A, 0x5C)   # Navy blue\nACCENT_RED = RGBColor(0xE7, 0x4C, 0x3C)       # Red accent\nSECONDARY_BLUE = RGBColor(0x29, 0x80, 0xB9)   # Medium blue\nLIGHT_GRAY = RGBColor(0xEC, 0xF0, 0xF1)       # Light background\nWHITE = RGBColor(0xFF, 0xFF, 0xFF)\nDARK_TEXT = RGBColor(0x2C, 0x3E, 0x50)        # Dark body text\nCARD_BG = RGBColor(0xF8, 0xF9, 0xFA)          # Card background\n\nFONT_HEADING = \"Arial\"\nFONT_BODY = \"Calibri\"\nTITLE_SIZE = Pt(28)\nSUBTITLE_SIZE = Pt(16)\nBODY_SIZE = Pt(14)\nSMALL_SIZE = Pt(12)\nLARGE_TITLE_SIZE = Pt(36)\n\nMARGIN_LEFT = Inches(0.75)\nMARGIN_RIGHT = Inches(0.75)\nMARGIN_TOP = Inches(0.5)\nMARGIN_BOTTOM = Inches(0.4)\nCARD_WIDTH = Inches(2.8)\nCARD_HEIGHT = Inches(1.6)\nCARD_GAP = Inches(0.3)\n\n\n# ── Color Helper ─────────────────────────────────────────────────...",
+      "recorded_at": "2026-06-24T18:17:03+00:00"
+    }
+  ]
+}

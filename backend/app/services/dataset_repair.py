@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass
 from typing import Dict, Literal, Optional, Tuple
 
@@ -49,6 +50,54 @@ def assemble_dataset_markdown(fixed_user_prompt: str, fixed_thinking: str, assis
         + assistant_python.strip()
         + "\n```\n"
     )
+
+
+def apply_code_replacements(source_code: str, replacements: list[dict[str, str]]) -> str:
+    if not replacements:
+        raise ValueError("적용할 부분 코드 패치가 없습니다.")
+
+    patched = source_code
+    for index, replacement in enumerate(replacements, start=1):
+        old_code = replacement.get("old_code")
+        new_code = replacement.get("new_code")
+        if not isinstance(old_code, str) or not old_code:
+            raise ValueError(f"부분 패치 {index}의 old_code가 비어 있습니다.")
+        if not isinstance(new_code, str):
+            raise ValueError(f"부분 패치 {index}의 new_code는 문자열이어야 합니다.")
+        if "```" in old_code or "```" in new_code:
+            raise ValueError(f"부분 패치 {index}에 허용되지 않는 Markdown 코드 fence가 포함되어 있습니다.")
+
+        looks_like_complete_script = (
+            "import " in new_code
+            and "def main(" in new_code
+            and 'if __name__ == "__main__"' in new_code
+        )
+        disproportionate_replacement = (
+            len(source_code) >= 1000
+            and len(old_code) < len(source_code) // 4
+            and len(new_code) >= (len(source_code) * 3) // 4
+        )
+        if looks_like_complete_script or disproportionate_replacement:
+            raise ValueError(
+                f"부분 패치 {index}의 new_code가 전체 스크립트 재생성으로 판단되어 거부되었습니다. "
+                "오류 수정에 필요한 최소 코드 구간만 반환해야 합니다."
+            )
+
+        occurrences = patched.count(old_code)
+        if occurrences == 0:
+            raise ValueError(f"부분 패치 {index}의 기존 코드 구간을 찾지 못했습니다.")
+        if occurrences > 1:
+            raise ValueError(f"부분 패치 {index}의 기존 코드 구간이 {occurrences}곳에 있어 안전하게 적용할 수 없습니다.")
+        patched = patched.replace(old_code, new_code, 1)
+
+    if patched == source_code:
+        raise ValueError("부분 패치 적용 후 코드가 변경되지 않았습니다.")
+    try:
+        ast.parse(patched)
+    except SyntaxError as exc:
+        location = f"line {exc.lineno}" if exc.lineno else "unknown line"
+        raise ValueError(f"부분 패치 적용 후 Python 문법 오류가 발생했습니다: {location}: {exc.msg}") from exc
+    return patched
 
 
 def missing_repair_target(parsed: Optional[Dict[str, str]]) -> Optional[DatasetRepairTarget]:
@@ -172,7 +221,7 @@ def execute_field_repair(
             ctx.failed_python_code,
         )
 
-    new_python = repair_assistant_python_only(
+    replacements = repair_assistant_python_only(
         endpoint=endpoint,
         model=model,
         raw_prompt=ctx.raw_prompt,
@@ -185,4 +234,5 @@ def execute_field_repair(
         repair_target=ctx.repair_target,
         error_memory_addon=ctx.error_memory_addon or None,
     )
+    new_python = apply_code_replacements(ctx.failed_python_code, replacements)
     return assemble_dataset_markdown(user_prompt, ctx.frozen_thinking, new_python)
