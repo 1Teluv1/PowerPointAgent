@@ -86,6 +86,18 @@ export async function getPythonDatasetEntry(filename) {
   );
 }
 
+export async function mergePythonDatasetEntries(payload) {
+  return requestJson(
+    "/tools/dataset/python-entries/merge",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    },
+    "Python 데이터셋 병합 저장 실패"
+  );
+}
+
 export async function validatePythonCode(payload) {
   return requestJson(
     "/tools/dataset/python/validate",

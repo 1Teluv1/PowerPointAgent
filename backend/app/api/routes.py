@@ -23,6 +23,8 @@ from app.models.schemas import (
     PythonValidationResponse,
     PythonDatasetEntryDetailResponse,
     PythonDatasetEntryListResponse,
+    PythonDatasetEntryMergeRequest,
+    PythonDatasetEntryMergeResponse,
     RawPromptPoolConsumeRequest,
     RawPromptPoolConsumeResponse,
     RawPromptPoolGenerateRequest,
@@ -41,6 +43,7 @@ from app.services.dataset_service import (
     list_saved_raw_prompt_pools,
     list_python_entries,
     load_raw_prompt_pool_from_file,
+    merge_python_entries,
     read_saved_raw_prompt_pool_raw,
     read_python_entry,
     restore_raw_prompt_pool,
@@ -178,6 +181,16 @@ def python_dataset_entry(filename: str) -> PythonDatasetEntryDetailResponse:
         return PythonDatasetEntryDetailResponse(**read_python_entry(filename))
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/tools/dataset/python-entries/merge", response_model=PythonDatasetEntryMergeResponse)
+def merge_python_dataset_entries(payload: PythonDatasetEntryMergeRequest) -> PythonDatasetEntryMergeResponse:
+    try:
+        return PythonDatasetEntryMergeResponse(**merge_python_entries(payload.filenames, payload.output_name))
+    except FileExistsError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

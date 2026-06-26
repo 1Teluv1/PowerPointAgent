@@ -882,6 +882,38 @@ pre {
   gap: 14px;
 }
 
+.python-entry-export-toolbar {
+  margin-bottom: 14px;
+}
+
+.python-entry-export-toolbar__steps {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.python-entry-export-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.python-entry-export-toolbar__save {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.python-entry-select-col {
+  width: 44px;
+  text-align: center;
+}
+
+.python-entry-list-card .execution-row--selected {
+  background: rgba(200, 164, 93, 0.08);
+}
+
 .python-entry-list-card .execution-row {
   cursor: pointer;
 }
@@ -920,6 +952,10 @@ pre {
   }
 
   .python-entry-review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .python-entry-export-toolbar__steps {
     grid-template-columns: 1fr;
   }
 

@@ -332,10 +332,38 @@ def validate_python_entry_row(row: object) -> Tuple[bool, List[str]]:
     return not errors, errors
 
 
-def read_python_entry(filename: str) -> Dict:
-    if Path(filename).name != filename or not filename.endswith(".jsonl"):
+PROTECTED_DATASET_FILES = frozenset({ASSET_DATASET_FILE.name, PYTHON_DATASET_FILE.name})
+
+
+def _safe_python_entry_filename(filename: str) -> str:
+    safe_name = Path(filename).name
+    if safe_name != filename or not safe_name.endswith(".jsonl"):
         raise ValueError("올바르지 않은 개별 데이터셋 파일명입니다.")
-    path = PYTHON_ENTRY_DIR / filename
+    return safe_name
+
+
+def _safe_merged_dataset_filename(name: str) -> str:
+    trimmed = name.strip()
+    if not trimmed:
+        raise ValueError("저장 파일명이 비어 있습니다.")
+    if "/" in trimmed or "\\" in trimmed or ".." in trimmed:
+        raise ValueError("저장 파일명에 경로 구분자를 사용할 수 없습니다.")
+
+    safe_name = Path(trimmed).name
+    if safe_name != trimmed:
+        raise ValueError("저장 파일명은 파일 이름만 입력할 수 있습니다.")
+    if not safe_name.endswith(".jsonl"):
+        safe_name = f"{safe_name}.jsonl"
+    if not re.fullmatch(r"[A-Za-z0-9._-]+\.jsonl", safe_name):
+        raise ValueError("저장 파일명은 영문, 숫자, '.', '_', '-'만 사용할 수 있습니다.")
+    if safe_name in PROTECTED_DATASET_FILES:
+        raise ValueError(f"보호된 데이터셋 파일명은 사용할 수 없습니다: {safe_name}")
+    return safe_name
+
+
+def read_python_entry(filename: str) -> Dict:
+    safe_name = _safe_python_entry_filename(filename)
+    path = PYTHON_ENTRY_DIR / safe_name
     if not path.exists():
         raise FileNotFoundError(f"개별 데이터셋 파일을 찾을 수 없습니다: {filename}")
 
@@ -353,7 +381,7 @@ def read_python_entry(filename: str) -> Dict:
     valid_row, row_errors = validate_python_entry_row(row)
     errors.extend(row_errors)
     return {
-        "filename": filename,
+        "filename": safe_name,
         "valid": len(errors) == 0 and valid_row,
         "errors": errors,
         "size_bytes": path.stat().st_size,
@@ -391,6 +419,55 @@ def list_python_entries(query: str = "") -> List[Dict]:
             }
         )
     return entries
+
+
+def merge_python_entries(filenames: List[str], output_name: str) -> Dict:
+    ensure_dataset_dir()
+    safe_output_name = _safe_merged_dataset_filename(output_name)
+    output_path = DATASET_DIR / safe_output_name
+    if output_path.exists():
+        raise FileExistsError(f"이미 존재하는 파일입니다: {safe_output_name}")
+
+    merged_rows: List[Dict] = []
+    skipped_invalid: List[str] = []
+    missing: List[str] = []
+    seen_filenames: set[str] = set()
+
+    for filename in filenames:
+        try:
+            safe_name = _safe_python_entry_filename(filename)
+        except ValueError:
+            missing.append(filename)
+            continue
+        if safe_name in seen_filenames:
+            continue
+        seen_filenames.add(safe_name)
+
+        try:
+            detail = read_python_entry(safe_name)
+        except FileNotFoundError:
+            missing.append(safe_name)
+            continue
+
+        if not detail["valid"]:
+            skipped_invalid.append(safe_name)
+            continue
+
+        row = detail.get("row")
+        if isinstance(row, dict):
+            merged_rows.append(row)
+
+    if not merged_rows:
+        raise ValueError("병합할 유효한 레코드가 없습니다.")
+
+    write_jsonl(output_path, merged_rows)
+    return {
+        "filename": safe_output_name,
+        "path": str(output_path),
+        "record_count": len(merged_rows),
+        "skipped_invalid": skipped_invalid,
+        "missing": missing,
+    }
 
 
 def upsert_record(path: Path, user_prompt: str, answer_code: str, system_prompt: str) -> bool:

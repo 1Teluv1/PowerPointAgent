@@ -134,6 +134,19 @@ class PythonDatasetEntryDetailResponse(BaseModel):
     raw: str
 
 
+class PythonDatasetEntryMergeRequest(BaseModel):
+    filenames: List[str] = Field(min_length=1)
+    output_name: str = Field(min_length=1)
+
+
+class PythonDatasetEntryMergeResponse(BaseModel):
+    filename: str
+    path: str
+    record_count: int
+    skipped_invalid: List[str] = Field(default_factory=list)
+    missing: List[str] = Field(default_factory=list)
+
+
 class PythonValidationRequest(BaseModel):
     python_code: str = Field(min_length=1)
 
